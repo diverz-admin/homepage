@@ -14,22 +14,13 @@ const BUBBLES = [
   { left: "95%", size: 5, duration: 16, delay: 6 },
 ];
 
-export default function Bubbles({
-  /**
-   * 히어로처럼 화면 높이만 한 섹션 기준의 기본 rise는 이동 거리가
-   * 110vh다. 푸터처럼 훨씬 낮은 섹션에 그대로 쓰면 대부분의 구간이
-   * 보이는 영역 밖에서 지나가 거의 안 보인다 — 그런 곳에 compact를 켠다.
-   */
-  compact = false,
-}: {
-  compact?: boolean;
-}) {
+export default function Bubbles() {
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
       {BUBBLES.map((b, i) => (
         <span
           key={i}
-          className={compact ? "bubble bubble--compact" : "bubble"}
+          className="bubble"
           style={{
             left: b.left,
             width: b.size,

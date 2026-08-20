@@ -79,15 +79,9 @@ export default function WorkPage() {
                   />
                 </div>
 
-                {/* 캡션은 타일 밖, 다크 배경 위에 온다.
-                    레퍼런스처럼 분류 태그와 브랜드명이 한 줄로 이어진다. */}
-                <p className="mt-3 flex items-baseline gap-2">
-                  <span className="font-display text-[0.72rem] font-bold tracking-[0.08em] text-accent">
-                    {logo.category}
-                  </span>
-                  <span className="font-display text-sm font-bold tracking-tight text-white">
-                    {logo.name}
-                  </span>
+                {/* 캡션은 타일 밖, 다크 배경 위에 온다. */}
+                <p className="mt-3 font-display text-sm font-bold tracking-tight text-white">
+                  {logo.name}
                 </p>
               </article>
             </Reveal>

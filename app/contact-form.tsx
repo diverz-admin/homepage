@@ -4,10 +4,11 @@ import { useState } from "react";
 
 type Status = "idle" | "sending" | "sent" | "error";
 
-/** 문의유형 — 다이버즈 실제 서비스 라인업을 두 갈래로 묶었다. */
+/** 문의유형 — 다이버즈 실제 서비스 라인업을 묶었다. */
 const INQUIRY_TYPES = [
   "IMC · 퍼포먼스 · 바이럴 · 글로벌 마케팅",
   "콘텐츠 제작 (숏폼·영상·광고 소재·카피)",
+  "브랜딩",
 ];
 
 const BUDGET_OPTIONS = [

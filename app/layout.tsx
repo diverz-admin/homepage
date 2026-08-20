@@ -13,7 +13,9 @@ export const metadata: Metadata = {
     default: "DIVERZ — DIVE DEEP, RISE FAST",
     template: "%s | DIVERZ",
   },
-  description: `${company.positioning.replace(/\n/g, " ")} ${company.intro.replace(/\n/g, " ")}`,
+  // intro의 "**강조**" 마커(components/ui/text-reveal.tsx가 강조색으로 읽는 표시)는
+  // 메타 설명에는 필요 없는 표기라 걷어낸다.
+  description: `${company.positioning.replace(/\n/g, " ")} ${company.intro.replace(/\n/g, " ").replace(/\*\*/g, "")}`,
   openGraph: {
     title: "DIVERZ — DIVE DEEP, RISE FAST",
     description: company.positioning.replace(/\n/g, " "),

@@ -7,7 +7,7 @@ import { company } from "@/lib/site";
 export const metadata: Metadata = {
   title: "CONTACT",
   description:
-    "문의 내용에 따라 전담 매니저가 맞춤형 컨설팅을 제공합니다. 다이버즈에 프로젝트를 문의하세요.",
+    "문의 내용에 따라 전담 매니저가 무료로 맞춤형 컨설팅을 제공합니다. 다이버즈에 프로젝트를 문의하세요.",
 };
 
 /**

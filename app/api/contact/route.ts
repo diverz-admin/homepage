@@ -5,6 +5,8 @@ type ContactPayload = {
   name?: unknown;
   company?: unknown;
   phone?: unknown;
+  /** 선택 입력. 회신 수단은 연락처가 기본이고 이메일은 있으면 함께 받는다. */
+  email?: unknown;
   inquiryTypes?: unknown;
   budget?: unknown;
   consent?: unknown;
@@ -34,6 +36,7 @@ export async function POST(request: Request) {
   const name = asTrimmedString(body.name, 80);
   const company = asTrimmedString(body.company, 120);
   const phone = asTrimmedString(body.phone, 40);
+  const email = asTrimmedString(body.email, 160);
   const budget = asTrimmedString(body.budget, 80);
   const inquiryTypes = asStringArray(body.inquiryTypes, 10, 120);
   const consent = body.consent === true;
@@ -48,6 +51,14 @@ export async function POST(request: Request) {
   if (!/^[0-9+\-\s]{7,20}$/.test(phone)) {
     return NextResponse.json(
       { error: "연락처 형식이 올바르지 않습니다." },
+      { status: 400 }
+    );
+  }
+
+  // 이메일은 선택이라 비어 있으면 통과시키고, 적혀 있을 때만 형식을 본다.
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return NextResponse.json(
+      { error: "이메일 형식이 올바르지 않습니다." },
       { status: 400 }
     );
   }
@@ -67,6 +78,7 @@ export async function POST(request: Request) {
       const { error } = await supabase.from("contacts").insert({
         name,
         phone,
+        email: email || null,
         company: company || null,
         budget: budget || null,
         inquiry_types: inquiryTypes,

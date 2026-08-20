@@ -26,23 +26,17 @@ const label = "text-sm font-bold text-white";
 export default function InlineContactForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  /**
+   * 문의유형은 "하나 이상" 골라야 한다. 체크박스 하나에 required를 걸면 그
+   * 칸만 강제되므로, 아무것도 안 골랐을 때만 전부 required로 두고 하나라도
+   * 고르면 푼다 — 브라우저 기본 검증을 그대로 쓰면서 그룹 필수를 만든다.
+   */
+  const [typePicked, setTypePicked] = useState(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
-
-    /**
-     * /api/contact 와 contacts 테이블은 name·email·company·message 네 칸만 받는다.
-     * 문의유형·연락처·예산은 따로 담을 칸이 없어서 message 본문에 정리해 넣는다.
-     * (컬럼을 늘리려면 Supabase 스키마부터 바꿔야 한다.)
-     */
-    const types = data.getAll("type").join(", ");
-    const message = [
-      `[문의유형] ${types || "미선택"}`,
-      `[연락처] ${data.get("phone") || "미입력"}`,
-      `[예산] ${data.get("budget") || "미선택"}`,
-    ].join("\n");
 
     setStatus("sending");
     setErrorMessage("");
@@ -53,9 +47,12 @@ export default function InlineContactForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: data.get("name"),
-          email: data.get("email"),
           company: data.get("company"),
-          message,
+          phone: data.get("phone"),
+          email: data.get("email"),
+          budget: data.get("budget"),
+          inquiryTypes: data.getAll("inquiryTypes"),
+          consent: data.get("consent") === "on",
         }),
       });
 
@@ -67,6 +64,7 @@ export default function InlineContactForm() {
       }
 
       form.reset();
+      setTypePicked(false);
       setStatus("sent");
     } catch {
       setErrorMessage("네트워크 오류가 발생했습니다.");
@@ -77,10 +75,20 @@ export default function InlineContactForm() {
   return (
     <form onSubmit={handleSubmit} className="grid gap-8">
       <div className="grid gap-2 sm:grid-cols-[88px_1fr] sm:gap-6">
-        <span className={`${label} sm:pt-1`}>문의유형</span>
-        {/* 5개를 flex-wrap으로 흘리면 폭에 따라 4+1로 갈려 마지막 한 칸만
-            아래에 남는다. 3열 격자로 못 박아 위 3 · 아래 2로 떨어뜨린다. */}
-        <div className="grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-3">
+        <span className={`${label} sm:pt-1`}>문의유형 *</span>
+        {/* 6개를 flex-wrap으로 흘리면 폭에 따라 갈려 마지막 칸만 아래에 혼자
+            남는다. 3열 격자로 못 박아 위 3 · 아래 3으로 떨어뜨린다.
+            브랜딩은 services(lib/site.ts)에 없는 서비스라 별도로 붙인다. */}
+        <div
+          className="grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-3"
+          onChange={(event) =>
+            setTypePicked(
+              event.currentTarget.querySelectorAll(
+                'input[name="inquiryTypes"]:checked'
+              ).length > 0
+            )
+          }
+        >
           {services.map((service) => (
             <label
               key={service.slug}
@@ -88,20 +96,32 @@ export default function InlineContactForm() {
             >
               <input
                 type="checkbox"
-                name="type"
+                name="inquiryTypes"
                 value={service.name}
+                required={!typePicked}
                 className="h-4 w-4 accent-accent"
               />
               {service.name}
             </label>
           ))}
+          <label className="flex cursor-pointer items-center gap-2 text-sm text-white/80 transition hover:text-white">
+            <input
+              type="checkbox"
+              name="inquiryTypes"
+              value="브랜딩"
+              required={!typePicked}
+              className="h-4 w-4 accent-accent"
+            />
+            브랜딩
+          </label>
         </div>
       </div>
 
       <label className={row}>
-        <span className={label}>업체명</span>
+        <span className={label}>업체명 *</span>
         <input
           name="company"
+          required
           maxLength={120}
           placeholder="업체명을 입력해주세요."
           className={field}
@@ -120,10 +140,11 @@ export default function InlineContactForm() {
       </label>
 
       <label className={row}>
-        <span className={label}>연락처</span>
+        <span className={label}>연락처 *</span>
         <input
           name="phone"
           type="tel"
+          required
           maxLength={40}
           placeholder="연락처를 입력해주세요."
           className={field}
@@ -131,11 +152,10 @@ export default function InlineContactForm() {
       </label>
 
       <label className={row}>
-        <span className={label}>이메일 *</span>
+        <span className={label}>이메일</span>
         <input
           name="email"
           type="email"
-          required
           maxLength={160}
           placeholder="회신받을 이메일을 입력해주세요."
           className={field}
@@ -170,6 +190,7 @@ export default function InlineContactForm() {
       <label className="flex cursor-pointer items-center gap-2.5 text-sm text-white/80">
         <input
           type="checkbox"
+          name="consent"
           required
           className="h-4 w-4 accent-accent"
         />

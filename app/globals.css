@@ -26,7 +26,7 @@
   --ocean-abyss-rgb: 10 21 38;
   --ocean-abyss: rgb(var(--ocean-abyss-rgb));
 
-  --accent: #7c9cc4;
+  --accent: #acd4ff;
   --accent-soft: #a8c0da;
 
   --background: var(--ocean-abyss);
@@ -104,11 +104,16 @@
 
 /**
  * 페이지 공통 컨테이너.
- * 좌우 여백 20 → 28 → 40 → 56px, 콘텐츠 최대 폭 1800px.
+ * 좌우 여백 24 → 40 → 72 → 96 → 128px, 콘텐츠 최대 폭 1800px.
  *
- * 예전 값(15 → 20 → 30 → 40)은 1920px 화면에서 좌우가 너무 비어 보이던 걸
- * 되돌리려다 반대로 너무 좁아진 결과였다. 캡(1800px)은 그대로 두고 여백만
- * 한 단계씩 올려, 넓은 화면에서 콘텐츠가 화면 끝에 붙지 않게 한다.
+ * 값을 두 번 고쳤다. 처음(15 → 20 → 30 → 40)은 1920px 화면에서 좌우가 너무
+ * 비어 보이던 걸 되돌리려던 것인데 반대로 콘텐츠가 화면 끝에 붙었고,
+ * 다음(20 → 28 → 40 → 56)도 여전히 좁았다. 지금은 데스크톱 구간을 크게
+ * 벌려(1280px에서 96px, 1536px부터 128px) 콘텐츠가 화면 가운데로 모이게 한다.
+ * 캡(1800px)은 그대로 — 초광폭에서는 캡이 먼저 걸려 여백이 더 늘어난다.
+ *
+ * 히어로(components/ui/parallax-scrolling.tsx)는 이 여백 위에 자기 여백을
+ * 한 겹 더 얹으므로, 여기 값을 고치면 그쪽도 같이 맞춰야 한다.
  *
  * globals.css 는 레이어 밖이라 Tailwind 유틸리티보다 우선한다.
  * 개별 화면에서 여백을 다르게 줘야 하면 이 클래스를 쓰지 말고 직접 잡는다.
@@ -117,24 +122,30 @@
   width: 100%;
   max-width: 1800px;
   margin-inline: auto;
-  padding-inline: 20px;
+  padding-inline: 24px;
 }
 
 @media (min-width: 640px) {
-  .page-container {
-    padding-inline: 28px;
-  }
-}
-
-@media (min-width: 1024px) {
   .page-container {
     padding-inline: 40px;
   }
 }
 
+@media (min-width: 1024px) {
+  .page-container {
+    padding-inline: 72px;
+  }
+}
+
 @media (min-width: 1280px) {
   .page-container {
-    padding-inline: 56px;
+    padding-inline: 96px;
+  }
+}
+
+@media (min-width: 1536px) {
+  .page-container {
+    padding-inline: 128px;
   }
 }
 
@@ -144,14 +155,15 @@
  * 색 "역할" 변수만 뒤집는다. background/foreground/muted/line/accent 를
  * 참조하는 유틸리티(text-foreground, border-border, bg-background …)가
  * 그대로 밝은 배경용으로 바뀌므로, 컴포넌트마다 클래스를 갈아끼울 필요가 없다.
- * accent 는 흰 배경에서 대비를 잃으므로 mid(#5b7897)로 내린다.
+ * accent 는 어두운 배경용(#acd4ff)이 흰 배경에서 대비를 잃으므로
+ * 흰 배경 전용 포인트 컬러(#4c8dd3)로 내린다.
  */
 .on-light {
   --background: #ffffff;
   --foreground: var(--ocean-abyss);
   --muted: rgb(var(--ocean-abyss-rgb) / 0.55);
   --line: rgb(var(--ocean-abyss-rgb) / 0.1);
-  --accent: var(--ocean-mid);
+  --accent: #4c8dd3;
   color: var(--foreground);
 }
 
@@ -266,24 +278,6 @@ body {
   }
 }
 
-/* 히어로처럼 화면 높이만 한 섹션을 기준으로 만든 rise는 이동 거리가
-   110vh다. 푸터는 그보다 훨씬 낮아서(보통 500~600px) 대부분의 구간이
-   보이는 영역 위아래로 잘려 나가 거의 안 보인다 — 푸터 같은 낮은
-   섹션에서는 이동 거리를 픽셀로 줄인 이 버전을 쓴다. */
-@keyframes rise-compact {
-  0% {
-    transform: translateY(0) scale(0.9);
-    opacity: 0;
-  }
-  15% {
-    opacity: 0.28;
-  }
-  100% {
-    transform: translateY(-560px) scale(1.15);
-    opacity: 0;
-  }
-}
-
 /* 기포는 브랜드 모티프(다이버즈)라 남기되, 눈에 띄는 장식에서 배경의
    미세한 부유물 수준으로 낮춘다. 흰 하이라이트를 빼고 전체 알파를 크게 내렸다. */
 .bubble {
@@ -299,10 +293,42 @@ body {
   pointer-events: none;
 }
 
-/* 낮은 섹션(푸터 등)용 — rise-compact 참고. */
-.bubble--compact {
-  bottom: -24px;
-  animation-name: rise-compact;
+/* 푸터 — 파도가 수면처럼 부풀어 오르는 이펙트(components/rising-wave.tsx).
+   가로 드리프트(흐름)와 세로 스웰(부풀어 오름)을 같은 요소의 transform에
+   같이 주면 나중 애니메이션이 앞 애니메이션을 덮어써서 하나만 남는다 —
+   그래서 두 겹으로 나눈다: 바깥(.wave-swell)이 세로로 오르내리고,
+   안쪽(.wave-drift)이 그 안에서 가로로 흐른다. */
+@keyframes wave-swell {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+@keyframes wave-drift {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    /* 안쪽 SVG를 파도 한 벌만큼(전체 폭의 절반, 뒤에 같은 모양을 이어 붙였다)
+       밀면 이어지는 지점이 안 보이고 끊김 없이 계속 흐른다. */
+    transform: translateX(-50%);
+  }
+}
+
+.wave-swell {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  animation: wave-swell ease-in-out infinite;
+}
+
+.wave-drift {
+  width: 200%;
+  animation: wave-drift linear infinite;
 }
 
 /* 커스텀 커서 — 커서 컴포넌트가 마운트된 뒤에만 기본 커서를 숨긴다.
@@ -351,19 +377,6 @@ body {
 
 .cursor[data-visible="false"] {
   opacity: 0;
-}
-
-/* 성과 상승 그래프 — 스크롤 진입 시 좌→우로 그려지며 라인이 상승한다. */
-/* 그래프는 스크롤 진행도로 그려진다 — clip-path/transform은 컴포넌트가
-   인라인 스타일로 매 프레임 갱신하고, 여기서는 초기 상태만 잡아둔다. */
-.growth-chart {
-  clip-path: inset(0 100% 0 0);
-  transform: translateY(14%);
-}
-
-/* 데이터 포인트 — 선이 지나간 지점만 팝인 (스케일은 인라인) */
-.growth-dot {
-  transform: translate(-50%, -50%) scale(0);
 }
 
 /* 스크롤 리빌 */
@@ -617,6 +630,41 @@ html.lenis [data-lenis-prevent] {
   background: var(--ocean-mid);
 }
 
+/* 클라이언트 로고 3줄 마퀴 — 줄마다 리스트를 두 벌 이어 붙이고 -50%까지
+   옮기면 이음매 없이 반복된다. 방향을 줄마다 반대로 주면 서로 교차하듯
+   지나간다(위쪽 utility 클래스에서 reverse만 골라 쓴다). */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-reverse {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-marquee {
+  animation: marquee linear infinite;
+}
+
+.animate-marquee-reverse {
+  animation: marquee-reverse linear infinite;
+}
+
+/* 마우스를 올린 줄만 멈춰서 로고 이름을 읽을 여유를 준다. */
+.marquee-row:hover .animate-marquee,
+.marquee-row:hover .animate-marquee-reverse {
+  animation-play-state: paused;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -641,18 +689,12 @@ html.lenis [data-lenis-prevent] {
   }
 
   .bubble,
-  .god-rays::before {
+  .wave-swell,
+  .wave-drift,
+  .god-rays::before,
+  .animate-marquee,
+  .animate-marquee-reverse {
     animation: none;
-  }
-
-  /* 그래프는 애니메이션 없이 최종 상태로 바로 보여준다. */
-  .growth-chart {
-    clip-path: none;
-    transform: none;
-  }
-
-  .growth-dot {
-    transform: translate(-50%, -50%) scale(1);
   }
 
   /* 키네틱 메뉴는 컴포넌트 쪽에서 애니메이션을 건너뛰고 최종 상태로 둔다.

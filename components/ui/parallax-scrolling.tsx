@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import GradientLine from "@/components/gradient-line";
-import { useEffect, useRef } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
@@ -53,11 +54,19 @@ type Props = {
   videoSrc?: string;
   /** 큰 슬로건 두 줄. */
   slogan: readonly [string, string];
-  /** 슬로건 아래 보조 카피. "\n"으로 줄을 나눈다. */
-  tagline: string;
+  /**
+   * 슬로건 오른쪽에 세로로 나열하는 서비스 목록 — 좁은 화면(xl 미만)은
+   * 걸 자리가 없어서 숨긴다.
+   */
+  serviceLinks?: readonly { href: string; label: string }[];
 };
 
-export default function ParallaxHero({ src, videoSrc, slogan, tagline }: Props) {
+export default function ParallaxHero({
+  src,
+  videoSrc,
+  slogan,
+  serviceLinks,
+}: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -188,25 +197,60 @@ export default function ParallaxHero({ src, videoSrc, slogan, tagline }: Props) 
                 타이틀과 같은 레이어라 함께 밀린다. */}
             <div aria-hidden className="hero-scrim absolute inset-0" />
 
-            {/* 슬로건 아래에 보조 카피를 바로 이어 붙여, 화면 크기와 무관하게
-                항상 세로로 쌓고 가운데 정렬한다. */}
+            {/* 영상 속 다이버가 화면 정가운데서 떠오른다 — 그 자리를 비워 두려고
+                제목은 왼쪽, 목록은 오른쪽 끝으로 벌린다(xl부터, 2열).
+                xl 미만은 목록을 걸 자리가 없어 제목만 가운데로 남는다. */}
             <div className="relative page-container">
-              {/* 부모(레이어3)가 items-center라 여기 그대로 두면 뷰포트 정가운데다. */}
-              <div className="flex w-full flex-col items-center gap-8">
-                {/* GradientLine은 이제 색을 입히지 않고 줄만 끊는다.
-                    글자색은 여기(부모)에서 정한다. */}
-                <h1 className="text-center font-sans text-fluid-hero leading-[1.15] font-bold tracking-tight text-white drop-shadow-[0_4px_30px_rgb(5_8_16_/_0.75)]">
-                  <GradientLine>{slogan[0]}</GradientLine>
-                  <GradientLine>{slogan[1]}</GradientLine>
-                </h1>
-                <p
-                  /* globals.css의 `p { line-height: 1.7 }`가 레이어 밖이라
-                     leading-* 유틸리티를 이긴다 — 행간은 인라인으로 준다. */
-                  style={{ lineHeight: 1.5 }}
-                  className="max-w-md text-center break-keep whitespace-pre-line text-fluid-lg font-semibold text-accent drop-shadow-[0_2px_14px_rgb(5_8_16_/_0.95)]"
-                >
-                  {tagline}
-                </p>
+              {/* page-container 여백만으로는 화면 끝에 붙어 보여서, xl부터
+                  이 레이어에서만 좌우 여백을 더 준다. page-container 쪽 여백을
+                  키운 만큼 여기서는 줄여, 합쳐진 여백(xl 160 / 2xl 224px)은
+                  예전과 비슷하게 유지한다. */}
+              <div className="grid w-full items-center gap-10 xl:grid-cols-2 xl:px-16 2xl:px-24">
+                <div className="flex flex-col items-center xl:items-start">
+                  {/* GradientLine은 이제 색을 입히지 않고 줄만 끊는다.
+                      글자색은 여기(부모)에서 정한다. */}
+                  <h1 className="text-center font-sans text-fluid-hero leading-[1.15] font-black tracking-tight text-white italic drop-shadow-[0_4px_30px_rgb(5_8_16_/_0.75)] xl:text-left">
+                    <GradientLine>{slogan[0]}</GradientLine>
+                    <GradientLine>{slogan[1]}</GradientLine>
+                  </h1>
+                </div>
+
+                {serviceLinks && (
+                  <nav
+                    aria-label="서비스"
+                    className="hidden justify-self-end xl:block"
+                  >
+                    {/* 세로 한 줄씩이 아니라 두 줄로 묶는다 — 앞 3개(IMC·퍼포먼스·
+                        바이럴)가 한 줄, 뒤 2개(글로벌·콘텐츠)가 다음 줄. 줄 안에서는
+                        "/"로 이어 붙인다. */}
+                    <div className="flex flex-col items-center gap-4">
+                      {[serviceLinks.slice(0, 3), serviceLinks.slice(3)].map(
+                        (row, rowIndex) => (
+                          <div
+                            key={rowIndex}
+                            className="flex items-center gap-3"
+                          >
+                            {row.map((s, i) => (
+                              <Fragment key={s.href}>
+                                {i > 0 && (
+                                  <span aria-hidden className="text-white/25">
+                                    /
+                                  </span>
+                                )}
+                                <Link
+                                  href={s.href}
+                                  className="font-display text-sm font-semibold tracking-[0.15em] text-white/55 drop-shadow-[0_2px_10px_rgb(5_8_16_/_0.7)] transition-colors hover:text-white"
+                                >
+                                  {s.label}
+                                </Link>
+                              </Fragment>
+                            ))}
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </nav>
+                )}
               </div>
             </div>
           </div>

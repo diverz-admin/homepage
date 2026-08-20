@@ -125,7 +125,14 @@ const FlowArt: React.FC<FlowArtProps> = ({
           if (tween.scrollTrigger) triggers.push(tween.scrollTrigger);
         }
 
-        if (i < sections.length - 1) {
+        /* 화면보다 큰 섹션은 고정하지 않는다.
+           고정(pin)은 "한 섹션 = 한 화면"을 전제로 다 읽은 섹션을 붙잡아 두고
+           다음 섹션이 그 위를 덮게 하는 장치다. 섹션이 화면보다 크면 아직
+           아래쪽을 못 읽었는데 다음 섹션이 덮어 버려서, 끝부분이 통째로
+           가려진다. 그런 섹션은 그냥 흘려보내면 전부 읽힌다. */
+        const fitsViewport = section.offsetHeight <= window.innerHeight;
+
+        if (i < sections.length - 1 && fitsViewport) {
           triggers.push(
             ScrollTrigger.create({
               trigger: section,

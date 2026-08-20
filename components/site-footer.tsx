@@ -1,14 +1,13 @@
 import Link from "next/link";
 import { Download } from "lucide-react";
-import Bubbles from "@/components/bubbles";
+import RisingWave from "@/components/rising-wave";
 import { company, companyProfile, nav } from "@/lib/site";
 
 export default function SiteFooter() {
   return (
     <footer className="relative overflow-hidden border-t border-line bg-abyss">
-      {/* 다른 다크 섹션(히어로·CTA)과 같은 기포 모티프를 푸터에도 얹는다.
-          푸터는 그 섹션들보다 훨씬 낮아서 compact로 이동 거리를 줄인다. */}
-      <Bubbles compact />
+      {/* 파도가 수면처럼 부풀어 오르는 이펙트. */}
+      <RisingWave />
       <div className="page-container relative py-20">
         <div className="grid gap-14 md:grid-cols-2 lg:grid-cols-[1fr_1fr_auto]">
           {/* 워드마크 아래로 메뉴가 크게 흐르는 구성 */}

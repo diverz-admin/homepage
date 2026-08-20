@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import GradientLine from "@/components/gradient-line";
 import PageHero from "@/components/page-hero";
+import GlobalShowcase from "@/components/global-showcase";
 import LogoOrbit from "@/components/logo-orbit";
 import PerformanceFunnel from "@/components/performance-funnel";
 import PerformanceLogoGrid from "@/components/performance-logo-grid";
 import Reveal from "@/components/reveal";
 import ServiceSection from "@/components/service-section";
+import ViralChannels from "@/components/viral-channels";
 import FlowArt, { FlowSection } from "@/components/ui/story-scroll";
 import { imcProcess, services } from "@/lib/site";
 
@@ -41,7 +43,11 @@ const heroServices = [
 const panels = [
   { bg: "#ffffff", tone: "light" },
   { bg: "var(--ocean-surface)", tone: "light" },
-  { bg: "var(--ocean-shallow)", tone: "light" },
+  // shallow(#a8c0da)는 밝지도 어둡지도 않은 중간값이라, 본문(foreground/60)
+  // 대비가 2.9:1까지 떨어져 글씨가 묻혔다. surface와 shallow 사이의
+  // 밝은 톤으로 한 칸 올린다 — 수심이 내려가는 흐름은 그대로 두면서
+  // 본문 대비는 4.6:1까지 회복된다.
+  { bg: "#dbe4f0", tone: "light" },
   { bg: "var(--ocean-deep)", tone: "dark" },
   { bg: "var(--ocean-abyss)", tone: "dark" },
 ] as const;
@@ -81,11 +87,12 @@ export default function ServicePage() {
       <FlowArt aria-label="다이버즈 서비스">
         {services.map((service, i) => {
           const panel = panels[i];
-          // IMC·퍼포먼스는 딸린 블록(프로세스 타임라인·성과 곡선)이 있어
-          // 패널 하나를 넘긴다. 나머지 셋은 본문만 있어서 위로 붙이면
-          // 화면 아래 절반이 통째로 빈다 — 그래서 가운데로 모은다.
-          const centered =
-            service.slug !== "imc" && service.slug !== "performance";
+          // IMC·퍼포먼스·바이럴은 딸린 블록(프로세스 타임라인·성과 곡선·
+          // 채널 목록)이 있어 패널 하나를 넘긴다. 나머지 둘은 본문만 있어서
+          // 위로 붙이면 화면 아래 절반이 통째로 빈다 — 그래서 가운데로 모은다.
+          const centered = !["imc", "performance", "viral"].includes(
+            service.slug
+          );
           return (
             <FlowSection
               key={service.slug}
@@ -109,17 +116,23 @@ export default function ServicePage() {
                   service={service}
                   index={i}
                   tone={panel.tone}
-                  /* IMC는 로고 궤도, 퍼포먼스는 채널 로고 3x2 그리드를 오른쪽에 세운다. */
+                  /* IMC는 로고 궤도, 퍼포먼스는 채널 로고 3x2 그리드,
+                     글로벌은 샤오홍슈 노출 사례 사진을 오른쪽에 세운다. */
                   aside={
                     service.slug === "imc" ? (
                       <LogoOrbit />
                     ) : service.slug === "performance" ? (
                       <PerformanceLogoGrid />
+                    ) : service.slug === "global" ? (
+                      <GlobalShowcase />
                     ) : undefined
                   }
                 >
                   {/* 퍼포먼스 마케팅 전용 화이트 카드 — 강점 3가지 + 성과 곡선. */}
                   {service.slug === "performance" && <PerformanceFunnel />}
+
+                  {/* 바이럴 채널 3종 + 상위노출 2종. */}
+                  {service.slug === "viral" && <ViralChannels />}
 
                   {/* IMC 6단계는 IMC에 속한 내용이라 그 블록 안에 둔다. */}
                   {service.slug === "imc" && (

@@ -12,9 +12,9 @@ export const company = {
   email: "diverz1225@gmail.com",
   tagline: "가장 깊이 잠수하고, 빠르게 떠오릅니다.",
   slogan: ["DIVE DEEP", "RISE FAST"] as const,
-  // "\n"으로 세 문단을 나눈다. 화면에서는 줄바꿈으로, 메타데이터에서는 공백으로 처리한다.
+  // "\n"으로 줄을 나눈다. 화면에서는 줄바꿈으로, 메타데이터에서는 공백으로 처리한다.
   intro:
-    "다이버즈는 넓은 시장 속에서\n마케팅 전략 없이 헤매고 있는 브랜드들을 찾아내고\n그들의 잠재력을 수면 위로 끌어올립니다.",
+    "브랜드의 본질과 시장의 흐름을 **집요하게 파고들고**\n누구보다 **더 빠른 성장을** 만들어냅니다.",
   // intro와 같은 규칙 — "\n"은 화면에서만 줄바꿈, 메타데이터에서는 공백.
   // 좁은 화면에서 자연 개행에 맡기면 "IMC 마케팅 / 그룹입니다."처럼
   // 고유명사 한가운데가 갈려서 여기서 끊는 자리를 정해 둔다.
@@ -204,12 +204,13 @@ export const services = [
     image: "/images/service/global.png",
     en: "GLOBAL MARKETING",
     name: "글로벌 마케팅",
-    // TODO: 확정 카피 대기 중. 아래 태그라인/요약/키워드는 다른 서비스의 형식에
-    // 맞춰 임시로 쓴 초안이라, 실제 서비스 범위와 다를 수 있다.
     tagline: "현지 채널과 언어로 확장하는\n글로벌 브랜드 진출",
+    // 아마존(미국)·샤오홍슈(중국) 등 해외 커머스·콘텐츠 플랫폼 노출이 핵심이다.
     summary:
-      "국가별 검색·커머스 환경에 맞춰 현지 채널과 언어로 브랜드를 알립니다. 진출 준비부터 현지 운영까지 함께 설계합니다.",
-    points: ["현지 채널 운영", "다국어 콘텐츠", "국가별 타겟 설계"],
+      "미국 아마존, 중국 샤오홍슈 등 해외 주요 커머스·콘텐츠 플랫폼에 브랜드와 상품을 노출합니다. " +
+      "국가별 플랫폼의 검색·추천 알고리즘에 맞춰 리스팅, 콘텐츠, 트래픽을 정교하게 설계하고, " +
+      "진출 준비부터 현지 운영까지 함께 관리해 해외 판매로 연결합니다.",
+    points: ["아마존", "샤오홍슈", "해외 플랫폼 노출", "리스팅 최적화", "현지 운영 관리"],
   },
   {
     slug: "contents",
@@ -279,6 +280,79 @@ export const performanceFunnel = [
 ] as const;
 
 /** WORK — 케이스 스터디 */
+/**
+ * 바이럴 채널 3종 — 서비스 페이지 VIRAL 블록.
+ * 기존 사이트 diverz.kr/viralmarketing 의 내용을 그대로 옮겼다.
+ *
+ * logo는 채널명 옆에 붙는 작은 마크다. 원본은 "Service page/viral/"에 있고,
+ * 크기를 서로 맞춘 정사각 파일을 scripts/normalize-viral-logos.mjs가 만든다.
+ */
+export const viralChannels = [
+  {
+    en: "NAVER",
+    logo: "/images/viral/naver.png",
+    title: "카페·블로그 기반\n상위노출 바이럴 솔루션",
+    body:
+      "네이버 카페와 블로그는 검색 유입과 소비자 설득에 최적화된 채널입니다. " +
+      "바이럴 콘텐츠와 실사용 기반 후기, 키워드 중심 전략으로 검색 상위노출과 전환을 동시에 이끕니다.",
+  },
+  {
+    en: "INSTAGRAM",
+    logo: "/images/viral/instagram.png",
+    title: "시딩부터 인기게시물까지,\n인스타그램 최적화 전략",
+    body:
+      "진정성 있는 인플루언서 콘텐츠와 인기 게시물 전략으로 " +
+      "신뢰와 도달률을 동시에 확보하는 인스타그램 바이럴을 실행합니다.",
+  },
+  {
+    en: "DANG-GEUN",
+    logo: "/images/viral/danggeun.png",
+    title: "타겟 지역 직접 공략,\n당근에서 시작됩니다",
+    body:
+      "단순 노출이 아닌 브랜드 상황에 맞는 맞춤형 소재와 상세 카테고리 전략으로 " +
+      "지역 내 전환을 유도하고 현장 중심의 마케팅 성과를 빠르게 끌어올립니다. " +
+      "가성비 높은 집행, 높은 클릭률, 실제 전환까지. 당근마켓은 로컬 브랜딩의 가장 강력한 해답입니다.",
+  },
+] as const;
+
+/**
+ * 상위노출 2종 — 서비스 페이지 VIRAL 블록의 두 번째 묶음.
+ * 기존 사이트 diverz.kr/35 (SEARCH RANKING BOOST)의 내용을 그대로 옮겼다.
+ * 바이럴과 별개 서비스지만 이 사이트에서는 VIRAL 안의 키워드로 묶여 있어
+ * (points에 "상위노출"이 있다) 같은 블록에서 이어 보여 준다.
+ */
+/**
+ * 스마트스토어 상위노출 실적 — 키워드별 순위 상승 기록.
+ * from(초기 순위) → to(현재 순위). 상승 폭은 화면에서 from - to로 계산한다.
+ */
+export const smartstoreRankings = [
+  { keyword: "애견용품", from: 24, to: 2 },
+  { keyword: "낚시용품", from: 72, to: 1 },
+  { keyword: "샴푸", from: 25, to: 3 },
+  { keyword: "방향제", from: 122, to: 1 },
+  { keyword: "스킨케어", from: 169, to: 1 },
+] as const;
+
+export const searchRankingBoost = [
+  {
+    en: "NAVER PLACE",
+    logo: "/images/viral/naver-place.png",
+    title: "플레이스 상위노출",
+    body:
+      "블로그 리뷰, 영수증 리뷰, 리워드 트래픽, 저장하기 등 다양한 사용자 행동 데이터를 정교하게 설계합니다. " +
+      "단순 광고가 아닌, 네이버 알고리즘에 최적화된 유기적 노출 구조를 통해 브랜드의 플레이스 상위노출을 안정적으로 만들어 냅니다.",
+  },
+  {
+    // TODO: 로고 원본 없음. "Service page/viral/"에 스마트스토어 파일이 들어오면
+    // scripts/normalize-viral-logos.mjs의 FILES에 추가하고 여기 logo를 채운다.
+    en: "NAVER SMARTSTORE",
+    title: "스마트스토어 상위노출",
+    body:
+      "SEO 최적화부터 상품 찜, 관심고객수, 리워드 기반 트래픽까지. " +
+      "스마트스토어의 검색 상위노출을 위해 주요 지표들을 정교하게 조합해 노출 경쟁력을 높이고 실질적인 매출 성장을 유도합니다.",
+  },
+] as const;
+
 export const cases = [
   {
     client: "A지역 피부과",
@@ -352,38 +426,61 @@ export const performanceChannels = [
   { name: "Google Analytics", src: "/images/performance/google-analytics.png" },
 ] as const;
 
+/**
+ * 클라이언트 로고 — "업체 로고/" 폴더(실제 거래 업체 로고 원본)에서 뽑았다.
+ * 3줄 마퀴가 서로 반대 방향으로 흐르며 스쳐 지나가는 연출이라
+ * (components/client-logos.tsx) 업종별로 묶을 필요가 없어 카테고리 없이
+ * 평평한 목록으로 둔다. 순서는 한쪽에 업종이 몰리지 않도록 미리 섞어
+ * 고정해 뒀다 — 매 렌더마다 무작위로 섞으면 서버/클라이언트 렌더 결과가
+ * 달라져 하이드레이션이 어긋나므로 리터럴 순서 자체를 섞는다.
+ */
 export const clientLogos = [
-  // 금융·보험
-  { name: "AXA", src: "/images/clients/axa.png", category: "금융·보험" },
-  { name: "삼성카드", src: "/images/clients/samsung-card.png", category: "금융·보험" },
-  { name: "KB국민카드", src: "/images/clients/kb-card.png", category: "금융·보험" },
-  { name: "한화손해보험", src: "/images/clients/hanwha-insurance.png", category: "금융·보험" },
-  { name: "메리츠화재", src: "/images/clients/meritz-fire.png", category: "금융·보험" },
-  { name: "라이나생명", src: "/images/clients/lina-life.png", category: "금융·보험" },
-  { name: "DB손해보험", src: "/images/clients/db-insurance.png", category: "금융·보험" },
-  { name: "현대해상", src: "/images/clients/hyundai-insurance.png", category: "금융·보험" },
-  { name: "미래에셋증권", src: "/images/clients/mirae-asset.png", category: "금융·보험" },
-  { name: "하이투자증권", src: "/images/clients/dgb-hi-investment.png", category: "금융·보험" },
-  { name: "코인원", src: "/images/clients/coinone.png", category: "금융·보험" },
-
-  // 통신·미디어·커머스
-  { name: "SK브로드밴드", src: "/images/clients/sk-broadband.png", category: "미디어·커머스" },
-  { name: "웅진", src: "/images/clients/woongjin.png", category: "미디어·커머스" },
-  { name: "SOOP", src: "/images/clients/soop.png", category: "미디어·커머스" },
-  { name: "한국경제TV", src: "/images/clients/hankyung-tv.png", category: "미디어·커머스" },
-  { name: "TV조선", src: "/images/clients/tv-chosun.png", category: "미디어·커머스" },
-  { name: "NS홈쇼핑", src: "/images/clients/ns-homeshopping.png", category: "미디어·커머스" },
-  { name: "아모레퍼시픽", src: "/images/clients/amorepacific.png", category: "미디어·커머스" },
-
-  // 럭셔리·주류
-  { name: "Bentley", src: "/images/clients/bentley.png", category: "럭셔리·주류" },
-  { name: "HERMÈS", src: "/images/clients/hermes.png", category: "럭셔리·주류" },
-  { name: "Porsche", src: "/images/clients/porsche.png", category: "럭셔리·주류" },
-  { name: "Rolls-Royce", src: "/images/clients/rolls-royce.png", category: "럭셔리·주류" },
-  { name: "Hendrick's Gin", src: "/images/clients/hendricks-gin.png", category: "럭셔리·주류" },
-  { name: "The Balvenie", src: "/images/clients/the-balvenie.png", category: "럭셔리·주류" },
-  { name: "Lillet", src: "/images/clients/lillet.png", category: "럭셔리·주류" },
-  { name: "Hennessy", src: "/images/clients/hennessy.png", category: "럭셔리·주류" },
+  { name: "Hennessy", src: "/images/clients/hennessy.png" },
+  { name: "깐부치킨", src: "/images/clients/kkanbu-chicken.png" },
+  { name: "AXA", src: "/images/clients/axa.png" },
+  { name: "고향의봄", src: "/images/clients/hometown-spring.png" },
+  { name: "Bentley", src: "/images/clients/bentley.png" },
+  { name: "웅진", src: "/images/clients/woongjin.png" },
+  { name: "THE HANOI FOOT&BODY", src: "/images/clients/the-hanoi-foot-body.png" },
+  { name: "KB국민카드", src: "/images/clients/kb-card.png" },
+  { name: "Sealy", src: "/images/clients/sealy.png" },
+  { name: "SOOP", src: "/images/clients/soop.png" },
+  { name: "우다다", src: "/images/clients/udada.png" },
+  { name: "메리츠화재", src: "/images/clients/meritz-fire.png" },
+  { name: "The Balvenie", src: "/images/clients/the-balvenie.png" },
+  { name: "직폰", src: "/images/clients/ziphone.png" },
+  { name: "아모레퍼시픽", src: "/images/clients/amorepacific.png" },
+  { name: "MONOCUS", src: "/images/clients/monocus.png" },
+  { name: "Rolls-Royce", src: "/images/clients/rolls-royce.png" },
+  { name: "린센다이닝", src: "/images/clients/linsen-dining.png" },
+  { name: "하이투자증권", src: "/images/clients/dgb-hi-investment.png" },
+  { name: "Care by Me", src: "/images/clients/care-by-me.png" },
+  { name: "NS홈쇼핑", src: "/images/clients/ns-homeshopping.png" },
+  { name: "dr ROBBIN", src: "/images/clients/dr-robbin.png" },
+  { name: "라이나생명", src: "/images/clients/lina-life.png" },
+  { name: "웨이브히어링", src: "/images/clients/wave-hearing.png" },
+  { name: "Porsche", src: "/images/clients/porsche.png" },
+  { name: "우피아", src: "/images/clients/uffia.png" },
+  { name: "TV조선", src: "/images/clients/tv-chosun.png" },
+  { name: "살롱드하루", src: "/images/clients/salon-de-haru.png" },
+  { name: "삼성카드", src: "/images/clients/samsung-card.png" },
+  { name: "이품고", src: "/images/clients/ipoomgo.png" },
+  { name: "한화손해보험", src: "/images/clients/hanwha-insurance.png" },
+  { name: "BODYBEAN PILATES", src: "/images/clients/bodybean-pilates.png" },
+  { name: "코인원", src: "/images/clients/coinone.png" },
+  { name: "ALLERMAN", src: "/images/clients/allerman.png" },
+  { name: "SK브로드밴드", src: "/images/clients/sk-broadband.png" },
+  { name: "오키파", src: "/images/clients/okipa.png" },
+  { name: "미래에셋증권", src: "/images/clients/mirae-asset.png" },
+  { name: "SHINE U CLINIC", src: "/images/clients/shine-u-clinic.png" },
+  { name: "현대해상", src: "/images/clients/hyundai-insurance.png" },
+  { name: "Odorr", src: "/images/clients/odorr.png" },
+  { name: "한국경제TV", src: "/images/clients/hankyung-tv.png" },
+  { name: "THE LITER", src: "/images/clients/the-liter.png" },
+  { name: "HERMÈS", src: "/images/clients/hermes.png" },
+  { name: "DB손해보험", src: "/images/clients/db-insurance.png" },
+  { name: "Hendrick's Gin", src: "/images/clients/hendricks-gin.png" },
+  { name: "Lillet", src: "/images/clients/lillet.png" },
 ] as const;
 
 /**

@@ -33,7 +33,9 @@ export default function Home() {
             </p>
           }
           footer={
-            <p className="mt-10 font-display text-fluid-lg font-bold text-accent-soft">
+            /* 개행은 좁은 화면에서만 살린다 — sm 이상은 한 줄에 들어가므로
+               whitespace-normal로 되돌려 "\n"을 공백으로 흘린다. */
+            <p className="mt-10 font-display text-fluid-lg font-bold whitespace-pre-line text-accent-soft sm:whitespace-normal">
               {company.positioning}
             </p>
           }

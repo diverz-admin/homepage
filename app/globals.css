@@ -266,6 +266,24 @@ body {
   }
 }
 
+/* 히어로처럼 화면 높이만 한 섹션을 기준으로 만든 rise는 이동 거리가
+   110vh다. 푸터는 그보다 훨씬 낮아서(보통 500~600px) 대부분의 구간이
+   보이는 영역 위아래로 잘려 나가 거의 안 보인다 — 푸터 같은 낮은
+   섹션에서는 이동 거리를 픽셀로 줄인 이 버전을 쓴다. */
+@keyframes rise-compact {
+  0% {
+    transform: translateY(0) scale(0.9);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.28;
+  }
+  100% {
+    transform: translateY(-560px) scale(1.15);
+    opacity: 0;
+  }
+}
+
 /* 기포는 브랜드 모티프(다이버즈)라 남기되, 눈에 띄는 장식에서 배경의
    미세한 부유물 수준으로 낮춘다. 흰 하이라이트를 빼고 전체 알파를 크게 내렸다. */
 .bubble {
@@ -279,6 +297,12 @@ body {
   );
   animation: rise linear infinite;
   pointer-events: none;
+}
+
+/* 낮은 섹션(푸터 등)용 — rise-compact 참고. */
+.bubble--compact {
+  bottom: -24px;
+  animation-name: rise-compact;
 }
 
 /* 커스텀 커서 — 커서 컴포넌트가 마운트된 뒤에만 기본 커서를 숨긴다.

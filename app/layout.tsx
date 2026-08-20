@@ -13,10 +13,10 @@ export const metadata: Metadata = {
     default: "DIVERZ — DIVE DEEP, RISE FAST",
     template: "%s | DIVERZ",
   },
-  description: `${company.positioning} ${company.intro.replace(/\n/g, " ")}`,
+  description: `${company.positioning.replace(/\n/g, " ")} ${company.intro.replace(/\n/g, " ")}`,
   openGraph: {
     title: "DIVERZ — DIVE DEEP, RISE FAST",
-    description: company.positioning,
+    description: company.positioning.replace(/\n/g, " "),
     type: "website",
     locale: "ko_KR",
     images: ["/images/hero-deep.png"],

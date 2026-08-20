@@ -3,13 +3,24 @@ import { createServerSupabase } from "@/lib/supabase";
 
 type ContactPayload = {
   name?: unknown;
-  email?: unknown;
   company?: unknown;
-  message?: unknown;
+  phone?: unknown;
+  inquiryTypes?: unknown;
+  budget?: unknown;
+  consent?: unknown;
 };
 
 function asTrimmedString(value: unknown, max: number): string {
   return typeof value === "string" ? value.trim().slice(0, max) : "";
+}
+
+function asStringArray(value: unknown, maxItems: number, maxLen: number): string[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter((item): item is string => typeof item === "string")
+    .slice(0, maxItems)
+    .map((item) => item.trim().slice(0, maxLen))
+    .filter(Boolean);
 }
 
 export async function POST(request: Request) {
@@ -21,32 +32,64 @@ export async function POST(request: Request) {
   }
 
   const name = asTrimmedString(body.name, 80);
-  const email = asTrimmedString(body.email, 160);
   const company = asTrimmedString(body.company, 120);
-  const message = asTrimmedString(body.message, 4000);
+  const phone = asTrimmedString(body.phone, 40);
+  const budget = asTrimmedString(body.budget, 80);
+  const inquiryTypes = asStringArray(body.inquiryTypes, 10, 120);
+  const consent = body.consent === true;
 
-  if (!name || !email || !message) {
+  if (!name || !phone || !consent) {
     return NextResponse.json(
-      { error: "이름, 이메일, 문의 내용은 필수입니다." },
+      { error: "성함, 연락처, 개인정보 수집 동의는 필수입니다." },
       { status: 400 }
     );
   }
 
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  if (!/^[0-9+\-\s]{7,20}$/.test(phone)) {
     return NextResponse.json(
-      { error: "이메일 형식이 올바르지 않습니다." },
+      { error: "연락처 형식이 올바르지 않습니다." },
       { status: 400 }
     );
   }
 
   try {
     const supabase = createServerSupabase();
-    const { error } = await supabase
-      .from("contacts")
-      .insert({ name, email, company: company || null, message });
 
-    if (error) {
-      console.error("[contact] insert failed:", error.message);
+    /**
+     * Supabase가 간헐적으로 `JWT issued at future` 로 인증을 거부한다(우리 시계는 정상).
+     * 인증 단계에서 막히는 것이라 행은 저장되지 않으므로 재시도해도 중복이 생기지 않는다.
+     * 문의 유실은 비용이 크니 짧게 두 번 더 시도한다.
+     */
+    const ATTEMPTS = 3;
+    let lastError: string | null = null;
+
+    for (let attempt = 1; attempt <= ATTEMPTS; attempt++) {
+      const { error } = await supabase.from("contacts").insert({
+        name,
+        phone,
+        company: company || null,
+        budget: budget || null,
+        inquiry_types: inquiryTypes,
+        consent,
+      });
+
+      if (!error) {
+        lastError = null;
+        break;
+      }
+
+      lastError = error.message;
+      console.error(
+        `[contact] insert failed (${attempt}/${ATTEMPTS}):`,
+        error.message
+      );
+
+      if (attempt < ATTEMPTS) {
+        await new Promise((resolve) => setTimeout(resolve, attempt * 250));
+      }
+    }
+
+    if (lastError) {
       return NextResponse.json(
         { error: "문의 저장에 실패했습니다. 잠시 후 다시 시도해 주세요." },
         { status: 500 }

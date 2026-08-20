@@ -1,16 +1,26 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import SiteHeader from "@/components/site-header";
+import SiteFooter from "@/components/site-footer";
+import Cursor from "@/components/cursor";
+import { company } from "@/lib/site";
+// 한글 본문 폰트 Pretendard (유니코드 dynamic-subset — 필요한 글리프만 로드)
+import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
-  title: "DIVERZ — 다양함이 만드는 새로운 기준",
-  description:
-    "DIVERZ는 브랜드, 콘텐츠, 기술을 아우르는 통합 솔루션으로 비즈니스의 다음 단계를 만듭니다.",
+  metadataBase: new URL("https://diverz.kr"),
+  title: {
+    default: "DIVERZ — DIVE DEEP, RISE FAST",
+    template: "%s | DIVERZ",
+  },
+  description: `${company.positioning} ${company.intro.replace(/\n/g, " ")}`,
+  openGraph: {
+    title: "DIVERZ — DIVE DEEP, RISE FAST",
+    description: company.positioning,
+    type: "website",
+    locale: "ko_KR",
+    images: ["/images/hero-deep.png"],
+  },
 };
 
 export default function RootLayout({
@@ -19,8 +29,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className={`${geistSans.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html
+      lang="ko"
+      className="h-full antialiased"
+    >
+      <body className="flex min-h-full flex-col">
+        <Cursor />
+        <SiteHeader />
+        <main className="flex-1">{children}</main>
+        <SiteFooter />
+      </body>
     </html>
   );
 }

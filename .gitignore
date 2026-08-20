@@ -39,3 +39,44 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Supabase DB 비밀번호 (커밋 금지)
+.supabase-db-password.txt
+
+# playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# 원본 대용량 영상(웹용 public/videos/*.mp4로 변환해 사용) & 임시 프레임
+*.mov
+/scratch_frames/
+
+# 공유용 정적 export zip
+/diverz-homepage-static.zip
+/diverz-homepage-static*.zip
+
+# 원본 소스 자료 폴더 — public/ 안에 필요한 것만 이미 가공해서 넣어 뒀다.
+# 여기 남은 건 웹에서 안 쓰는 원본이라 저장소에 올릴 필요가 없다.
+/Main page/
+/Service page/
+/업체 로고/
+/undefined/
+
+# public/ 밖에 남은 중복 원본(실제로 쓰는 사본은 public/videos, public/images 안에 있다).
+/contact.mp4
+/diving.mp4
+/diver.jpg
+/A지역 피부과와 그래프.png
+/F&B 브랜드 본사 그래프.png
+
+# 디자인 확인용 1회성 스크린샷 스크립트
+/.c3.mjs
+/.tw2.mjs
+
+# Claude Code 로컬 설정·스킬 번들 — 사이트 소스와 무관, 개인 도구 설정이라 저장소에 안 올린다.
+/.claude/
+
+# 작업 중 백업 사본
+*.bak

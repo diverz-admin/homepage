@@ -178,12 +178,40 @@ body {
   font-family: "Pretendard Variable", system-ui, sans-serif;
   /* 한글 본문 자간을 살짝 좁혀 촘촘한 인상을 준다. */
   letter-spacing: -0.01em;
+
+  /* 한글은 기본값(word-break: normal)이면 글자 단위로 줄이 바뀌어서
+     "함께하고 있 / 습니다"처럼 단어 중간이 쪼개진다. 국문 사이트라
+     여기서 한 번에 끊어 준다 — 컴포넌트마다 break-keep을 붙이는 방식은
+     빠뜨린 곳이 계속 생긴다(모바일에서 특히 티가 난다).
+     영문은 원래 공백에서만 끊기므로 영향이 없다.
+
+     대신 keep-all만 걸면 이메일·URL처럼 공백 없는 긴 문자열이 칸을
+     삐져나간다. overflow-wrap으로 "정말 안 들어갈 때만" 끊게 열어 둔다. */
+  word-break: keep-all;
+  overflow-wrap: break-word;
   /* 배경 명암은 "있는 줄 모를 정도"로만 남긴다. 예전엔 상단에 시안 글로우가
      꽤 세게 깔려 있어서, 색을 뺀 팔레트에서는 그것만 붕 떠 보인다. */
   background-image:
     radial-gradient(120% 60% at 50% -10%, rgb(124 156 196 / 0.045), transparent 62%),
     radial-gradient(80% 50% at 80% 100%, rgb(23 37 60 / 0.35), transparent 72%);
   background-attachment: fixed;
+}
+
+/* background-attachment: fixed는 모바일 사파리/크롬에서 스크롤할 때마다
+   고정 배경을 다시 그리게 만들어(합성 레이어로 못 뺀다) 스크롤이 끊겨
+   보인다 — 특히 히어로처럼 무거운(GSAP 패럴랙스) 구간을 지날 때 티가
+   난다. 데스크톱은 비용이 적어 그대로 두고, 좁은 화면에서만 scroll로
+   되돌린다. 은은한 그라디언트라 attachment 차이는 눈에 띄지 않는다. */
+@media (max-width: 639px) {
+  body {
+    background-attachment: scroll;
+  }
+
+  /* 모바일도 같은 이유(components/ui/parallax-scrolling.tsx)로 GSAP
+     패럴랙스를 끄므로, 여기서도 스크럽용 여분 높이(220svh)를 접어 둔다. */
+  .parallax {
+    height: 100svh;
+  }
 }
 
 /* 제목용 타이포. 서체는 본문과 같은 Pretendard이고, 자간만 따로 잡는다.
@@ -615,3 +643,4 @@ html.lenis [data-lenis-prevent] {
     height: 100svh;
   }
 }
+

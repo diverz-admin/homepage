@@ -65,6 +65,12 @@ export default function ParallaxHero({ src, videoSrc, slogan, tagline }: Props) 
     if (!root) return;
     // 모션 최소화 사용자에게는 스크롤을 가로채지도, 레이어를 밀지도 않는다.
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // 모바일도 마찬가지로 끈다. 히어로 영상을 자동재생하며 매 스크롤
+    // 프레임마다 레이어 4장을 GSAP로 같이 옮기면(+Lenis 관성) 저사양
+    // 기기에서 스크롤이 버벅인다 — 특히 히어로를 벗어나는 순간 티가 난다.
+    // 데스크톱 전용 장식이라 꺼도 내용 손실이 없고, CSS(.parallax의
+    // 640px 미만 규칙)가 무대를 100svh 고정 히어로로 접어 둔다.
+    if (window.matchMedia("(max-width: 639px)").matches) return;
 
     gsap.registerPlugin(ScrollTrigger);
 

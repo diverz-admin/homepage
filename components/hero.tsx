@@ -7,11 +7,11 @@ import { company } from "@/lib/site";
  * 짧게 줄인다 — 큰 제목 옆에 거는 장식적 목록이라 항목명이 길면 무거워진다.
  */
 const HERO_SERVICE_LINKS = [
-  { href: "/service#imc", label: "IMC Marketing" },
-  { href: "/service#performance", label: "Performance" },
-  { href: "/service#viral", label: "Viral Solution" },
-  { href: "/service#global", label: "Global" },
-  { href: "/service#contents", label: "Contents" },
+  { href: "/service/imc", label: "IMC Marketing" },
+  { href: "/service/performance", label: "Performance" },
+  { href: "/service/viral", label: "Viral Solution" },
+  { href: "/service/global", label: "Global" },
+  { href: "/service/contents", label: "Contents" },
 ] as const;
 
 export default function Hero() {

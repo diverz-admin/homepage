@@ -119,33 +119,62 @@
  * 개별 화면에서 여백을 다르게 줘야 하면 이 클래스를 쓰지 말고 직접 잡는다.
  */
 .page-container {
+  --page-pad: 24px;
   width: 100%;
   max-width: 1800px;
   margin-inline: auto;
-  padding-inline: 24px;
+  padding-inline: var(--page-pad);
 }
 
 @media (min-width: 640px) {
   .page-container {
-    padding-inline: 40px;
+    --page-pad: 40px;
   }
 }
 
 @media (min-width: 1024px) {
   .page-container {
-    padding-inline: 72px;
+    --page-pad: 72px;
   }
 }
 
 @media (min-width: 1280px) {
   .page-container {
-    padding-inline: 96px;
+    --page-pad: 96px;
   }
 }
 
 @media (min-width: 1536px) {
   .page-container {
-    padding-inline: 128px;
+    --page-pad: 128px;
+  }
+}
+
+/**
+ * 컨테이너 안의 요소를 화면 오른쪽 끝까지 흘려보낼 때 쓰는 음수 여백.
+ * (헤어라인이 수치 뒤에서 화면 밖으로 빠져나가는 잡지식 처리 — GrowthStats)
+ *
+ * 컨테이너 좌우 여백(--page-pad)에, 1800px 캡이 걸린 뒤 생기는 바깥 여백까지
+ * 더해야 진짜 화면 끝에 닿는다. 100vw는 스크롤바 폭을 포함하므로 몇 px 넘칠 수
+ * 있다 — 쓰는 쪽에서 overflow-x: clip 으로 잘라 준다(hidden 은 스크롤
+ * 컨테이너를 만들어 sticky 를 죽이므로 쓰지 않는다).
+ */
+.bleed-right {
+  margin-right: calc(-1 * (var(--page-pad, 24px) + max(0px, (100vw - 1800px) / 2)));
+}
+
+/**
+ * 같은 흘려보내기를 2단으로 펴지는 xl(1280px)부터만 건다.
+ *
+ * 그 아래에서는 그래픽이 본문 밑으로 내려와 한 단을 통째로 쓰는데, 거기서도
+ * 오른쪽으로 빼면 그림의 오른쪽이 화면 밖으로 잘려 나간다. 2단일 때만
+ * "옆 칸이 화면 끝까지 이어진다"가 성립한다.
+ */
+@media (min-width: 80rem) {
+  .bleed-right-xl {
+    margin-right: calc(
+      -1 * (var(--page-pad, 24px) + max(0px, (100vw - 1800px) / 2))
+    );
   }
 }
 
@@ -235,6 +264,64 @@ body {
      뭉치려던 것인데, 글자가 작아지고 굵기가 내려간 지금은 그대로 두면
      답답하게 붙어 보인다. */
   letter-spacing: -0.01em;
+}
+
+/* 흰 섹션 → 심해 섹션을 잇는 그라디언트 띠(components/gradient-transition.tsx).
+   컴포넌트가 스크롤 진행도를 --p(0→1)로 넣어 주면 색 경계가 위로 올라가,
+   내려갈수록 파랑이 아래에서 차오르는 것처럼 보인다. --p가 없으면(JS 전)
+   0으로 두고 정지 그라디언트로 보인다 — 이음매는 어느 쪽이든 자연스럽다.
+
+   색이 변하는 구간은 띠 위쪽 30%(p=1이면 23%)까지고, 그 아래는 심해색으로
+   평평하다. 30%는 띠 높이(140svh) 기준 약 0.4화면 — 화면에서 보이는 건
+   "한 화면짜리 흰색→심해 그라디언트 + 그 아래 어두운 바닥"이고, 문구는 그
+   바닥 위에 앉는다. 마지막 스톱을 100%에 두면 문구가 늘 밝은 물색 위에
+   놓여 읽히지 않는다. 띠 높이를 고치면 이 30%도 같이 고쳐야 한다. */
+.gradient-transition {
+  --p: 0;
+  background: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    var(--ocean-shallow) calc(14% - var(--p) * 6%),
+    var(--ocean-mid) calc(21% - var(--p) * 6%),
+    var(--ocean-deep) calc(30% - var(--p) * 7%),
+    var(--ocean-deep) 100%
+  );
+}
+
+/* 띠 위에 뜨는 두 줄 — "Dive Deeper" 다음 "Grow Faster".
+   같은 --p를 나눠 쓰되 구간을 어긋나게 잡아, 스크롤을 내리면 첫 줄이 먼저
+   떠오르고 이어서 둘째 줄이 뜬다.
+
+   구간 값(0.44~0.51 / 0.53~0.60)은 문구가 sticky로 화면에 붙어 있는 동안
+   리빌이 다 끝나도록 맞춘 것이다. 띠 높이 H=140svh, sticky 레이어 C=65svh,
+   화면 V일 때 붙어 있는 구간은 p ∈ [V/(H+V), (H+V-C)/(H+V)] = [0.42, 0.73]
+   — 여기를 넘겨서 리빌하면 둘째 줄이 화면 밖으로 빠지면서 뜨는 꼴이 된다.
+   띠 높이나 레이어 높이를 고치면 이 값도 같이 고쳐야 한다.
+
+   IntersectionObserver를 줄마다 걸지 않는 건, 두 줄이 "따로 나타나는 요소"가
+   아니라 하나의 스크롤 구간을 나눠 쓰는 한 장면이기 때문이다. */
+.dive-line {
+  --t: 0;
+  opacity: var(--t);
+  transform: translateY(calc((1 - var(--t)) * 0.4em));
+  /* 줄간은 여기서 잡는다. globals.css는 레이어 밖이라 위의 `p { line-height: 1.7 }`
+     가 Tailwind의 leading-* 유틸리티를 이겨 버린다 — 클래스에 leading을 걸어도
+     본문 줄간(1.7)이 그대로 먹어서 두 줄이 멀찍이 떨어져 보였다. */
+  line-height: 1.05;
+}
+
+.dive-line-1 {
+  --t: clamp(0, calc((var(--p, 0) - 0.44) * 14.3), 1);
+}
+
+.dive-line-2 {
+  --t: clamp(0, calc((var(--p, 0) - 0.53) * 14.3), 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dive-line {
+    transform: none;
+  }
 }
 
 /* 수면에서 내려오는 광선(god rays). 이미지 없이 CSS로만 구현. */
@@ -393,6 +480,17 @@ body {
   transform: none;
 }
 
+/* 오른쪽에서 왼쪽으로 밀려 들어오는 변형. (서비스 상세의 개념도)
+   기본 .reveal 은 아래에서 위로 떠오르는데, 본문 옆에 서는 그래픽은
+   가로로 들어와야 "옆에서 붙는다"는 인상이 난다.
+
+   translate 거리를 본문(28px)보다 크게 잡는다 — 그림이 크고 가로로
+   움직여서, 같은 거리면 거의 안 움직인 것처럼 보인다.
+   .reveal 뒤에 와야 transform 을 덮어쓴다. */
+.reveal-x {
+  transform: translateX(72px);
+}
+
 /* ───────────────────────────────────────────────────────────────
    WORK 로고 타일 — app/work/page.tsx
    ─────────────────────────────────────────────────────────────── */
@@ -516,6 +614,21 @@ html.lenis [data-lenis-prevent] {
   mask-image: radial-gradient(60% 70% at 42% 0%, #000 0%, transparent 78%);
 }
 
+/* 수면으로 떠오르는 다이버 사진 톤 보정.
+   수면 쪽 햇빛이 흰색에 가까워 그대로 두면 섹션 위쪽이 뜬다.
+   밝기를 내리고 채도를 낮춰 배경 네이비에 가라앉힌다. */
+.diver-rise {
+  filter: brightness(0.62) saturate(0.7) contrast(1.05);
+}
+
+/* 푸터 파도 사진 톤 보정.
+   원본은 초록빛이 도는 낮 바다라 그대로 깔면 팔레트(차가운 네이비)와
+   따로 논다. hue를 파랑 쪽으로 밀고 채도·밝기를 내려 배경에 가라앉힌다.
+   사진을 다시 보정해 넣으면 이 필터는 지워도 된다. */
+.footer-wave {
+  filter: saturate(0.5) hue-rotate(35deg) brightness(0.62) contrast(1.04);
+}
+
 /* 성과 그래프 PNG 톤 보정.
    이미지에 옛 액센트(#38bdf8)가 그대로 구워져 있어 새 팔레트에서 혼자 튄다.
    근본 해결은 그래프를 다시 뽑는 것이고, 여기서는 채도만 낮춰 임시로 맞춘다. */
@@ -559,6 +672,85 @@ html.lenis [data-lenis-prevent] {
     rgb(var(--ocean-abyss-rgb) / 0.5) 55%,
     transparent 82%
   );
+}
+
+/* 히어로 첫 진입 — 제목(왼쪽)과 서비스 목록(오른쪽)이 화면 가운데에 겹쳐
+   있다가 양옆의 제자리로 벌어진다. "가운데에서 갈라지며 길이 열린다"는
+   인상이라, 물속으로 내려가는 히어로 동선의 도입부 역할을 한다.
+
+   방향은 화면 폭에 따라 갈린다. xl(1280px) 이상은 제목과 목록이 좌우로
+   놓이므로 가로로 벌어지고, 그 아래는 제목이 가운데·목록이 바닥에 놓이므로
+   세로로 벌어진다 — 제목은 위로, 목록은 아래로. 어느 쪽이든 "가운데에 겹쳐
+   있다가 제자리로 갈라진다"는 같은 인상이다.
+
+   시작 거리(--hero-split)는 화면 폭에 비례하되 상한을 둔다. 초광폭에서
+   vw로만 잡으면 글자가 화면 밖에서 날아 들어온다. */
+@keyframes hero-split-in {
+  from {
+    transform: translate(var(--hero-split-from, 0), var(--hero-split-y, 0));
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+.hero-split-left,
+.hero-split-right {
+  --hero-split-from: 0;
+  --hero-split-y: 0;
+  /* 사이트 공통 리빌 이징(0.16,1,0.3,1)은 앞이 너무 급해서, 6%의 시간에
+     거리의 3할을 먹는다 — 벌어지는 게 안 보이고 이미 벌어져 있다.
+     여기서는 easeOutCubic 쪽으로 완만하게 잡아 이동 자체를 보여 준다. */
+  animation: hero-split-in 1.2s cubic-bezier(0.33, 1, 0.68, 1) 0.25s both;
+}
+
+/* 목록은 제목보다 한 박자 늦게 벌어진다. 동시에 움직이면 두 덩어리가
+   한 판처럼 밀려나 보이고, 살짝 어긋나야 각자 제자리를 찾아가는 것처럼 읽힌다. */
+.hero-split-right {
+  animation-delay: 0.42s;
+}
+
+/* 좁은 화면 — 세로로 갈라진다. 제목은 아래에서 올라오고, 바닥의 목록은
+   위에서 내려간다. 거리는 화면 높이에 비례하되 상한을 둔다. */
+@media (max-width: 1279.98px) {
+  .hero-split-left {
+    --hero-split-y: min(13vh, 110px);
+  }
+
+  .hero-split-right {
+    --hero-split-y: max(-13vh, -110px);
+  }
+}
+
+@media (min-width: 1280px) {
+  .hero-split-left,
+  .hero-split-right {
+    animation-duration: 1.5s;
+  }
+
+  /* 시작 위치는 두 덩어리가 화면 가운데에서 거의 겹치는 자리. 완전히 포개면
+     첫 프레임이 지저분해지는데, 그 구간은 어차피 투명도가 0에 가까워
+     "가운데에서 갈라져 나온다"로 읽힌다. */
+  .hero-split-left {
+    --hero-split-from: min(26vw, 360px);
+  }
+
+  .hero-split-right {
+    --hero-split-from: max(-26vw, -360px);
+  }
+}
+
+/* 모션을 줄이는 사용자에게는 이동 없이 나타나기만 한다. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-split-left,
+  .hero-split-right {
+    --hero-split-from: 0;
+    --hero-split-y: 0;
+    animation-duration: 0.5s;
+    animation-delay: 0s;
+  }
 }
 
 /* 전경 산호 밴드. 같은 사진을 한 장 더 깔고 아래쪽만 남긴다.
@@ -670,7 +862,8 @@ html.lenis [data-lenis-prevent] {
     scroll-behavior: auto;
   }
 
-  .reveal {
+  .reveal,
+  .reveal-x {
     opacity: 1;
     transform: none;
     transition: none;
@@ -709,4 +902,3 @@ html.lenis [data-lenis-prevent] {
     height: 100svh;
   }
 }
-

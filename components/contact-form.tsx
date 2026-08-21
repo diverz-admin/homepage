@@ -23,7 +23,7 @@ const row = "grid gap-2 sm:grid-cols-[88px_1fr] sm:items-center sm:gap-6";
 
 const label = "text-sm font-bold text-white";
 
-export default function InlineContactForm() {
+export default function ContactForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMessage, setErrorMessage] = useState("");
   /**

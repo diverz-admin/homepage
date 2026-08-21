@@ -63,7 +63,7 @@ const TextRevealByWord: FC<TextRevealByWordProps> = ({
         {/* 글자 크기를 뷰포트 폭에 비례(vw)시켜 넓은 화면에서는 문단이 한 줄에
             들어간다. 좁은 화면은 그 크기로 한 줄에 다 안 들어가므로 억지로
             줄이는 대신(글자가 너무 작아진다) 자연스럽게 다음 줄로 접는다. */}
-        <div className="flex flex-col items-center gap-y-1 text-[clamp(1.35rem,4.2vw,2.2rem)] leading-tight text-white/15 md:gap-y-2">
+        <div className="flex flex-col items-center gap-y-1 text-[clamp(1.5rem,5vw,2.2rem)] leading-tight text-white/15 md:gap-y-2">
           {wordsPerLine.map((lineWords, li) => (
             <p key={li} className="flex flex-wrap justify-center gap-y-1">
               {lineWords.map((word) => {

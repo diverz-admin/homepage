@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import CountUp from "@/components/count-up";
 import GradientLine from "@/components/gradient-line";
 import PageHero from "@/components/page-hero";
 import Reveal from "@/components/reveal";
-import { clientLogos } from "@/lib/site";
+import { clientLogos, stats } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "WORK",
@@ -11,6 +12,23 @@ export const metadata: Metadata = {
 
 /** 한 줄에 들어가는 카드 수 — Reveal 지연을 열 단위로 묶는 데도 쓴다. */
 const COLUMNS = 5;
+
+/**
+ * 배너 아래 성과 두 줄.
+ *
+ * 수치는 lib/site.ts 의 stats 를 그대로 끌어다 쓴다 — 홈(WHY DIVERZ)과 같은
+ * 숫자여야 하는데, 여기에 다시 적어 두면 한쪽만 고치는 일이 반드시 생긴다.
+ * 라벨은 "누적"을 뗀 짧은 국문으로 쓴다 — 수치 바로 위에 붙는 자리라
+ * 짧을수록 숫자가 먼저 읽힌다.
+ */
+const WORK_STATS = [
+  { label: "프로젝트", from: "누적 프로젝트" },
+  { label: "클라이언트", from: "누적 클라이언트" },
+].map((item) => {
+  const stat = stats.find((s) => s.label === item.from);
+  if (!stat) throw new Error(`stats에 "${item.from}"가 없다`);
+  return { label: item.label, value: stat.value, suffix: stat.suffix };
+});
 
 /**
  * WORK — 로고 격자 한 장으로 끝나는 단순한 페이지.
@@ -23,21 +41,41 @@ export default function WorkPage() {
     <>
       {/* who-we-are·service와 같은 히어로 — 다크 배경 + 2줄 GradientLine 제목. */}
       <PageHero
-        title={
-          <>
-            <GradientLine>브랜드의 가능성을</GradientLine>
-            <GradientLine>현실의 결과로 만듭니다</GradientLine>
-          </>
-        }
+        title={<GradientLine>다이버즈와 함께한 프로젝트</GradientLine>}
         description={
-          "다이버즈는 브랜드가 가진 고유한 가치를 발견하고,\n" +
-          "전략과 실행을 통해 고객에게 닿는 경험으로 완성합니다."
+          "브랜드의 목표에 맞춰 전략을 세우고\n" +
+          "IMC마케팅, 퍼포먼스마케팅, 바이럴, 콘텐츠까지\n" +
+          "브랜드 성장에 필요한 실행을 함께 진행해왔습니다."
         }
         center
         compact
         borderless
         titleReveal
       />
+
+      {/* 배너 바로 아래 성과 두 줄. 라벨이 위, 수치가 아래로 크게 온다.
+          화면에 들어오면 0에서 목표값까지 굴러간다(CountUp).
+
+          히어로가 이미 아래 여백을 갖고 있어서 위 여백은 주지 않는다.
+          수치는 히어로와 같은 흰색 — 이 자리는 배너의 연장이라, 홈의
+          액센트 파랑을 쓰면 배너에서 떨어져 나온 다른 블록처럼 보인다. */}
+      <section className="page-container pb-24 sm:pb-32">
+        <Reveal>
+          <dl className="flex flex-wrap justify-center gap-x-16 gap-y-10 sm:gap-x-28">
+            {WORK_STATS.map((stat) => (
+              <div key={stat.label} className="text-center">
+                <dt className="font-display text-sm font-semibold tracking-tight text-white/60 sm:text-base">
+                  {stat.label}
+                </dt>
+                {/* tabular-nums — 굴러가는 동안 자릿수 폭이 흔들리지 않게 한다. */}
+                <dd className="mt-3 font-sans text-[clamp(3rem,7vw,5.5rem)] leading-[0.95] font-bold tracking-[-0.04em] text-white tabular-nums">
+                  <CountUp to={stat.value} suffix={stat.suffix} />
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </Reveal>
+      </section>
 
       {/* 격자는 컨테이너 좌우 여백만 쓰고, 타일 사이는 완전히 붙인다.
           흰 타일이 한 줄로 이어지고, 캡션만 다크 배경 위에 놓인다. */}

@@ -82,9 +82,10 @@ export default function PageHero({
     <section
       className={`relative overflow-hidden ${borderless ? "" : "border-b"} ${
         typed || flipWords
-          // typed/flipWords 줄 자체가 py-20/28 여백을 이미 갖고 있어서,
+          // typed/flipWords 줄 자체가 py-10/14 여백을 이미 갖고 있어서,
           // 그만큼을 빼야 위아래 "눈에 보이는" 여백이 맞는다.
-          ? "pt-32 pb-32 sm:pt-36 sm:pb-44"
+          // pt는 고정 헤더(h-20 = 80px)를 넘겨야 제목이 가리지 않는다.
+          ? "pt-28 pb-20 sm:pt-32 sm:pb-24"
           : equalPadding
           ? "pt-[15rem] pb-40 sm:pt-[17rem] sm:pb-48"
           : compact
@@ -106,7 +107,7 @@ export default function PageHero({
         {flipWords && (
           <p
             style={{ lineHeight: 1.1 }}
-            className={`py-20 font-display text-[clamp(1.5rem,7vw,2.6rem)] font-bold tracking-tight sm:py-28 sm:text-[clamp(1.1rem,4.4vw,2.9rem)] ${
+            className={`py-10 font-display text-[clamp(1.5rem,7vw,2.6rem)] font-bold tracking-tight sm:py-14 sm:text-[clamp(1.1rem,4.4vw,2.9rem)] ${
               light ? "text-mid" : "text-accent"
             }`}
           >
@@ -120,7 +121,7 @@ export default function PageHero({
         {typed && (
           <p
             style={{ lineHeight: 1.1 }}
-            className={`py-20 font-display text-[clamp(1.5rem,7vw,2.6rem)] font-bold tracking-tight sm:py-28 sm:text-[clamp(1.1rem,4.4vw,2.9rem)] ${
+            className={`py-10 font-display text-[clamp(1.5rem,7vw,2.6rem)] font-bold tracking-tight sm:py-14 sm:text-[clamp(1.1rem,4.4vw,2.9rem)] ${
               light ? "text-mid" : "text-accent"
             }`}
           >

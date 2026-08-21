@@ -114,7 +114,7 @@ export default function ParallaxHero({
         tl.to(
           stage.querySelectorAll(`[data-parallax-layer="${layer}"]`),
           { yPercent, ease: "none" },
-          i === 0 ? undefined : "<"
+          i === 0 ? undefined : "<",
         );
       });
     }, rootRef);
@@ -200,13 +200,22 @@ export default function ParallaxHero({
             {/* 영상 속 다이버가 화면 정가운데서 떠오른다 — 그 자리를 비워 두려고
                 제목은 왼쪽, 목록은 오른쪽 끝으로 벌린다(xl부터, 2열).
                 xl 미만은 목록을 걸 자리가 없어 제목만 가운데로 남는다. */}
-            <div className="relative page-container">
+            {/* 좁은 화면에서는 제목 묶음을 23svh 끌어올려 배 위쪽 빈 물 위에
+                앉힌다(화면 높이의 22~32% 자리). 배와 겹치면 흰 물살 위에
+                흰 글자가 얹혀 대비가 무너진다 — 배 위는 어두운 물이라
+                제목이 가장 깨끗하게 읽히는 구간이다.
+
+                translate 는 이 상자에 건다 — 제목 쪽(.hero-split-left)은
+                등장 애니메이션이 transform 을 쓰고 있어서, 거기에 유틸리티로
+                translate 를 얹으면 애니메이션이 끝나며 transform: none 으로
+                덮어써 위치가 원위치된다. */}
+            <div className="relative page-container -translate-y-[23svh] xl:translate-y-0">
               {/* page-container 여백만으로는 화면 끝에 붙어 보여서, xl부터
                   이 레이어에서만 좌우 여백을 더 준다. page-container 쪽 여백을
                   키운 만큼 여기서는 줄여, 합쳐진 여백(xl 160 / 2xl 224px)은
                   예전과 비슷하게 유지한다. */}
               <div className="grid w-full items-center gap-10 xl:grid-cols-2 xl:px-16 2xl:px-24">
-                <div className="flex flex-col items-center xl:items-start">
+                <div className="hero-split-left flex flex-col items-center xl:items-start">
                   {/* GradientLine은 이제 색을 입히지 않고 줄만 끊는다.
                       글자색은 여기(부모)에서 정한다. */}
                   <h1 className="text-center font-sans text-fluid-hero leading-[1.15] font-black tracking-tight text-white italic drop-shadow-[0_4px_30px_rgb(5_8_16_/_0.75)] xl:text-left">
@@ -216,40 +225,10 @@ export default function ParallaxHero({
                 </div>
 
                 {serviceLinks && (
-                  <nav
-                    aria-label="서비스"
-                    className="hidden justify-self-end xl:block"
-                  >
-                    {/* 세로 한 줄씩이 아니라 두 줄로 묶는다 — 앞 3개(IMC·퍼포먼스·
-                        바이럴)가 한 줄, 뒤 2개(글로벌·콘텐츠)가 다음 줄. 줄 안에서는
-                        "/"로 이어 붙인다. */}
-                    <div className="flex flex-col items-center gap-4">
-                      {[serviceLinks.slice(0, 3), serviceLinks.slice(3)].map(
-                        (row, rowIndex) => (
-                          <div
-                            key={rowIndex}
-                            className="flex items-center gap-3"
-                          >
-                            {row.map((s, i) => (
-                              <Fragment key={s.href}>
-                                {i > 0 && (
-                                  <span aria-hidden className="text-white/25">
-                                    /
-                                  </span>
-                                )}
-                                <Link
-                                  href={s.href}
-                                  className="font-display text-sm font-semibold tracking-[0.15em] text-white/55 drop-shadow-[0_2px_10px_rgb(5_8_16_/_0.7)] transition-colors hover:text-white"
-                                >
-                                  {s.label}
-                                </Link>
-                              </Fragment>
-                            ))}
-                          </div>
-                        )
-                      )}
-                    </div>
-                  </nav>
+                  <HeroServiceLinks
+                    links={serviceLinks}
+                    className="hero-split-right hidden justify-self-end xl:block"
+                  />
                 )}
               </div>
             </div>
@@ -280,7 +259,70 @@ export default function ParallaxHero({
           aria-hidden
           className="hero-fade pointer-events-none absolute inset-x-0 bottom-0 h-1/2"
         />
+
+        {/* 좁은 화면용 자리 — 히어로 바닥.
+            xl 이상은 제목 오른쪽에 걸리지만, 그 아래에서는 제목 옆에 둘 자리가
+            없어 예전에는 아예 숨겼다. 화면 아래쪽이 비어 있으니 거기로 내린다.
+
+            무대(sticky) 안이지만 패럴랙스 레이어 밖에 둔다 — 레이어에 넣으면
+            스크롤에 따라 같이 밀려서 바닥에 붙어 있지 못한다. 페이드 위에
+            얹어야 글자가 가려지지 않으므로 순서상 뒤에 온다. */}
+        {serviceLinks && (
+          <div className="hero-split-right absolute inset-x-0 bottom-0 px-6 pb-44 xl:hidden">
+            <HeroServiceLinks links={serviceLinks} />
+          </div>
+        )}
       </div>
     </div>
+  );
+}
+
+/**
+ * 슬로건 옆(또는 아래)에 거는 서비스 목록.
+ *
+ * 데스크톱과 모바일 두 자리에서 같은 것을 쓴다 — 문구가 갈리면 안 되는
+ * 내용이라 마크업을 한 벌만 두고 놓이는 자리만 바꾼다. 글자 크기는 좁은
+ * 화면 기준으로 잡고 xl 부터 키운다.
+ */
+function HeroServiceLinks({
+  links,
+  className,
+}: {
+  links: readonly { href: string; label: string }[];
+  className?: string;
+}) {
+  return (
+    <nav aria-label="서비스" className={className}>
+      {/* 목록 위에 거는 한 줄 카피. 링크보다 한 단계 밝고 크게 잡아
+          "카피 + 그 아래 목록"으로 읽히게 한다. */}
+      <p className="mb-4 text-center font-display text-sm font-semibold tracking-[0.08em] text-white/85 drop-shadow-[0_2px_10px_rgb(5_8_16_/_0.7)] xl:mb-5 xl:text-base 2xl:text-lg">
+        Marketing That Moves Brands Forward
+      </p>
+
+      {/* 세로 한 줄씩이 아니라 두 줄로 묶는다 — 앞 3개(IMC·퍼포먼스·
+          바이럴)가 한 줄, 뒤 2개(글로벌·콘텐츠)가 다음 줄. 줄 안에서는
+          "/"로 이어 붙인다. */}
+      <div className="flex flex-col items-center gap-3 xl:gap-4">
+        {[links.slice(0, 3), links.slice(3)].map((row, rowIndex) => (
+          <div key={rowIndex} className="flex items-center gap-2.5 xl:gap-3">
+            {row.map((s, i) => (
+              <Fragment key={s.href}>
+                {i > 0 && (
+                  <span aria-hidden className="text-white/25">
+                    /
+                  </span>
+                )}
+                <Link
+                  href={s.href}
+                  className="font-display text-xs font-semibold tracking-[0.12em] text-white/55 drop-shadow-[0_2px_10px_rgb(5_8_16_/_0.7)] transition-colors hover:text-white xl:text-sm xl:tracking-[0.15em]"
+                >
+                  {s.label}
+                </Link>
+              </Fragment>
+            ))}
+          </div>
+        ))}
+      </div>
+    </nav>
   );
 }

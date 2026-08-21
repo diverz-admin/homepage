@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import ContactForm from "@/app/contact-form";
+import ContactForm from "@/components/contact-form";
 import Bubbles from "@/components/bubbles";
 import Reveal from "@/components/reveal";
 import { company } from "@/lib/site";

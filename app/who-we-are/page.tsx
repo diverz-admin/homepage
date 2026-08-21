@@ -182,7 +182,7 @@ export default function WhoWeArePage() {
 
       {/* 팀 — 화이트 섹션. 카드 행은 컨테이너를 벗어나 가로로 흐르고,
           좁은 화면에서는 그대로 스크롤된다(시안처럼 양옆이 잘려 보인다). */}
-      <section className="bg-white py-52 sm:py-72">
+      <section className="bg-white py-28 sm:py-36">
         <div className="page-container text-center">
           <Reveal>
             <p className="font-display text-xs font-bold tracking-[0.35em] text-mid">
@@ -201,7 +201,7 @@ export default function WhoWeArePage() {
             컴포넌트 기본값(max-w-6xl, 4열, p-4)은 이 페이지의 page-container
             폭과 맞지 않아 className으로 덮는다. */}
         <Reveal delay={150}>
-          <div className="page-container mt-20 sm:mt-24">
+          <div className="page-container mt-14 sm:mt-16">
             <HoverRevealCards
               items={team.map((member) => ({
                 id: member.role,

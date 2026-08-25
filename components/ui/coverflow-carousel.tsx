@@ -1,6 +1,8 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -14,6 +16,12 @@ export interface CoverflowSlide {
   title?: string;
   subtitle?: string;
   meta?: { label: string; value: string }[];
+  /**
+   * 넘기면 카드 전체가 링크가 된다. 정면 카드는 눌렀을 때 이동하고,
+   * 옆 카드는 먼저 가운데로 돌려세운다 — 뒤로 젖혀져 반쯤 가려진 카드를
+   * 누른 것을 "그 페이지로 가겠다"는 뜻으로 읽으면 오작동에 가깝다.
+   */
+  href?: string;
 }
 
 export interface CoverflowCarouselProps {
@@ -80,8 +88,19 @@ export function CoverflowCarousel({
     v: number;
     t: number;
   } | null>(null);
+  /**
+   * 마지막으로 누른 자리. 카드 링크를 누른 채 링을 돌리고 손을 떼면 click 이
+   * 그대로 따라오는데, 그때 페이지가 넘어가면 안 된다 — 눌린 자리와 클릭이
+   * 난 자리를 견줘 "끌기였는지"를 그 자리에서 판단한다.
+   *
+   * "끌었다" 플래그를 세워 두는 대신 좌표를 남기는 건, 플래그는 다음 누름
+   * 전까지 참인 채로 남아 있어서 — 키보드 Enter 처럼 누름 없이 오는 클릭까지
+   * 같이 막아 버리기 때문이다.
+   */
+  const pressRef = React.useRef<{ x: number; y: number } | null>(null);
 
   const [selected, setSelected] = React.useState(0);
+  const router = useRouter();
 
   /** Nearest whole card, folded back into 0..count-1. */
   const indexAt = React.useCallback(
@@ -125,6 +144,9 @@ export function CoverflowCarousel({
       const edge = loop ? Math.min(1, Math.max(0, count / 2 - distance)) : 1;
       card.style.opacity = String(Math.max(0, 1 - fade * distance) * edge);
       card.style.zIndex = String(100 - Math.round(distance));
+      // 반대편으로 넘어가는 중이라 안 보이는 카드는 클릭도 받지 않는다 —
+      // 투명해도 링크는 살아 있어서, 안 보이는 카드가 클릭을 가로챈다.
+      card.style.pointerEvents = edge > 0 ? "auto" : "none";
 
       // 정면(거리 0)에 가까울수록 어둡게 깔고 이름표를 띄운다 — 옆 카드로
       // 넘어가면 매끄럽게 사라지도록 거리에 비례해 페이드한다.
@@ -189,6 +211,7 @@ export function CoverflowCarousel({
     }
     event.currentTarget.setPointerCapture(event.pointerId);
     targetRef.current = posRef.current;
+    pressRef.current = { x: event.clientX, y: event.clientY };
     dragRef.current = {
       id: event.pointerId,
       x: event.clientX,
@@ -215,6 +238,57 @@ export function CoverflowCarousel({
     const index = indexAt(posRef.current);
     if (index !== selected) setSelected(index);
     paint();
+  };
+
+  /**
+   * 이 클릭이 끌기 끝에 따라온 것인지.
+   *
+   * 손가락도 마우스도 누르는 사이 몇 px 은 흔들린다 — 그 정도는 클릭에 딸린
+   * 노이즈로 보고, 그 위로 넘어간 것만 끌기로 친다. 누른 기록이 없으면
+   * (키보드 Enter 등) 끌기가 아니다.
+   */
+  const cameFromDrag = (event: { clientX: number; clientY: number }) => {
+    const press = pressRef.current;
+    if (!press) return false;
+    return Math.hypot(event.clientX - press.x, event.clientY - press.y) > 10;
+  };
+
+  /**
+   * 옆 카드를 눌렀을 때도 그 카드의 페이지로 보낸다.
+   *
+   * 카드에 걸린 링크가 아니라 무대에서 받는다 — 옆 카드는 rotateY 로 젖혀져
+   * 있어서 크롬이 그 안을 히트 테스트하지 않는다(클릭이 카드가 아니라 뒤의
+   * 무대로 떨어져, 링크가 아예 눌리지 않는다). 정면 카드만 제 링크가 클릭을
+   * 받으므로, 여기서는 눌린 좌표가 어느 카드의 화면상 자리에 들어가는지로
+   * 되짚어 같은 곳으로 보낸다.
+   *
+   * 한때는 옆 카드를 "가운데로 돌려세우기"로 뒀는데, 다섯 장 중 넉 장이
+   * 눌러도 페이지로 가지 않는 셈이라 "클릭이 안 먹는다"로 읽혔다.
+   */
+  const onFrameClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    // 정면 카드는 제 링크가 이미 처리했다. 끌기 뒤에 따라오는 클릭도 뺀다.
+    if (cameFromDrag(event)) return;
+    if ((event.target as HTMLElement).closest("a")) return;
+
+    let nearest = -1;
+    let best = Infinity;
+    cardRefs.current.forEach((card, index) => {
+      if (!card || card.style.pointerEvents === "none") return;
+      const rect = card.getBoundingClientRect();
+      if (event.clientY < rect.top || event.clientY > rect.bottom) return;
+      if (event.clientX < rect.left || event.clientX > rect.right) return;
+      // 겹치는 구간이 생기면 중심이 가까운 쪽을 고른다.
+      const distance = Math.abs(event.clientX - (rect.left + rect.right) / 2);
+      if (distance < best) {
+        best = distance;
+        nearest = index;
+      }
+    });
+    if (nearest === -1) return;
+
+    const href = slides[nearest].href;
+    if (href) router.push(href);
+    else if (nearest !== indexAt(posRef.current)) goTo(nearest);
   };
 
   const endDrag = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -270,6 +344,7 @@ export function CoverflowCarousel({
           onPointerMove={onPointerMove}
           onPointerUp={endDrag}
           onPointerCancel={endDrag}
+          onClick={onFrameClick}
           onKeyDown={(event) => {
             if (event.key === "ArrowLeft") {
               event.preventDefault();
@@ -345,6 +420,29 @@ export function CoverflowCarousel({
                       <p className="mt-1 text-lg font-bold">{slide.title}</p>
                     )}
                   </div>
+                )}
+
+                {/* 카드를 통째로 덮는 링크. 진짜 <a> 라서 크롤러도 읽고,
+                    새 탭으로 열기·상태 표시줄 미리보기가 그대로 동작한다.
+
+                    draggable={false} 가 없으면 앵커의 기본 드래그(링크
+                    끌어다 놓기)가 포인터를 가로채 링이 안 돈다.
+                    탭 순서에는 정면 카드만 넣는다 — 나머지는 화면에서
+                    젖혀져 있어 초점이 가도 어디에 있는지 보이지 않는다. */}
+                {slide.href && (
+                  <Link
+                    href={slide.href}
+                    draggable={false}
+                    tabIndex={index === selected ? 0 : -1}
+                    aria-hidden={index !== selected}
+                    onClick={(event) => {
+                      // 끌기 끝에 따라온 클릭이면 이동하지 않는다.
+                      if (cameFromDrag(event)) event.preventDefault();
+                    }}
+                    className="absolute inset-0 cursor-pointer outline-none ring-inset ring-white focus-visible:ring-2"
+                  >
+                    <span className="sr-only">{slide.title ?? slide.alt}</span>
+                  </Link>
                 )}
               </div>
             ))}

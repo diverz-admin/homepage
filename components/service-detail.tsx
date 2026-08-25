@@ -1,5 +1,6 @@
 import Image from "next/image";
 
+import GlobalMarketingTabs from "@/components/global-marketing-tabs";
 import ServiceSection from "@/components/service-section";
 import ViralChannels from "@/components/viral-channels";
 import { services } from "@/lib/site";
@@ -105,8 +106,9 @@ const diagrams: Record<
 /**
  * 상품 한 종의 본문. /service/[slug]에서 쓴다.
  *
- * 오른쪽 개념도는 위 diagrams에서 slug로 고르고, 본문 아래 딸린 블록은
- * 지금은 바이럴(채널 목록) 하나뿐이다.
+ * 오른쪽 개념도는 위 diagrams에서 slug로 고르고, 본문 아래에는 상품별로
+ * 딸린 블록이 이어진다 — 바이럴(채널 목록)과 글로벌(이커머스 입점 마케팅 ·
+ * 병원 마케팅 두 상품을 탭으로 오가는 GlobalMarketingTabs).
  *
  * 프로세스 타임라인 두 개(IMC PROCESS, PERFORMANCE PROCESS)는 뺐다. 오른쪽
  * 개념도가 이미 그 상품이 무엇을 묶는지 보여 주는데, 그 아래 다시 단계별
@@ -126,8 +128,13 @@ export default function ServiceDetail({
   return (
     <ServiceSection
       service={service}
-      /* 바이럴만 한 페이지 안에 순서 있는 묶음이 셋이다
-         (블루에그 01 → 바이럴 마케팅 02 → 리워드 마케팅 03). */
+      /* 한 페이지 안에 순서 있는 묶음이 여럿인 상품에만 번호를 붙인다 —
+         지금은 바이럴뿐이다(블루에그 01 → 바이럴 마케팅 02 → 리워드 03).
+
+         글로벌은 번호를 주지 않는다. 이 블록은 나란한 묶음 중 하나가 아니라
+         글로벌 마케팅 전체의 대제목이고, 아래 딸린 두 상품(이커머스 입점
+         마케팅 · 병원 마케팅)은 순서가 아니라 탭으로 갈린 선택지라 번호가
+         맞지 않는다. */
       no={service.slug === "viral" ? "01" : undefined}
       asideBleed={diagram?.bleedRight}
       aside={
@@ -185,6 +192,9 @@ export default function ServiceDetail({
     >
       {/* 바이럴 채널 3종 + 상위노출 2종. */}
       {service.slug === "viral" && <ViralChannels />}
+
+      {/* 글로벌 — 이커머스 입점 마케팅 · 병원 마케팅 두 상품을 탭으로. */}
+      {service.slug === "global" && <GlobalMarketingTabs />}
     </ServiceSection>
   );
 }

@@ -16,6 +16,8 @@ const SERVICE_SLIDES: CoverflowSlide[] = services.map((service) => ({
   alt: service.name,
   title: service.en,
   subtitle: service.name,
+  // 정면 카드를 누르면 그 상품의 서비스 페이지로 간다.
+  href: `/service/${service.slug}`,
 }));
 
 export default function ServiceStack() {

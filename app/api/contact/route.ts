@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createServerSupabase } from "@/lib/supabase";
+import { sendContactNotification } from "@/lib/email";
 
 type ContactPayload = {
   name?: unknown;
@@ -113,6 +114,24 @@ export async function POST(request: Request) {
       { error: "서버 오류가 발생했습니다." },
       { status: 500 }
     );
+  }
+
+  /**
+   * 저장이 끝난 뒤에 알림 메일을 보낸다. 메일이 실패해도 문의는 이미 저장돼
+   * 있으므로 사용자에게는 성공으로 응답한다 — 여기서 500을 내면 문의자가
+   * 같은 내용을 또 보내 중복만 쌓인다. 대신 로그를 남겨 추적한다.
+   */
+  try {
+    await sendContactNotification({
+      name,
+      company,
+      phone,
+      email,
+      budget,
+      inquiryTypes,
+    });
+  } catch (error) {
+    console.error("[contact] 알림 메일 발송 중 예외:", error);
   }
 
   return NextResponse.json({ ok: true }, { status: 201 });

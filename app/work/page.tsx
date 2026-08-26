@@ -51,6 +51,7 @@ export default function WorkPage() {
         compact
         borderless
         titleReveal
+        noBackdrop
       />
 
       {/* 배너 바로 아래 성과 두 줄. 라벨이 위, 수치가 아래로 크게 온다.
@@ -84,7 +85,7 @@ export default function WorkPage() {
       <section className="page-container pb-28 sm:pb-40">
         <Reveal>
           <p className="font-display text-xs font-bold tracking-[0.35em] text-accent">
-            CLIENTS
+            PARTNERS
           </p>
         </Reveal>
 

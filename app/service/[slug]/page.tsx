@@ -10,16 +10,23 @@ import { MenuHorizontal } from "@/components/ui/menu-horizontal";
 import { services } from "@/lib/site";
 
 /**
- * 히어로 상단에서 돌아가는 서비스명(영문).
- * lib/site.ts의 services에서 파생하지 않는다 — 표기가 국문이라 그대로 못 쓴다.
+ * 히어로 상단에 고정으로 서는 서비스명(영문).
+ *
+ * 예전에는 다섯 이름이 타이핑 효과로 돌아갔는데, 상품마다 페이지가 갈린
+ * 뒤로는 지금 보고 있는 상품이 무엇인지 흐리기만 했다 — 클릭해 들어온
+ * 이름이 지워지고 다른 이름이 쳐진다. 이제는 그 자리에 이 페이지의 이름만
+ * 세운다.
+ *
+ * lib/site.ts의 services에서 파생하지 않는다 — 표기가 국문(name)이거나
+ * 전부 대문자(en)라 그대로 못 쓴다.
  */
-const heroServices = [
-  "IMC Marketing",
-  "Contents",
-  "Viral",
-  "Performance Marketing",
-  "Global Marketing",
-] as const;
+const heroServiceNames: Record<string, string> = {
+  imc: "IMC Marketing",
+  performance: "Performance Marketing",
+  viral: "Viral",
+  global: "Global Marketing",
+  contents: "Contents",
+};
 
 /**
  * 상품 한 종의 상세 페이지. 서비스 영역의 실질적인 본체다.
@@ -85,7 +92,7 @@ export default async function ServiceDetailPage({
           "브랜드가 고객에게 발견되는 순간부터 신뢰를 얻고 선택되는 과정까지,\n" +
           "각 채널의 역할을 전략적으로 설계하고 실행합니다."
         }
-        typed={{ texts: heroServices }}
+        lead={heroServiceNames[slug] ?? service.en}
       />
 
       {/* overflow-x-clip — 블루에그 그래픽이 컨테이너 밖으로 흘러 화면 끝에
@@ -99,7 +106,9 @@ export default async function ServiceDetailPage({
       {/* service-page — 이 지면의 page-container 좌우 여백을 좁힌다
           (app/globals.css). 안쪽에 겹치는 RiseReveal 패널의 컨테이너까지
           한 번에 덮으려고 클래스를 이 바깥 상자에 건다. */}
-      <div className={`service-page on-light bg-white ${service.slug === "viral" ? "overflow-x-clip" : ""}`}>
+      <div
+        className={`service-page on-light bg-white ${service.slug === "viral" ? "overflow-x-clip" : ""}`}
+      >
         {/* 상품 메뉴 — 배너 바로 밑에 붙인다. 예전엔 연한 하늘색(#acd4ff)
             띠였는데, 배너(PageHero)가 어두운 잠수부 사진 배경을 갖게
             되면서 밝은 띠가 그 위에 갑자기 끊겨 붙는 조각처럼 보였다.

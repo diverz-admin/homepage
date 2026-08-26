@@ -20,6 +20,15 @@ type Props = {
     texts: readonly string[];
   };
   /**
+   * typed/flipWords 와 같은 자리에 서지만 움직이지 않는 한 줄.
+   *
+   * 서비스 상세처럼 페이지마다 그 페이지의 이름이 고정으로 와야 하는 자리에
+   * 쓴다 — 타이핑 효과는 다섯 상품 이름이 돌아가며 나오는 문패였는데,
+   * 상품마다 페이지가 갈린 뒤로는 지금 보고 있는 상품이 무엇인지 흐리는
+   * 쪽으로만 작동했다(내가 클릭해 들어온 이름이 지워지고 다른 이름이 쳐진다).
+   */
+  lead?: string;
+  /**
    * typed 대신 쓰는 단어 교체 효과. 같은 자리를 쓰므로 둘 중 하나만 넘긴다.
    * typed는 한 글자씩 치고 지우고, 이쪽은 통째로 흐려지며 바뀐다.
    */
@@ -74,6 +83,7 @@ export default function PageHero({
   title,
   description,
   typed,
+  lead,
   flipWords,
   light = false,
   center = false,
@@ -83,23 +93,23 @@ export default function PageHero({
   titleReveal = false,
   noBackdrop = false,
 }: Props) {
-  const centered = Boolean(typed || flipWords || center);
+  const centered = Boolean(typed || flipWords || lead || center);
   return (
     /* 배경 효과는 떠오르는 기포만 남긴다.
        (이전엔 god-rays 대각선 광선 + deep→abyss 세로 그라디언트가 겹쳐 있었다) */
     <section
       className={`relative overflow-hidden ${borderless ? "" : "border-b"} ${
-        typed || flipWords
-          // typed/flipWords 줄 자체가 py-10/14 여백을 이미 갖고 있어서,
-          // 그만큼을 빼야 위아래 "눈에 보이는" 여백이 맞는다.
-          // pt는 고정 헤더(h-20 = 80px)를 넘겨야 제목이 가리지 않는다.
-          ? "pt-28 pb-20 sm:pt-32 sm:pb-24"
+        typed || flipWords || lead
+          ? // typed/flipWords/lead 줄 자체가 py-10/14 여백을 이미 갖고 있어서,
+            // 그만큼을 빼야 위아래 "눈에 보이는" 여백이 맞는다.
+            // pt는 고정 헤더(h-20 = 80px)를 넘겨야 제목이 가리지 않는다.
+            "pt-28 pb-20 sm:pt-32 sm:pb-24"
           : equalPadding
-          ? "pt-[15rem] pb-40 sm:pt-[17rem] sm:pb-48"
-          : compact
-          // pt = pb + 헤더 높이(5rem). equalPadding과 계산은 같고 값만 낮다.
-          ? "pt-36 pb-16 sm:pt-40 sm:pb-20"
-          : "pt-40 pb-32 sm:pt-48 sm:pb-44"
+            ? "pt-[15rem] pb-40 sm:pt-[17rem] sm:pb-48"
+            : compact
+              ? // pt = pb + 헤더 높이(5rem). equalPadding과 계산은 같고 값만 낮다.
+                "pt-36 pb-16 sm:pt-40 sm:pb-20"
+              : "pt-40 pb-32 sm:pt-48 sm:pb-44"
       } ${light ? "bg-white border-abyss/10" : "border-line"}`}
     >
       {!light && (
@@ -142,7 +152,9 @@ export default function PageHero({
           <Bubbles />
         </>
       )}
-      <div className={`relative page-container ${centered ? "text-center" : ""}`}>
+      <div
+        className={`relative page-container ${centered ? "text-center" : ""}`}
+      >
         {/* 크기·행간을 인라인 style로 준다.
             - 행간: globals.css의 `p { line-height: 1.7 }`가 레이어 밖에 있어
               Tailwind의 leading-* 유틸리티를 이긴다. 클래스로는 못 맞춘다.
@@ -162,6 +174,17 @@ export default function PageHero({
               words={[...flipWords.words]}
               duration={flipWords.duration}
             />
+          </p>
+        )}
+
+        {lead && (
+          <p
+            style={{ lineHeight: 1.1 }}
+            className={`py-10 font-display text-[clamp(1.5rem,7vw,2.6rem)] font-bold tracking-tight sm:py-14 sm:text-[clamp(1.1rem,4.4vw,2.9rem)] ${
+              light ? "text-mid" : "text-accent"
+            }`}
+          >
+            {lead}
           </p>
         )}
 

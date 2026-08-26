@@ -95,6 +95,7 @@ export default function WhoWeArePage() {
         center
         equalPadding
         titleReveal
+        noBackdrop
       />
 
       {/* 5단계 프로세스 — 잠수부가 내려갔다 올라오는 여정 */}

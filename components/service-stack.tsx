@@ -1,3 +1,9 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
 import {
   CoverflowCarousel,
   type CoverflowSlide,
@@ -21,6 +27,38 @@ const SERVICE_SLIDES: CoverflowSlide[] = services.map((service) => ({
 }));
 
 export default function ServiceStack() {
+  const stageRef = useRef<HTMLDivElement>(null);
+
+  // 한 번 리빌되고 끝나는 게 아니라, 스크롤량에 그대로 물려 커졌다 작아졌다
+  // 한다 — 내려가면 커지고 다시 올리면 그만큼 되돌아간다(scrub).
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        stage,
+        { scale: 0.82, opacity: 0 },
+        {
+          scale: 1,
+          opacity: 1,
+          ease: "none",
+          scrollTrigger: {
+            trigger: stage,
+            start: "top bottom",
+            end: "top 55%",
+            scrub: true,
+          },
+        },
+      );
+    }, stageRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <section className="on-light bg-white py-28 sm:py-40">
       <div className="page-container">
@@ -41,7 +79,7 @@ export default function ServiceStack() {
       {/* 캐러셀만 page-container 밖으로 뺀다 — 좌우 여백 없이 화면 폭을 꽉
           채워야 옆 카드가 화면 끝까지 이어지며 링이 계속 도는 인상이 난다.
           제목은 그대로 컨테이너 안이라 다른 섹션과 왼쪽 기준선이 맞는다. */}
-      <div className="mt-16 sm:mt-20">
+      <div ref={stageRef} className="mt-16 sm:mt-20 will-change-transform">
         <CoverflowCarousel
           slides={SERVICE_SLIDES}
           label="다이버즈 서비스"

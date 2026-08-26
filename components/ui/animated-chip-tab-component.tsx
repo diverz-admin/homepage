@@ -54,7 +54,15 @@ export function ChipTabs({
   const reduceMotion = useReducedMotion();
 
   return (
-    <div className={cn("flex flex-wrap items-center gap-1.5", className)}>
+    // w-fit + mx-auto — 탭 묶음을 감싼 블록을 가운데로 보낸다(inline-flex
+    // 그대로면 부모가 block이어도 mx-auto가 안 먹는다). 트랙 배경·테두리는
+    // 걷었다 — 선택 탭의 알약(그라디언트)만으로 상태가 구분된다.
+    <div
+      className={cn(
+        "mx-auto flex w-fit flex-wrap items-center gap-1 p-1.5",
+        className
+      )}
+    >
       {tabs.map((tab) => {
         const isActive = active === tab.id;
         const shared = {
@@ -63,10 +71,12 @@ export function ChipTabs({
             onSelect?.(tab.id);
           },
           className: cn(
-            // 본문 폰트(Pretendard) 볼드 + 좁은 자간.
-            "relative rounded-md px-4 py-2 text-base font-bold tracking-[-0.03em] transition-colors",
+            // 본문 폰트(Pretendard) 볼드 + 좁은 자간. rounded-full —
+            // 트랙과 알약이 같은 반경이어야 알약이 트랙에 꼭 맞는 조각으로
+            // 보인다(예전엔 버튼 rounded-lg, 알약 rounded-md로 서로 달랐다).
+            "relative rounded-full px-5 py-2.5 text-sm font-bold tracking-[-0.02em] transition-colors sm:text-base",
             // 활성 탭은 알약 위라 흰색을 유지해야 대비가 나온다.
-            isActive ? "text-white" : "text-foreground/70 hover:text-foreground"
+            isActive ? "text-white" : "text-foreground/60 hover:text-foreground"
           ),
         };
 
@@ -81,7 +91,7 @@ export function ChipTabs({
                     ? { duration: 0 }
                     : { type: "spring", duration: 0.5 }
                 }
-                className="absolute inset-0 z-0 rounded-md bg-gradient-to-r from-deep to-mid"
+                className="absolute inset-0 z-0 rounded-full bg-gradient-to-r from-deep to-mid"
               />
             )}
           </>

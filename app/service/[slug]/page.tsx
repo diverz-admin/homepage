@@ -89,31 +89,41 @@ export default async function ServiceDetailPage({
       />
 
       {/* overflow-x-clip — 블루에그 그래픽이 컨테이너 밖으로 흘러 화면 끝에
-          닿는데(.xl:bleed-right), 그대로 두면 가로 스크롤이 생긴다.
-          hidden 이 아니라 clip 이다 — hidden 은 스크롤 컨테이너를 만들어
-          안쪽의 sticky 를 죽인다. */}
-      <div className="on-light overflow-x-clip bg-white">
-        {/* 상품 메뉴 — 포인트 컬러 띠. 화면 폭을 다 쓰므로 컨테이너 밖에
-            두고, 안쪽에서 다시 page-container 로 글자만 가운데로 모은다.
-            배너 바로 밑에 붙인다 — 흰 여백 위에 색 띠만 떠 있으면 본문에서
-            떨어져 나온 조각처럼 보인다. 띠가 곧 경계라 밑줄은 뺐다.
+          닿는데(.xl:bleed-right), 그대로 두면 가로 스크롤이 생긴다. hidden이
+          아니라 clip을 쓴 건 hidden이 스크롤 컨테이너를 만들어 안쪽의
+          sticky를 죽이기 때문인데, overflow-x만 visible이 아니어도(값이
+          clip이어도) 같은 조상의 overflow-y가 auto로 계산돼 버려 결국
+          sticky가 죽는다(글로벌 페이지의 RiseReveal이 실측으로 확인됨).
+          그래서 이 클래스는 실제로 필요한 바이럴 페이지에만 건다 — 다른
+          상품은 가로로 흘러나가는 그래픽이 없어 클리핑이 필요 없다. */}
+      {/* service-page — 이 지면의 page-container 좌우 여백을 좁힌다
+          (app/globals.css). 안쪽에 겹치는 RiseReveal 패널의 컨테이너까지
+          한 번에 덮으려고 클래스를 이 바깥 상자에 건다. */}
+      <div className={`service-page on-light bg-white ${service.slug === "viral" ? "overflow-x-clip" : ""}`}>
+        {/* 상품 메뉴 — 배너 바로 밑에 붙인다. 예전엔 연한 하늘색(#acd4ff)
+            띠였는데, 배너(PageHero)가 어두운 잠수부 사진 배경을 갖게
+            되면서 밝은 띠가 그 위에 갑자기 끊겨 붙는 조각처럼 보였다.
+            배너와 같은 어두운 남색(bg-abyss)으로 바꿔 자연스럽게
+            이어지게 한다 — 띠가 곧 경계라 밑줄은 여전히 없다.
 
-            색은 토큰이 아니라 값으로 적는다. #acd4ff 는 :root 의 --accent
-            (어두운 배경용 연한 하늘색)인데, 이 지면은 .on-light 안이라
-            그 변수가 #4c8dd3 으로 덮여 있어 bg-accent 로는 집히지 않는다. */}
-        <div className="bg-[#acd4ff]">
+            색은 토큰이 아니라 값으로 적는다. 이 지면은 .on-light 안이라
+            역할 토큰(--accent 등)이 흰 배경용으로 뒤집혀 있어 어두운
+            바탕에 어울리는 값이 안 나온다.
+
+            한때 sticky로 헤더 밑에 붙여 봤는데, 글로벌 페이지의 RiseReveal
+            (지구본이 붙어 있다가 아래 패널에 덮이는 연출)과 같이 스크롤하면
+            띠가 그 사이에 어중간하게 끼어 보여 도로 걷었다. */}
+        <div className="bg-abyss">
           {/* min-w-0 — 안에 든 가로 스크롤 메뉴의 "내용 전체 폭"이 이 칸의
               최소 폭으로 잡히면 지면이 화면보다 넓어진다. 스크롤 되는 요소를
               감쌀 때는 최소 폭을 0으로 풀어 준다. */}
           <div className="page-container min-w-0 py-5 xl:py-7">
-            {/* color 는 브랜드 네이비(--ocean-abyss)를 그대로 넣는다.
-                motion 이 색을 보간해야 해서 CSS 변수는 쓸 수 없다.
-                고르지 않은 항목은 같은 네이비를 옅게 깔아 두므로(컴포넌트),
-                지금 보고 있는 상품만 색이 꽉 차고 화살표가 붙는다. */}
+            {/* 어두운 띠 위라 글자도 밝은 색으로 뒤집는다 — 지금 보고
+                있는 상품은 예전 띠 배경색(#acd4ff)을 그대로 물려받아
+                밝게 켜지고, 나머지는 흰색을 옅게 깔아 둔다. */}
             <MenuHorizontal
-              color="#0a1526"
-              /* 고르지 않은 항목 — 같은 네이비를 65%로 옅게. */
-              baseColor="rgb(10 21 38 / 0.65)"
+              color="#acd4ff"
+              baseColor="rgb(255 255 255 / 0.55)"
               skew={-4}
               activeHref={`/service/${service.slug}`}
               /* 스크롤 위치를 그대로 둔다 — 상품을 바꿔도 보고 있던
@@ -140,7 +150,7 @@ export default async function ServiceDetailPage({
 
             {/* 다음 상품으로 넘어가는 줄. 메뉴는 본문 위에 있지만, 다 읽고
                 난 뒤 손이 가는 자리는 여기다. */}
-            <div className="mt-24 border-t border-line pt-8">
+            <div className="section-gap border-t border-line pt-8">
               <Link
                 href={`/service/${next.slug}`}
                 className="group flex items-baseline justify-between gap-6"

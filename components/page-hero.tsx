@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import Bubbles from "@/components/bubbles";
 import Reveal from "@/components/reveal";
 import Typewriter from "@/components/ui/typewriter";
@@ -59,6 +61,11 @@ type Props = {
    * 선 하나만 떠 보여서 지운다. 배경이 바뀌는 페이지는 켜 둔 채로 둔다.
    */
   borderless?: boolean;
+  /**
+   * 배경 잠수부 사진(+어둡게 깔던 그라디언트)을 끈다. 기포는 그대로 남는다.
+   * light가 켜진 페이지는 원래 사진이 없으므로 이 값과 무관하다.
+   */
+  noBackdrop?: boolean;
 };
 
 /** 하위 페이지 공통 헤더. 히어로보다 얕은 수심 느낌. */
@@ -74,6 +81,7 @@ export default function PageHero({
   compact = false,
   borderless = false,
   titleReveal = false,
+  noBackdrop = false,
 }: Props) {
   const centered = Boolean(typed || flipWords || center);
   return (
@@ -94,7 +102,46 @@ export default function PageHero({
           : "pt-40 pb-32 sm:pt-48 sm:pb-44"
       } ${light ? "bg-white border-abyss/10" : "border-line"}`}
     >
-      {!light && <Bubbles />}
+      {!light && (
+        <>
+          {!noBackdrop && (
+            <>
+              {/* 잠수부 사진을 배경에 얹는다 — 다이버즈 브랜드의 "DIVE DEEP"
+              자체를 이 배너에도 자연스럽게 흘려 넣는다.
+              이 배너는 사진(가로세로 1.5:1)보다 훨씬 넓적해서(가로세로
+              ~3.5:1), object-cover가 이미 "가로 폭"으로 꽉 채운다 —
+              가로로는 남는 여백(잘릴 몫)이 없어 object-position을
+              좌우로 아무리 옮겨도 그림이 안 움직인다(세로만 잘린다).
+              그래서 scale로 사진을 한 번 더 키워 가로에도 잘릴 여유를
+              만든 다음, translateX로 그 안에서 옮긴다.
+
+              두 값은 같이 움직여야 한다. scale(s)가 만드는 한쪽 여유는
+              (s-1)/2 이고, translateX(t)가 실제로 미는 거리는 s*t 다
+              (transform이 scale 다음이라 이동량도 같이 커진다).
+              s*t 가 (s-1)/2 를 넘으면 반대쪽 끝에 배경이 드러난다 —
+              scale(1.4) translateX(18%)가 그랬다: 밀린 거리 25.2% 대
+              여유 20%, 차이 5.2%(1500px 화면에서 약 78px)가 왼쪽에
+              검은 띠로 남았다. 지금 값은 16.8% 대 20%로 여유를 남긴다.
+              값을 만질 일이 생기면 s*t ≤ (s-1)/2 를 먼저 확인한다. */}
+              <Image
+                src="/images/diver-sunbeam.png"
+                alt=""
+                aria-hidden
+                fill
+                priority
+                sizes="100vw"
+                style={{ transform: "scale(1.4) translateX(12%)" }}
+                className="object-cover opacity-55"
+              />
+              <div
+                aria-hidden
+                className="absolute inset-0 bg-gradient-to-b from-abyss/45 via-abyss/65 to-abyss/90"
+              />
+            </>
+          )}
+          <Bubbles />
+        </>
+      )}
       <div className={`relative page-container ${centered ? "text-center" : ""}`}>
         {/* 크기·행간을 인라인 style로 준다.
             - 행간: globals.css의 `p { line-height: 1.7 }`가 레이어 밖에 있어

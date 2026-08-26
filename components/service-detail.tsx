@@ -1,7 +1,9 @@
 import Image from "next/image";
 
 import GlobalMarketingTabs from "@/components/global-marketing-tabs";
+import PerformanceFunnel from "@/components/performance-funnel";
 import ServiceSection from "@/components/service-section";
+import { Feature as ImcWhyDiverz } from "@/components/ui/feature-section-with-bento-grid";
 import ViralChannels from "@/components/viral-channels";
 import { services } from "@/lib/site";
 
@@ -71,7 +73,7 @@ const diagrams: Record<
     height: 1473,
     // 세로 720px 기준 폭 — 아래 세 장 모두 같은 기준으로 맞췄다.
     maxWidth: 500,
-    alt: "퍼포먼스 마케팅 운영 흐름 — 전략 수립, 소재 제작, 성과 최적화, 성과 분석. 구글·메타·틱톡·유튜브 채널을 함께 운영합니다",
+    alt: "퍼포먼스 마케팅 운영 흐름 — 전략 수립, 소재 제작, 성과 최적화, 성과 분석. 구글/메타/틱톡/유튜브 채널을 함께 운영합니다",
   },
   viral: {
     /* 바이럴은 개념도 대신 블루에그 플랫폼 화면을 세운다 — 이 상품의
@@ -110,13 +112,13 @@ const diagrams: Record<
  * 딸린 블록이 이어진다 — 바이럴(채널 목록)과 글로벌(이커머스 입점 마케팅 ·
  * 병원 마케팅 두 상품을 탭으로 오가는 GlobalMarketingTabs).
  *
- * 프로세스 타임라인 두 개(IMC PROCESS, PERFORMANCE PROCESS)는 뺐다. 오른쪽
- * 개념도가 이미 그 상품이 무엇을 묶는지 보여 주는데, 그 아래 다시 단계별
- * 타임라인이 오면 같은 말을 두 번 한다.
- *
- * 컴포넌트(components/performance-funnel.tsx)와 데이터(lib/site.ts의
- * imcProcess · performanceFeatures · performanceFunnel)는 남겨 두었다 —
- * 다시 붙일 일이 생기면 그대로 쓰면 된다.
+ * 프로세스 타임라인은 한때 둘 다(IMC PROCESS, PERFORMANCE PROCESS) 뺐었다 —
+ * 오른쪽 개념도가 이미 그 상품이 무엇을 묶는지 보여 주는데, 그 아래 다시
+ * 단계별 타임라인이 오면 같은 말을 두 번 한다는 이유였다. 퍼포먼스는
+ * 다시 붙였다 — "가설 → A/B 테스트 → 데이터 분석 → 리마케팅"이 반복되며
+ * 성과를 끌어올린다는 이야기는 개념도(무엇을 묶는지)가 못 하는 말이라,
+ * 겹치지 않는다. IMC는 겹쳐서(imcProcess) 그대로 뺀 채로 둔다 — 다시
+ * 붙일 일이 생기면 그대로 쓰면 된다.
  */
 export default function ServiceDetail({
   service,
@@ -190,6 +192,13 @@ export default function ServiceDetail({
         ) : undefined
       }
     >
+      {/* 왜 다이버즈인지 — WHY DIVERZ 벤토 그리드. */}
+      {service.slug === "imc" && <ImcWhyDiverz />}
+
+      {/* 가설 → A/B 테스트 → 데이터 분석 → 리마케팅, 지속적인 분석으로
+          성과를 끌어올린다는 이야기. */}
+      {service.slug === "performance" && <PerformanceFunnel />}
+
       {/* 바이럴 채널 3종 + 상위노출 2종. */}
       {service.slug === "viral" && <ViralChannels />}
 

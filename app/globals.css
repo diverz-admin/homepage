@@ -50,6 +50,24 @@
   --text-fluid-3xl: clamp(1.8rem, 3.8vw, 2.75rem);
   /* 히어로도 더 이상 화면을 꽉 채우지 않는다. */
   --text-fluid-hero: clamp(2.2rem, 5vw, 4rem);
+
+  /**
+   * 서비스 상세 지면(app/service/[slug]) 전용 크기 두 개.
+   *
+   * 이 지면의 묶음 제목과 본문은 네 파일(service-section · viral-channels ·
+   * hospital-marketing · ecommerce-marketing)에 흩어져 있으면서 항상 같은
+   * 크기로 움직여야 한다. 예전에는 각자 text-fluid-2xl / text-fluid-base 를
+   * 직접 썼는데, 그 토큰들은 홈·CONTACT·WHO WE ARE 에서도 쓰여서 여기만
+   * 줄이려면 파일마다 손대야 했다. 이 두 값으로 묶어 한 곳에서 조절한다.
+   *
+   *   title 25.6px (기존 text-fluid-2xl 33.6px)
+   *   body  13.6px (기존 text-fluid-base 15.2px)
+   *
+   * body 는 주석용 text-fluid-sm(12.8px)보다는 커야 한다 — 같아지면 본문과
+   * 단서(※)의 위계가 무너진다.
+   */
+  --text-svc-title: clamp(1.3rem, 2.2vw, 1.6rem);
+  --text-svc-body: clamp(0.78rem, 1.15vw, 0.85rem);
 }
 
 @theme inline {
@@ -86,6 +104,9 @@
   --text-fluid-2xl: var(--text-fluid-2xl);
   --text-fluid-3xl: var(--text-fluid-3xl);
   --text-fluid-hero: var(--text-fluid-hero);
+  /* 서비스 상세 전용 — text-svc-title / text-svc-body 로 쓴다. */
+  --text-svc-title: var(--text-svc-title);
+  --text-svc-body: var(--text-svc-body);
 
   /* 타이핑 커서 깜빡임. steps로 딱딱 끊어 블록 커서 느낌을 낸다. */
   --animate-cursor-blink: cursor-blink 1.06s steps(1, end) infinite;
@@ -151,6 +172,56 @@
 }
 
 /**
+ * 서비스 상세 지면(app/service/[slug])은 좌우 여백을 넓게 쓴다.
+ *
+ * 넓은 화면에서 본문이 화면 폭을 가로지르면 한 줄이 너무 길어 읽는 눈이
+ * 되돌아올 자리를 잃는다. 기본 여백(최대 128px)보다 더 벌려 지면을 가운데로
+ * 모은다.
+ *
+ * 24 → 40 → 80 → 120 → 190px. 1920px 화면에서 좌우가 250px씩 빈다 —
+ * 최대폭 1800px 캡에서 남는 60px에 여백 190px이 더해진 값이다(60 + 190).
+ * 1536~1800px 구간은 캡이 걸리지 않아 190px 그대로다.
+ *
+ * 모바일(기본 구간)은 24px 그대로다 — 여기서 더 벌리면 글자가 들어갈 자리가
+ * 없다. 최대폭 1800px 캡은 건드리지 않는다(사이트 전역 규칙).
+ *
+ * `.page-container` 를 직접 겨냥하는 이유는 두 가지다.
+ *  1) 커스텀 속성은 "자기 자신에 선언된 값"이 상속값을 이긴다. 조상에
+ *     --page-pad 를 물려도 .page-container 자신의 선언이 그대로 이겨서
+ *     안 먹는다. 선택자 특정도(0,2,0 > 0,1,0)로 눌러야 한다.
+ *  2) 이 지면에는 page-container 가 둘 겹친다 — 바깥(페이지)과
+ *     RiseReveal 패널 안쪽(components/rise-reveal.tsx). 후손 선택자로
+ *     한 번에 덮어야 글로벌 페이지만 여백이 어긋나지 않는다.
+ */
+.service-page .page-container {
+  --page-pad: 24px;
+}
+
+@media (min-width: 640px) {
+  .service-page .page-container {
+    --page-pad: 40px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .service-page .page-container {
+    --page-pad: 80px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .service-page .page-container {
+    --page-pad: 120px;
+  }
+}
+
+@media (min-width: 1536px) {
+  .service-page .page-container {
+    --page-pad: 190px;
+  }
+}
+
+/**
  * 컨테이너 안의 요소를 화면 오른쪽 끝까지 흘려보낼 때 쓰는 음수 여백.
  * (헤어라인이 수치 뒤에서 화면 밖으로 빠져나가는 잡지식 처리 — GrowthStats)
  *
@@ -161,6 +232,66 @@
  */
 .bleed-right {
   margin-right: calc(-1 * (var(--page-pad, 24px) + max(0px, (100vw - 1800px) / 2)));
+}
+
+/**
+ * 큰 묶음 사이의 세로 숨 — 서비스 상세 지면의 세로 리듬을 한 곳에서 정한다.
+ *
+ * 예전에는 묶음마다 마진을 직접 적었는데(mt-16 / mt-20 sm:mt-24 /
+ * mt-24 sm:mt-28 / mt-24 sm:mt-32) 같은 격의 묶음인데도 사이 간격이
+ * 네 종류로 갈렸다 — 한 페이지를 내려 읽으면 어떤 경계는 붙어 보이고
+ * 어떤 경계는 뚝 끊겨 보인다. 값을 여기 한 줄로 모아 두면 리듬이
+ * 어긋날 자리가 없다.
+ *
+ * 112 → 152 → 176px. 예전 기본값(80/96px)의 갑절에 가깝다 — 묶음마다
+ * 카드·표처럼 덩치 큰 것이 들어차 있어서, 그보다 좁으면 아래 묶음의
+ * 라벨이 위 카드에 딸려 있는 것처럼 읽혔다.
+ *
+ * globals.css 는 레이어 밖이라 이 클래스가 Tailwind 의 mt-* 를 이긴다.
+ * 어떤 자리에서 간격을 달리 줘야 하면 이 클래스를 빼고 직접 잡는다.
+ */
+.section-gap {
+  margin-top: 112px;
+}
+
+/**
+ * 같은 리듬을 형제 묶음이 여럿 이어질 때 쓰는 꼴(space-y 대용).
+ * 첫 묶음에는 걸리지 않고 사이에만 들어간다.
+ */
+.section-stack > * + * {
+  margin-top: 112px;
+}
+
+@media (min-width: 640px) {
+  .section-gap {
+    margin-top: 152px;
+  }
+
+  .section-stack > * + * {
+    margin-top: 152px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .section-gap {
+    margin-top: 176px;
+  }
+
+  .section-stack > * + * {
+    margin-top: 176px;
+  }
+}
+
+/**
+ * 좌우 모두 화면 끝까지 — page-container 안에서도 배경만은 폭 전체를
+ * 덮게 할 때 쓴다(RiseReveal의 panel). page-container 폭 그대로 두면
+ * 배경색이 페이지와 같아도 그림자(shadow)가 좌우 여백 안에서 상자
+ * 테두리처럼 보인다 — 배경이 화면 끝까지 닿아야 그림자가 위쪽 경계에만
+ * 걸리고, 페이지 자체가 밀고 올라오는 것처럼 읽힌다.
+ * 안쪽 내용은 다시 .page-container 로 감싸 읽는 폭을 맞춘다.
+ */
+.bleed-x {
+  margin-inline: calc(-1 * (var(--page-pad, 24px) + max(0px, (100vw - 1800px) / 2)));
 }
 
 /**
@@ -196,13 +327,20 @@
   color: var(--foreground);
 }
 
-/* 기본 리듬 — 유틸리티가 없을 때의 바닥값. */
-h1 {
-  line-height: 1.1;
-}
-
-h2 {
-  line-height: 1.2;
+/* 기본 리듬 — 유틸리티가 없을 때의 바닥값.
+   제목 줄간은 h1~h6 전부 1.15로 통일한다. 예전에는 h1/h2에만 값이 있고
+   h3~h6은 Tailwind preflight의 1.5를 그대로 받아서, 두 줄짜리 블록 제목
+   (NEEDS·비교표 등)만 유독 두 줄이 벌어져 보였다.
+   주의 — globals.css는 @layer 밖이라 이 값이 leading-* 유틸리티를 이긴다.
+   개별 제목에서 다른 줄간을 쓰려면 인라인 style로 준다
+   (ecommerce-marketing.tsx의 style={{ lineHeight: 1.15 }}가 그 예다). */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: 1.15;
 }
 
 p {
@@ -236,6 +374,51 @@ body {
     radial-gradient(120% 60% at 50% -10%, rgb(124 156 196 / 0.045), transparent 62%),
     radial-gradient(80% 50% at 80% 100%, rgb(23 37 60 / 0.35), transparent 72%);
   background-attachment: fixed;
+}
+
+/**
+ * 좁은 화면에서의 줄바꿈 — 낱말은 이미 body 의 word-break: keep-all 이
+ * 지켜 준다. 여기서 손보는 건 "줄이 어디서 끊기느냐"다.
+ *
+ * 넓은 화면 기준으로 다듬어 둔 글이 390px 칸에 들어오면 줄 수가 두세 배로
+ * 늘면서, 마지막 줄에 낱말 하나만 덩그러니 남는 자리가 곳곳에 생긴다
+ * (제목은 "…글로벌 / 마케팅", 본문은 "…있습니다." 한 마디). 브라우저에
+ * 줄 나누기 규칙을 알려 주면 그 자리를 알아서 메운다.
+ *
+ *   제목(짧은 글) → balance : 줄 길이를 고르게 나눈다.
+ *   본문(긴 글)  → pretty  : 마지막 줄에 외톨이 낱말을 남기지 않는다.
+ *                            balance 는 긴 문단에서 브라우저가 무시하므로
+ *                            문단에는 쓰지 않는다.
+ *
+ * md(768px) 미만에만 건다 — 그 위는 이미 폭이 넉넉하고, 컴포넌트마다
+ * 손으로 맞춰 둔 줄 나누기(하드 개행, min-h 로 잡아 둔 두 줄 자리)를
+ * 건드리지 않기 위해서다.
+ *
+ * :not(...) 으로 유틸리티가 붙은 자리를 비켜 간다. globals.css 는 레이어
+ * 밖이라 그냥 적으면 Tailwind 의 text-balance / text-pretty 까지 이겨서,
+ * 컴포넌트가 일부러 다르게 지정한 자리를 덮어 버린다. (@layer base 로
+ * 감싸는 방법은 v4 빌드가 이 블록을 통째로 버려서 못 쓴다 — 컴파일된
+ * CSS 에 규칙이 남지 않는 것으로 확인했다.)
+ */
+@media (max-width: 47.999rem) {
+  h1:not(.text-balance, .text-pretty, .text-nowrap),
+  h2:not(.text-balance, .text-pretty, .text-nowrap),
+  h3:not(.text-balance, .text-pretty, .text-nowrap),
+  h4:not(.text-balance, .text-pretty, .text-nowrap),
+  h5:not(.text-balance, .text-pretty, .text-nowrap),
+  h6:not(.text-balance, .text-pretty, .text-nowrap) {
+    text-wrap: balance;
+  }
+
+  p:not(.text-balance, .text-pretty, .text-nowrap),
+  li:not(.text-balance, .text-pretty, .text-nowrap),
+  dd:not(.text-balance, .text-pretty, .text-nowrap),
+  figcaption:not(.text-balance, .text-pretty, .text-nowrap),
+  blockquote:not(.text-balance, .text-pretty, .text-nowrap),
+  td:not(.text-balance, .text-pretty, .text-nowrap),
+  th:not(.text-balance, .text-pretty, .text-nowrap) {
+    text-wrap: pretty;
+  }
 }
 
 /* background-attachment: fixed는 모바일 사파리/크롬에서 스크롤할 때마다
@@ -489,6 +672,23 @@ body {
    .reveal 뒤에 와야 transform 을 덮어쓴다. */
 .reveal-x {
   transform: translateX(72px);
+}
+
+/* 좁은 화면(md 미만)에서는 가로로 밀지 않는다.
+
+   두 가지 이유다. (1) 한 단으로 쌓이는 폭에서는 그래픽이 본문 '옆'이
+   아니라 '위'에 서므로 "옆에서 붙는다"는 연출 자체가 뜻을 잃는다.
+   (2) 더 중요한 건, 72px 밀린 시작 상태가 그대로 화면 밖으로 나가
+   지면에 가로 스크롤이 생긴다는 점이다 — 390px 화면에서 문서 폭이
+   438px 로 잡혔다. 이 지면은 overflow-x 를 자르지 않으므로(바이럴
+   페이지에만 clip 을 건다 — app/service/[slug]/page.tsx) 넘친 만큼이
+   그대로 옆으로 긁히는 여백이 된다.
+
+   기본 .reveal 과 같은 세로 이동으로 되돌린다. */
+@media (max-width: 47.999rem) {
+  .reveal-x {
+    transform: translateY(28px);
+  }
 }
 
 /* ───────────────────────────────────────────────────────────────
@@ -851,6 +1051,45 @@ html.lenis [data-lenis-prevent] {
   animation: marquee-reverse linear infinite;
 }
 
+/**
+ * ImageSliderCard(components/ui/image-slider-card-shadcnui.tsx)의 슬라이드
+ * 전환용. 원래는 framer-motion의 AnimatePresence(mode="wait")로 크로스페이드를
+ * 줬는데, 이 프로젝트의 framer-motion 12.42.2에서 그 조합이 두 번째 키
+ * 변경부터 응답이 없어졌다(exit가 끝나도 다음 자식이 마운트되지 않고
+ * 첫 슬라이드에 멈춰 버림 — 자바스크립트로 직접 검증함). key로 다시
+ * 마운트되는 순간 CSS 애니메이션이 스스로 재생되는 성질을 빌려, 라이브러리
+ * 없이 같은 느낌의 전환을 낸다.
+ */
+@keyframes slide-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-fade-in {
+  animation: slide-fade-in 0.35s ease-out both;
+}
+
+@keyframes slide-image-in {
+  from {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.slide-image-in {
+  animation: slide-image-in 0.35s ease-out both;
+}
+
 /* 마우스를 올린 줄만 멈춰서 로고 이름을 읽을 여유를 준다. */
 .marquee-row:hover .animate-marquee,
 .marquee-row:hover .animate-marquee-reverse {
@@ -886,7 +1125,9 @@ html.lenis [data-lenis-prevent] {
   .wave-drift,
   .god-rays::before,
   .animate-marquee,
-  .animate-marquee-reverse {
+  .animate-marquee-reverse,
+  .slide-fade-in,
+  .slide-image-in {
     animation: none;
   }
 

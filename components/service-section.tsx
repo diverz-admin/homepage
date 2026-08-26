@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import Reveal from "@/components/reveal";
+import RiseReveal from "@/components/rise-reveal";
 import SectionNumber from "@/components/section-number";
 import type { services } from "@/lib/site";
 
@@ -28,6 +29,7 @@ export default function ServiceSection({
   children,
   aside,
   asideBleed = false,
+  riseReveal = false,
 }: {
   service: (typeof services)[number];
   /**
@@ -59,10 +61,16 @@ export default function ServiceSection({
    * 그래픽이 한 단을 다 쓰는데 오른쪽으로 빼면 그냥 잘린다.
    */
   asideBleed?: boolean;
+  /**
+   * 제목+개념도 칸을 화면에 붙여 두고, 그 아래 딸린 블록(children)이
+   * 화면 밑에서 솟아올라 그 위를 덮게 한다(components/rise-reveal.tsx —
+   * hwacheon.com/ko/media/news 히어로 참고). children이 있을 때만 뜻이
+   * 있어서, 지금은 글로벌(GlobalMarketingTabs)에만 켠다.
+   */
+  riseReveal?: boolean;
 }) {
-  return (
-    // scroll-mt는 고정 헤더(h-20 = 80px)만큼 앵커를 내린다.
-    <section id={service.slug} className="scroll-mt-32">
+  const grid = (
+    <>
       {/* 번호는 본문 칸이 아니라 그리드 위에 둔다 — 선이 그래픽 칸까지
           가로질러야 "여기서부터 이 묶음"이 폭 전체로 읽힌다. */}
       {no && (
@@ -106,6 +114,14 @@ export default function ServiceSection({
         }
       >
         <div>
+          <Reveal delay={40}>
+            {/* 제목 위 영문 라벨. 다른 블록(WHY DIVERZ, WHAT IS IMC …)과
+                같은 라벨 문법(작게, 넓은 자간, 액센트 색)으로 맞춘다. */}
+            <p className="font-display text-xs font-bold tracking-[0.25em] text-accent">
+              {service.en}
+            </p>
+          </Reveal>
+
           <Reveal delay={80}>
             {/* 행간은 클래스가 아니라 inline style로 준다.
                 globals.css의 `p { line-height: 1.7 }`가 레이어 밖에 있어
@@ -115,7 +131,7 @@ export default function ServiceSection({
               /* 좁은 화면에서만 키운다. text-fluid-2xl 의 하한(1.5rem)이 모바일에서
                   본문(1.125rem)과 한 단계밖에 차이가 안 나 제목이 서지 않았다.
                   넓은 화면 상한(2.1rem)은 그대로다. */
-              className="font-display text-[clamp(1.9rem,3vw,2.1rem)] font-bold tracking-tight text-balance whitespace-pre-line text-foreground"
+              className="mt-4 font-display text-[clamp(1.9rem,3vw,2.1rem)] font-bold tracking-tight text-balance whitespace-pre-line text-foreground"
             >
               {service.tagline}
             </h2>
@@ -125,7 +141,6 @@ export default function ServiceSection({
             {/* 크기는 상단 배너(components/page-hero.tsx)의 설명글과 같은
                 text-fluid-lg. 제목도 배너 제목과 같은 text-fluid-2xl이라,
                 배너에서 여기로 내려오는 동안 글자 크기가 한 벌로 이어진다.
-                (예전 text-fluid-sm은 상한이 0.8rem ≒ 12.8px이라 본문치고 너무 작았다.)
                 max-w-2xl — 컬럼 폭을 다 쓰면 한 줄이 너무 길어진다.
                 break-keep — 한글 단어 중간에서 끊지 않는다.
                 tracking — body 기본값(-0.01em)보다 더 좁힌다. 이 문단만
@@ -143,7 +158,10 @@ export default function ServiceSection({
                 담고, 하나하나가 "키워드"로 보인다.
 
                 흰 지면 위라 채운 알약(남색 바탕 + 흰 글자)으로 둔다 —
-                테두리만 있는 알약은 옆의 본문과 무게가 비슷해 묻힌다. */}
+                테두리만 있는 알약은 옆의 본문과 무게가 비슷해 묻힌다.
+
+                규격은 viral-channels.tsx의 알약과 같다 — 같은 지면에서 두
+                벌로 보이면 안 된다. 값을 고칠 일이 생기면 양쪽을 같이 고친다. */}
             <ul className="mt-10 flex flex-wrap gap-2.5">
               {service.points.map((point) => (
                 <li
@@ -190,8 +208,20 @@ export default function ServiceSection({
           </Reveal>
         )}
       </div>
+    </>
+  );
 
-      {children}
+  return (
+    // scroll-mt는 고정 헤더(h-20 = 80px)만큼 앵커를 내린다.
+    <section id={service.slug} className="scroll-mt-32">
+      {riseReveal ? (
+        <RiseReveal pinned={grid} panel={children} />
+      ) : (
+        <>
+          {grid}
+          {children}
+        </>
+      )}
     </section>
   );
 }

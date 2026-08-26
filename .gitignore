@@ -69,7 +69,11 @@ next-env.d.ts
 /diving.mp4
 /diver.jpg
 /A지역 피부과와 그래프.png
+/A지역 피부과 그래프.png
 /F&B 브랜드 본사 그래프.png
+
+# 제안서 원본 PDF(39MB) — 지면에 쓰는 이미지는 public/ 안에 따로 구워 뒀다.
+/refer.pdf
 
 # 디자인 확인용 1회성 스크린샷 스크립트
 /.c3.mjs

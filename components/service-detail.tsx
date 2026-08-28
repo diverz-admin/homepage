@@ -87,13 +87,6 @@ const diagrams: Record<
     height: 1024,
     alt: "블루에그 셀프 마케팅 플랫폼 화면 — 통합순위관리, 리워드 마케팅 캠페인 현황, 채널별 키워드 순위 추적",
   },
-  global: {
-    src: "/images/service/diagram-global-v2.png",
-    inkTop: 28,
-    width: 1083,
-    height: 1263,
-    alt: "글로벌 마케팅 진출 국가와 채널 — 중국 샤오홍슈, 중국 따종디엔핑, 일본, 대만",
-  },
   contents: {
     src: "/images/service/diagram-contents-v2.png",
     inkTop: 50,
@@ -109,8 +102,9 @@ const diagrams: Record<
  * 상품 한 종의 본문. /service/[slug]에서 쓴다.
  *
  * 오른쪽 개념도는 위 diagrams에서 slug로 고르고, 본문 아래에는 상품별로
- * 딸린 블록이 이어진다 — 바이럴(채널 목록)과 글로벌(이커머스 입점 마케팅 ·
- * 병원 마케팅 두 상품을 탭으로 오가는 GlobalMarketingTabs).
+ * 딸린 블록이 이어진다 — 지금은 바이럴(채널 목록)뿐이다.
+ *
+ * 글로벌만 예외로 대제목 블록 자체가 없다 — 아래 early return 참고.
  *
  * 프로세스 타임라인은 한때 둘 다(IMC PROCESS, PERFORMANCE PROCESS) 뺐었다 —
  * 오른쪽 개념도가 이미 그 상품이 무엇을 묶는지 보여 주는데, 그 아래 다시
@@ -127,16 +121,24 @@ export default function ServiceDetail({
 }) {
   const diagram = diagrams[service.slug];
 
+  /* 글로벌은 대제목 블록(영문 라벨 · 대제목 · 설명 · 키워드 알약 · 문의하기 ·
+     오른쪽 지구본 개념도) 없이 두 상품 탭으로 바로 시작한다. 그 블록이
+     말하던 "왜 지금 해외인가"는 아래 두 상품 지면이 각자 다시 풀고 있어서,
+     위에 한 겹 더 얹으면 같은 얘기를 두 번 하는 자리가 됐다.
+     (id는 그대로 둔다 — 상품 메뉴가 이 앵커로 자리를 잡는다.) */
+  if (service.slug === "global") {
+    return (
+      <section id={service.slug} className="scroll-mt-32">
+        <GlobalMarketingTabs />
+      </section>
+    );
+  }
+
   return (
     <ServiceSection
       service={service}
       /* 한 페이지 안에 순서 있는 묶음이 여럿인 상품에만 번호를 붙인다 —
-         지금은 바이럴뿐이다(블루에그 01 → 바이럴 마케팅 02 → 리워드 03).
-
-         글로벌은 번호를 주지 않는다. 이 블록은 나란한 묶음 중 하나가 아니라
-         글로벌 마케팅 전체의 대제목이고, 아래 딸린 두 상품(이커머스 입점
-         마케팅 · 병원 마케팅)은 순서가 아니라 탭으로 갈린 선택지라 번호가
-         맞지 않는다. */
+         지금은 바이럴뿐이다(블루에그 01 → 바이럴 마케팅 02 → 리워드 03). */
       no={service.slug === "viral" ? "01" : undefined}
       asideBleed={diagram?.bleedRight}
       aside={
@@ -201,9 +203,6 @@ export default function ServiceDetail({
 
       {/* 바이럴 채널 3종 + 상위노출 2종. */}
       {service.slug === "viral" && <ViralChannels />}
-
-      {/* 글로벌 — 이커머스 입점 마케팅 · 병원 마케팅 두 상품을 탭으로. */}
-      {service.slug === "global" && <GlobalMarketingTabs />}
     </ServiceSection>
   );
 }

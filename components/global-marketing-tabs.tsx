@@ -29,7 +29,12 @@ export default function GlobalMarketingTabs() {
     // .service-page 로 이미 좁은 여백을 쓴다(app/globals.css). 예전에는 이
     // 블록만 음수 마진으로 넓혀 뒀는데, 지면 전체가 좁아진 뒤로는 둘이
     // 겹쳐 여백이 과하게 줄어든다.
-    <div className="section-gap">
+    //
+    // 위 여백(.section-gap)도 없다. 예전에는 이 블록 위에 글로벌 대제목
+    // 블록이 있어서 둘 사이를 벌려야 했는데, 그 블록이 빠지면서 이 탭이
+    // 지면의 첫 덩어리가 됐다 — 여기서 또 벌리면 상품 메뉴 띠와의 사이가
+    // 두 번 벌어진다(지면 위 여백은 app/service/[slug]/page.tsx 가 준다).
+    <div>
       {/* 탭을 왼쪽으로 붙이고, 남는 폭은 헤어라인으로 마저 긋는다.
           SectionNumber("01 ─────")와 같은 문법이다 — 선은 칸을 나누는
           테두리가 아니라 "여기서부터 새 묶음"이라는 표시라 오른쪽으로

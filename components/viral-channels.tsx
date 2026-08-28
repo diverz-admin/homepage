@@ -128,16 +128,16 @@ export default function ViralChannels() {
             <Reveal delay={140} className="reveal-x order-first md:order-none">
               <Image
                 src="/images/service/viral/naver-app-mockup.png"
-                alt="네이버 앱 화면 — 검색, 쇼핑, 플레이스 등 브랜드가 노출되는 자리"
-                width={1037}
-                height={1517}
+                alt="네이버 검색 결과 화면 — 플레이스에 브랜드 정보와 리뷰가 노출되는 자리"
+                width={1057}
+                height={1488}
                 /* 폭에 상한을 둔다. 칸(1fr)을 그대로 채우면 넓은 화면에서
-                   630px까지 자라 세로가 920px를 넘고, 왼쪽 본문(제목+설명+
-                   알약)이 그 옆에서 초라해진다. 세로로 긴 그림(1:1.46)이라
+                   630px까지 자라 세로가 880px를 넘고, 왼쪽 본문(제목+설명+
+                   알약)이 그 옆에서 초라해진다. 세로로 긴 그림(1:1.41)이라
                    폭보다 키가 먼저 부담이 된다 — 상한이 곧 이 줄의 높이다.
-                   예전에는 lg에서 300px까지만 열어 뒀는데(세로 440px), 목업
+                   예전에는 lg에서 300px까지만 열어 뒀는데(세로 420px), 목업
                    안의 앱 화면이 뭘 보여 주는지 알아볼 수 없을 만큼 작았다.
-                   400px(세로 585px)까지 열어 화면 속 내용이 읽히게 한다. */
+                   400px(세로 563px)까지 열어 화면 속 내용이 읽히게 한다. */
                 sizes="(min-width: 768px) 400px, 100vw"
                 className="mx-auto h-auto w-full max-w-[300px] md:max-w-[340px] lg:max-w-[400px]"
               />

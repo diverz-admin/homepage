@@ -10,7 +10,7 @@
  */
 
 /** 받는 사람. 환경변수로 덮어쓸 수 있게 두되 기본값은 대표 메일. */
-const TO = process.env.CONTACT_TO_EMAIL ?? "diverz1225@gmail.com";
+const TO = process.env.CONTACT_TO_EMAIL ?? "info@diverz.kr";
 
 /**
  * 보내는 사람. 도메인(diverz.kr) DNS 인증이 끝나기 전에는 Resend가 자체

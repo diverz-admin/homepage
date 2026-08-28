@@ -37,7 +37,7 @@ test("실제 회사 정보가 푸터에 노출된다", async ({ page }) => {
 
   const footer = page.getByRole("contentinfo");
   await expect(footer).toContainText("주식회사 다이버즈");
-  await expect(footer).toContainText("diverz1225@gmail.com");
+  await expect(footer).toContainText("info@diverz.kr");
   await expect(footer).toContainText("경기도 고양시 일산동구");
 });
 

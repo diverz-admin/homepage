@@ -9,7 +9,7 @@ export const company = {
   ceo: "전재민",
   bizNumber: "174-88-03266",
   address: "경기도 고양시 일산동구 백마로 195, 5007호",
-  email: "diverz1225@gmail.com",
+  email: "info@diverz.kr",
   tagline: "가장 깊이 잠수하고, 빠르게 떠오릅니다.",
   slogan: ["DIVE DEEP", "RISE FAST"] as const,
   // "\n"으로 줄을 나눈다. 화면에서는 줄바꿈으로, 메타데이터에서는 공백으로 처리한다.

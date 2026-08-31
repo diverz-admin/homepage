@@ -1,16 +1,17 @@
 import Image from "next/image";
 
+import ContentsTabs from "@/components/contents-tabs";
 import GlobalMarketingTabs from "@/components/global-marketing-tabs";
 import PerformanceFunnel from "@/components/performance-funnel";
 import ServiceSection from "@/components/service-section";
 import { Feature as ImcWhyDiverz } from "@/components/ui/feature-section-with-bento-grid";
-import ViralChannels from "@/components/viral-channels";
-import { services } from "@/lib/site";
+import ViralProgramTabs from "@/components/viral-program-tabs";
+import { services, viralSolution } from "@/lib/site";
 
 /**
  * 상품마다 본문 오른쪽에 세우는 개념도.
  *
- * 다섯 장이 한 벌로 그려진 그림이다 — 흰 배경, 남색 그라디언트 도형, 그
+ * 한 벌로 그려진 그림이다 — 흰 배경, 남색 그라디언트 도형, 그
  * 둘레에 점과 라벨. 그래서 컴포넌트로 따로 그리지 않고 이미지로 받는다.
  * (예전에는 IMC만 로고 궤도, 퍼포먼스는 로고 그리드, 글로벌은 사진…처럼
  * 상품마다 다른 컴포넌트를 붙여서 다섯 페이지의 결이 제각각이었다.)
@@ -87,22 +88,75 @@ const diagrams: Record<
     height: 1024,
     alt: "블루에그 셀프 마케팅 플랫폼 화면 — 통합순위관리, 리워드 마케팅 캠페인 현황, 채널별 키워드 순위 추적",
   },
-  contents: {
-    src: "/images/service/diagram-contents-v2.png",
-    inkTop: 50,
-    width: 974,
-    height: 1431,
-    // 세로 720px 기준 폭.
-    maxWidth: 490,
-    alt: "콘텐츠 제작 과정 — 리서치 및 기획, 스토리보드 제작, 촬영 준비, 촬영, 편집 및 후반작업",
-  },
 };
+
+/**
+ * 개념도 한 장을 그래픽 칸에 앉히는 상자.
+ *
+ * 상품 본문이 두 자리에서 쓰인다 — 보통은 아래 ServiceSection 이,
+ * 바이럴은 탭 안(components/viral-program-tabs.tsx)이다. 둘이 같은
+ * 그림을 같은 규격으로 세워야 해서 함수로 뽑아 둔다.
+ */
+function DiagramAside({ diagram }: { diagram: (typeof diagrams)[string] }) {
+  return (
+    /* 폭 제한을 바깥 상자로 옮긴다. 아래 음수 여백을 %로 주는데,
+       margin 의 % 는 "담고 있는 상자"의 폭을 기준으로 계산된다 —
+       상자가 그림보다 넓으면 끌어올리는 양이 어긋난다.
+       흘려보내는 그림은 상한 없이 칸을 꽉 채운다. */
+    <div
+      /* 좁은 화면에서는 폭을 한 번 더 물린다. 다섯 장 모두 세로로 긴
+         그림(비율 0.60~0.75)이라, 칸 폭을 그대로 채우면 390px 화면에서
+         세로가 500px 가까이 자라 그림 한 장이 화면을 통째로 먹는다.
+         260px면 세로가 350px 안쪽으로 들어온다. 화면이 넓어지는 만큼
+         한 단씩 풀어 준다 — lg(1024px)까지 오면 한 칸이 900px가 넘어서
+         340px짜리 그림은 가운데 덩그러니 떠 보인다.
+
+         폭 상한을 인라인 style 이 아니라 CSS 변수로 넘기는 이유는,
+         인라인 style 이 유틸리티 클래스를 이겨서 좁은 화면 상한을
+         덮어쓰기 때문이다. */
+      className={
+        /* 쌓이는 구간(md 미만)에서는 제목 위에 가운데로 놓고 폭 상한을
+           아예 두지 않는다 — 한 단을 혼자 쓰는 자리라 칸을 꽉 채우는
+           게 맞다. 상한을 두면 그만큼이 좌우 빈 여백으로 남아 그림이
+           덩그러니 떠 보인다. md 부터는 오른쪽 칸 크기에 맞춰 줄어든다. */
+        diagram.bleedRight
+          ? "mx-auto w-full md:max-w-[460px] lg:max-w-[620px] xl:max-w-none"
+          : "mx-auto w-full md:max-w-[340px] lg:max-w-[420px] xl:max-w-(--diagram-max)"
+      }
+      style={
+        diagram.bleedRight
+          ? undefined
+          : ({
+              "--diagram-max": `${diagram.maxWidth ?? 540}px`,
+            } as React.CSSProperties)
+      }
+    >
+      <Image
+        src={diagram.src}
+        alt={diagram.alt}
+        width={diagram.width}
+        height={diagram.height}
+        sizes={
+          diagram.bleedRight
+            ? "(min-width: 1280px) 55vw, (min-width: 768px) 45vw, 100vw"
+            : "(min-width: 1280px) 34rem, (min-width: 768px) 40vw, 100vw"
+        }
+        style={{
+          marginTop: `-${(((diagram.inkTop ?? 0) / diagram.width) * 100).toFixed(2)}%`,
+        }}
+        className="h-auto w-full"
+      />
+    </div>
+  );
+}
 
 /**
  * 상품 한 종의 본문. /service/[slug]에서 쓴다.
  *
- * 오른쪽 개념도는 위 diagrams에서 slug로 고르고, 본문 아래에는 상품별로
- * 딸린 블록이 이어진다 — 지금은 바이럴(채널 목록)뿐이다.
+ * 오른쪽 개념도는 위 diagrams에서 slug로 고른다(없는 상품은 본문이 한 단을
+ * 통째로 쓴다 — 콘텐츠가 그렇다). 그리고 본문 아래에는 상품별로
+ * 딸린 블록이 이어진다 — 바이럴(프로그램 탭), 콘텐츠(영상 제작 세 묶음),
+ * IMC(WHY DIVERZ), 퍼포먼스(성과 곡선).
  *
  * 글로벌만 예외로 대제목 블록 자체가 없다 — 아래 early return 참고.
  *
@@ -134,65 +188,40 @@ export default function ServiceDetail({
     );
   }
 
+  /* 바이럴도 대제목 블록을 따로 세우지 않는다 — 이 상품은 나란한 셋
+     (블루에그 · 바이럴 마케팅 · 리워드 마케팅)이라, 그중 하나인 블루에그가
+     위에 대제목으로 서면 나머지 둘이 거기 딸린 곁가지로 읽힌다. 셋을 같은
+     높이의 탭으로 세우고, 블루에그 본문은 첫 탭 안으로 들어간다.
+
+     본문은 다른 상품과 똑같은 ServiceSection 이다 — 탭 안에 들어간다고
+     판형까지 달라질 이유가 없다. 다만 <section id>는 탭 바깥(여기)이
+     맡는다: 탭을 갈아타면 본문이 언마운트되는데 그때 앵커까지 사라지면
+     상품 메뉴가 잡을 자리가 없어진다. */
+  if (service.slug === "viral") {
+    return (
+      <section id={service.slug} className="scroll-mt-32">
+        <ViralProgramTabs
+          blueEgg={
+            <ServiceSection
+              service={service}
+              unwrapped
+              /* 영문 라벨(VIRAL) 자리에 공감 한 줄을 세운다 — 탭 안이라
+                 이름표는 활성 탭이 이미 맡고 있다. */
+              lead={viralSolution.hook}
+              asideBleed={diagram?.bleedRight}
+              aside={diagram ? <DiagramAside diagram={diagram} /> : undefined}
+            />
+          }
+        />
+      </section>
+    );
+  }
+
   return (
     <ServiceSection
       service={service}
-      /* 한 페이지 안에 순서 있는 묶음이 여럿인 상품에만 번호를 붙인다 —
-         지금은 바이럴뿐이다(블루에그 01 → 바이럴 마케팅 02 → 리워드 03). */
-      no={service.slug === "viral" ? "01" : undefined}
       asideBleed={diagram?.bleedRight}
-      aside={
-        diagram ? (
-          /* 폭 제한을 바깥 상자로 옮긴다. 아래 음수 여백을 %로 주는데,
-             margin 의 % 는 "담고 있는 상자"의 폭을 기준으로 계산된다 —
-             상자가 그림보다 넓으면 끌어올리는 양이 어긋난다.
-             흘려보내는 그림은 상한 없이 칸을 꽉 채운다. */
-          <div
-            /* 좁은 화면에서는 폭을 한 번 더 물린다. 다섯 장 모두 세로로 긴
-               그림(비율 0.60~0.75)이라, 칸 폭을 그대로 채우면 390px 화면에서
-               세로가 500px 가까이 자라 그림 한 장이 화면을 통째로 먹는다.
-               260px면 세로가 350px 안쪽으로 들어온다. 화면이 넓어지는 만큼
-               한 단씩 풀어 준다 — lg(1024px)까지 오면 한 칸이 900px가 넘어서
-               340px짜리 그림은 가운데 덩그러니 떠 보인다.
-
-               폭 상한을 인라인 style 이 아니라 CSS 변수로 넘기는 이유는,
-               인라인 style 이 유틸리티 클래스를 이겨서 좁은 화면 상한을
-               덮어쓰기 때문이다. */
-            className={
-              /* 쌓이는 구간(md 미만)에서는 제목 위에 가운데로 놓고 폭 상한을
-                 아예 두지 않는다 — 한 단을 혼자 쓰는 자리라 칸을 꽉 채우는
-                 게 맞다. 상한을 두면 그만큼이 좌우 빈 여백으로 남아 그림이
-                 덩그러니 떠 보인다. md 부터는 오른쪽 칸 크기에 맞춰 줄어든다. */
-              diagram.bleedRight
-                ? "mx-auto w-full md:max-w-[460px] lg:max-w-[620px] xl:max-w-none"
-                : "mx-auto w-full md:max-w-[340px] lg:max-w-[420px] xl:max-w-(--diagram-max)"
-            }
-            style={
-              diagram.bleedRight
-                ? undefined
-                : ({
-                    "--diagram-max": `${diagram.maxWidth ?? 540}px`,
-                  } as React.CSSProperties)
-            }
-          >
-            <Image
-              src={diagram.src}
-              alt={diagram.alt}
-              width={diagram.width}
-              height={diagram.height}
-              sizes={
-                diagram.bleedRight
-                  ? "(min-width: 1280px) 55vw, (min-width: 768px) 45vw, 100vw"
-                  : "(min-width: 1280px) 34rem, (min-width: 768px) 40vw, 100vw"
-              }
-              style={{
-                marginTop: `-${(((diagram.inkTop ?? 0) / diagram.width) * 100).toFixed(2)}%`,
-              }}
-              className="h-auto w-full"
-            />
-          </div>
-        ) : undefined
-      }
+      aside={diagram ? <DiagramAside diagram={diagram} /> : undefined}
     >
       {/* 왜 다이버즈인지 — WHY DIVERZ 벤토 그리드. */}
       {service.slug === "imc" && <ImcWhyDiverz />}
@@ -201,8 +230,10 @@ export default function ServiceDetail({
           성과를 끌어올린다는 이야기. */}
       {service.slug === "performance" && <PerformanceFunnel />}
 
-      {/* 바이럴 채널 3종 + 상위노출 2종. */}
-      {service.slug === "viral" && <ViralChannels />}
+      {/* 콘텐츠 갈래 — 지금은 영상 하나뿐이라 탭이 한 칸이다.
+          패널 안에 갈래 넷(MEDIA SERVICES) · 프로덕션팀(MISSION) ·
+          아홉 단계(PROCESS)가 들어 있다. */}
+      {service.slug === "contents" && <ContentsTabs />}
     </ServiceSection>
   );
 }

@@ -30,14 +30,19 @@ export default function ServiceSection({
   aside,
   asideBleed = false,
   riseReveal = false,
+  unwrapped = false,
+  lead,
 }: {
   service: (typeof services)[number];
   /**
    * 제목 위에 크게 얹는 순번("01").
    *
-   * 한 상품 안에 순서 있는 묶음이 여럿일 때만 넘긴다 — 지금은 바이럴뿐이다
-   * (블루에그 01 → 바이럴 마케팅 02 → 리워드 마케팅 03). 나머지 넷은
-   * 묶음이 하나뿐이라 번호를 붙이면 없는 순서를 있다고 말하게 된다.
+   * 한 상품 안에 '순서 있는' 묶음이 여럿일 때만 넘긴다. 묶음이 하나뿐이거나
+   * 나란한 갈래일 뿐인 상품에 붙이면 없는 순서를 있다고 말하게 된다.
+   *
+   * 지금은 아무 상품도 넘기지 않는다. 마지막으로 쓰던 바이럴이
+   * (블루에그 01 → 바이럴 마케팅 02 → 리워드 03) 뒤의 둘을 탭으로 가르면서
+   * 번호를 걷었기 때문이다(components/viral-program-tabs.tsx).
    */
   no?: string;
   /** IMC처럼 아래에 더 넣을 내용이 있을 때 쓴다. */
@@ -68,6 +73,26 @@ export default function ServiceSection({
    * 있어서, 지금은 글로벌(GlobalMarketingTabs)에만 켠다.
    */
   riseReveal?: boolean;
+  /**
+   * 바깥에서 이미 <section id={slug}>로 감쌌을 때 켠다 — 여기서 또 감싸면
+   * 같은 id가 문서에 둘 생긴다.
+   *
+   * 바이럴이 그렇다. 그 지면은 상품 본문(블루에그)이 탭 셋 중 하나로
+   * 들어가 있어서, 앵커가 될 <section>은 탭 바깥에 서 있어야 한다 —
+   * 탭을 갈아타면 이 본문이 통째로 언마운트되는데, 그때 id까지 사라지면
+   * 상품 메뉴가 잡을 자리가 없어진다(components/keep-section-in-view.tsx).
+   */
+  unwrapped?: boolean;
+  /**
+   * 제목 위 영문 라벨 자리에 대신 세우는 공감 한 줄.
+   *
+   * 바이럴처럼 이 본문이 탭 안에 들어가는 지면에서 쓴다. 거기서는 어느
+   * 상품 이야기인지 활성 탭이 이미 말해 주므로 이름표(영문 라벨)가 같은
+   * 말을 두 번 하는 자리가 된다 — 그 자리를 읽는 사람의 마음을 먼저 받는
+   * 문장에 내준다. 글로벌 마케팅의 두 탭과 같은 규격이다
+   * (components/ecommerce-marketing.tsx · hospital-marketing.tsx).
+   */
+  lead?: string;
 }) {
   const grid = (
     <>
@@ -115,11 +140,20 @@ export default function ServiceSection({
       >
         <div>
           <Reveal delay={40}>
-            {/* 제목 위 영문 라벨. 다른 블록(WHY DIVERZ, WHAT IS IMC …)과
-                같은 라벨 문법(작게, 넓은 자간, 액센트 색)으로 맞춘다. */}
-            <p className="font-display text-xs font-bold tracking-[0.25em] text-accent">
-              {service.en}
-            </p>
+            {/* 제목 위 한 줄. 기본은 영문 라벨이고, 다른 블록(WHY DIVERZ,
+                WHAT IS IMC …)과 같은 라벨 문법(작게, 넓은 자간, 액센트 색)으로
+                맞춘다. lead 가 오면 그 자리를 공감 한 줄에 내준다 — 이름표가
+                아니라 문장이라 제목 바로 아래 급으로 세우고, 액센트 색으로
+                제목과 무게를 가른다(위 prop 주석 참고). */}
+            {lead ? (
+              <p className="text-fluid-lg font-bold tracking-[-0.02em] break-keep text-accent">
+                {lead}
+              </p>
+            ) : (
+              <p className="font-display text-xs font-bold tracking-[0.25em] text-accent">
+                {service.en}
+              </p>
+            )}
           </Reveal>
 
           <Reveal delay={80}>
@@ -211,17 +245,21 @@ export default function ServiceSection({
     </>
   );
 
+  const body = riseReveal ? (
+    <RiseReveal pinned={grid} panel={children} />
+  ) : (
+    <>
+      {grid}
+      {children}
+    </>
+  );
+
+  if (unwrapped) return body;
+
   return (
     // scroll-mt는 고정 헤더(h-20 = 80px)만큼 앵커를 내린다.
     <section id={service.slug} className="scroll-mt-32">
-      {riseReveal ? (
-        <RiseReveal pinned={grid} panel={children} />
-      ) : (
-        <>
-          {grid}
-          {children}
-        </>
-      )}
+      {body}
     </section>
   );
 }

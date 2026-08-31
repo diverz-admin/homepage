@@ -138,110 +138,143 @@ function StageHead({
   isDiverz?: boolean;
 }) {
   return (
+    /* 단계 머리는 화면 좌우 끝까지 닿는 띠다.
+       예전에는 이 지면의 다른 묶음(NEEDS·COMPARISON…)과 같은 폭·같은 결로
+       서 있어서, 스크롤로 3,000px 넘게 이어지는 STAGE 01 본문을 지나 만나는
+       "STAGE 02"가 또 하나의 묶음 라벨처럼 읽혔다. 두 단계가 어디서 갈리는지
+       눈으로 잡히지 않았다.
+
+       띠가 화면 끝에 닿으면 경계가 지면을 가로지르는 한 줄이 되어, 스크롤
+       중에 "장이 넘어갔다"가 바로 잡힌다.
+
+       띠 색이 곧 담당이다 — 파트너 몫은 라이트 그레이, 다이버즈 몫은 남색
+       그라디언트(SOLUTION_BG). 예전에는 이 구분을 안쪽 공정 상자 하나가
+       지고 있었는데, 상자는 머리 아래 한 칸이라 지나가면 사라진다.
+       띠로 올리면 그 단계에 머무는 내내 색이 남는다.
+       (회색 대 남색은 이 지면이 이미 쓰는 짝이다 — 비교표의 두 칸,
+        NEEDS 카드의 걱정/해결이 같은 문법이다.) */
     <div className="section-gap">
-      {/* 제목 묶음은 위에 한 줄로 세우고, 공정은 그 아래 지면 폭을 다 쓴다.
-          예전에는 6:6 두 단이라 공정 상자가 오른쪽 절반에만 들어갔고,
-          왼쪽 아래가 통째로 비어 상자가 지면에서 떠 보였다. */}
-      <div className="max-w-3xl">
-        <Reveal>
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="rounded-full bg-abyss px-3.5 py-1.5 font-display text-xs font-bold tracking-[0.2em] text-white">
-              {no}
-            </span>
-            <span className="rounded-full border border-accent/40 px-3.5 py-1.5 text-sm font-bold tracking-tight text-accent">
-              {owner}
-            </span>
-          </div>
-        </Reveal>
-        <Reveal delay={60}>
-          <h4 className="mt-5 font-display text-fluid-2xl font-bold tracking-tight break-keep text-foreground">
-            {name}
-          </h4>
-        </Reveal>
-        <Reveal delay={80}>
-          <p className="mt-4 text-fluid-base leading-[1.9] tracking-[-0.03em] break-keep text-foreground/80">
-            {body}
-          </p>
-        </Reveal>
-      </div>
-
-      {/* 담당 업무는 순서다 — 입점 → 상품 등록 → 주문/재고 → 물류/통관 →
-          정산/CS 로 이어진다. 그래서 항목을 늘어놓지 않고 공정으로 세운다.
-          넓은 화면에서는 다섯 칸을 가로로 눕히고 번호와 번호를 실선으로
-          잇는다. 지면 폭을 다 쓰므로 한 단계에서 다음 단계로 넘어가는
-          거리가 눈에 보인다.
-
-          좁은 화면(lg 미만)에서는 세로로 접힌다 — 다섯 칸을 억지로 가로로
-          두면 "정산 / 현지 CS 지원" 같은 긴 항목이 서너 줄로 접힌다.
-          그때는 선을 긋지 않는다(가로선이 세로 배치에서 어긋난다).
-
-          접힌 판형에서는 번호와 글을 한 줄에 나란히 둔다. lg 의 세로
-          배치(번호 위 / 글 아래)를 그대로 물려받으면 한 항목이 두 줄을
-          쓰면서 다섯 줄이 화면 한 장을 통째로 먹었다 — 다섯은 훑고
-          지나가는 목록이지 한 줄씩 읽는 본문이 아니다. 번호 구슬도
-          한 급 줄이고(44 → 36px) 상자 여백과 줄 간격을 함께 좁힌다.
-
-          바탕(흰 칸 대 남색)은 담당을 색으로 한 번 더 말한다 — 비교표의
-          두 칸, NEEDS 카드의 걱정/해결과 같은 짝이다. 파트너 몫은 예전에
-          회색(bg-gray-100)이었는데, 지면이 이미 흰색이라 회색 판이 "덜
-          중요한 칸"처럼 가라앉아 보였다. 흰 칸 + 실선 테두리로 바꾸면
-          두 단계가 같은 격으로 서고, 남색과의 대비도 그대로 남는다
-          (이 지면의 카드들이 이미 쓰는 꼴이다 — border-gray-200 bg-white). */}
-      <Reveal delay={100}>
-        <ol
-          className={cn(
-            "mt-10 grid gap-5 rounded-2xl px-5 py-7 sm:grid-cols-2 sm:gap-7 sm:px-10 sm:py-9 lg:mt-12 lg:grid-cols-5 lg:gap-6 lg:px-12 lg:py-12",
-            isDiverz
-              ? SOLUTION_BG
-              : "border border-gray-200 bg-white shadow-[0_24px_50px_-34px_rgb(10_21_38/0.25)]",
-          )}
-        >
-          {items.map((item, i) => (
-            <li
-              key={item}
-              className="relative flex items-center gap-3.5 lg:flex-col lg:items-stretch lg:gap-4"
-            >
-              {/* 다음 번호로 잇는 선. 배지 한가운데(top-[22px]) 높이에서
-                  배지 오른쪽 끝(left-14)부터 칸 끝을 지나 다음 칸 배지까지
-                  긋는다 — 칸 사이 간격(lg:gap-6 = 24px)만큼 -right 로
-                  넘겨야 선이 끊기지 않는다. */}
-              {i !== items.length - 1 && (
+      <div
+        /* 파트너 몫 띠는 라이트 그레이다. 예전에는 팔레트의 수면색
+           (bg-surface — #eef2f7)이었는데, 푸른기가 남아 있어 아래 남색
+           띠(SOLUTION_BG)와 같은 계열의 옅은 버전처럼 보였다. 두 띠가
+           "같은 색의 진하기 차이"가 아니라 "다른 담당"으로 읽혀야 해서
+           중립 회색으로 내린다. 밝기(L≈95%)는 그대로 둬서 흰 지면과의
+           경계 세기는 달라지지 않는다. */
+        className={cn(
+          "bleed-x py-16 sm:py-20 lg:py-24",
+          isDiverz ? SOLUTION_BG : "bg-[#f2f2f3]",
+        )}
+      >
+        {/* 안쪽은 다시 page-container 로 감싸 읽는 폭을 지면과 맞춘다. */}
+        <div className="page-container">
+          <div className="max-w-3xl">
+            <Reveal>
+              <div className="flex flex-wrap items-center gap-3">
                 <span
-                  aria-hidden
                   className={cn(
-                    "absolute top-[22px] right-[-1.5rem] left-14 hidden h-px lg:block",
-                    isDiverz ? "bg-white/15" : "bg-abyss/10",
+                    "rounded-full px-3.5 py-1.5 font-display text-xs font-bold tracking-[0.2em]",
+                    isDiverz ? "bg-white text-abyss" : "bg-abyss text-white",
                   )}
-                />
-              )}
-              <span
-                className={cn(
-                  /* 남색 판 위에서는 흰 원에 테두리를 두르지 않는다 —
-                     바탕이 어두워 흰 면 자체가 이미 또렷하고, 거기에 선까지
-                     얹으면 배지가 두 겹으로 읽힌다. 글자는 #acd4ff 가 아니라
-                     abyss 로 뒤집는다(그 하늘색은 남색 위에서 쓰라고 고른
-                     색이라 흰 바탕에서는 대비가 안 난다).
-                     회색 판 쪽은 흰 원과 바탕이 가까워 테두리를 남긴다. */
-                  "relative z-10 flex size-9 shrink-0 items-center justify-center rounded-full font-display text-[0.75rem] font-bold tabular-nums lg:size-11 lg:text-[0.8rem]",
-                  isDiverz
-                    ? "bg-white text-abyss"
-                    : "bg-white text-accent ring-1 ring-abyss/15",
-                )}
+                >
+                  {no}
+                </span>
+                <span
+                  className={cn(
+                    "rounded-full border px-3.5 py-1.5 text-sm font-bold tracking-tight",
+                    isDiverz
+                      ? "border-white/40 text-white"
+                      : "border-accent/40 text-accent",
+                  )}
+                >
+                  {owner}
+                </span>
+              </div>
+            </Reveal>
+            <Reveal delay={60}>
+              {/* cn(twMerge) 금지 — text-fluid-* 는 twMerge 가 아는 크기
+                  값이 아니라 글자색 그룹으로 묶여, 같은 호출 안의 text-white /
+                  text-foreground 에 지워진다(components/page-hero.tsx 에 같은
+                  주석이 있다). 아래 본문·공정 글자도 같은 이유로 템플릿 문자열. */}
+              <h4
+                className={`mt-5 font-display text-fluid-2xl font-bold tracking-tight break-keep ${
+                  isDiverz ? "text-white" : "text-foreground"
+                }`}
               >
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <span
-                className={cn(
-                  "text-fluid-base leading-[1.45] font-semibold break-keep",
-                  isDiverz ? "text-white/90" : "text-foreground/85",
-                )}
+                {name}
+              </h4>
+            </Reveal>
+            <Reveal delay={80}>
+              <p
+                className={`mt-4 text-fluid-base leading-[1.9] tracking-[-0.03em] break-keep ${
+                  isDiverz ? "text-white/70" : "text-foreground/80"
+                }`}
               >
-                {item}
-              </span>
-            </li>
-          ))}
-        </ol>
-      </Reveal>
+                {body}
+              </p>
+            </Reveal>
+          </div>
+
+          {/* 담당 업무는 순서다 — 입점 → 상품 등록 → 주문/재고 → 물류/통관 →
+              정산/CS 로 이어진다. 그래서 항목을 늘어놓지 않고 공정으로 세운다.
+              넓은 화면에서는 다섯 칸을 가로로 눕히고 번호와 번호를 실선으로
+              잇는다.
+
+              좁은 화면(lg 미만)에서는 세로로 접힌다 — 다섯 칸을 억지로 가로로
+              두면 "정산 / 현지 CS 지원" 같은 긴 항목이 서너 줄로 접힌다.
+              그때는 선을 긋지 않는다(가로선이 세로 배치에서 어긋난다).
+              접힌 판형에서는 번호와 글을 한 줄에 나란히 둔다.
+
+              상자를 두르지 않는다 — 바깥 띠가 이미 담당 색을 지고 있어서,
+              그 안에 또 판을 깔면 같은 말이 두 겹이 되고 띠가 액자처럼
+              보인다. */}
+          <Reveal delay={100}>
+            <ol className="mt-10 grid gap-5 sm:grid-cols-2 sm:gap-7 lg:mt-12 lg:grid-cols-5 lg:gap-6">
+              {items.map((item, i) => (
+                <li
+                  key={item}
+                  className="relative flex items-center gap-3.5 lg:flex-col lg:items-stretch lg:gap-4"
+                >
+                  {/* 다음 번호로 잇는 선. 배지 한가운데(top-[22px]) 높이에서
+                      배지 오른쪽 끝(left-14)부터 칸 끝을 지나 다음 칸 배지까지
+                      긋는다 — 칸 사이 간격(lg:gap-6 = 24px)만큼 -right 로
+                      넘겨야 선이 끊기지 않는다. */}
+                  {i !== items.length - 1 && (
+                    <span
+                      aria-hidden
+                      className={cn(
+                        "absolute top-[22px] right-[-1.5rem] left-14 hidden h-px lg:block",
+                        isDiverz ? "bg-white/25" : "bg-abyss/15",
+                      )}
+                    />
+                  )}
+                  <span
+                    className={cn(
+                      /* 번호 구슬은 두 띠 모두 흰 원이다. 남색 위에서는
+                         테두리를 두르지 않는다 — 바탕이 어두워 흰 면 자체가
+                         이미 또렷하고, 선까지 얹으면 배지가 두 겹으로 읽힌다.
+                         회색 띠 쪽은 흰 원과 바탕이 가까워 테두리를 남긴다. */
+                      "relative z-10 flex size-9 shrink-0 items-center justify-center rounded-full font-display text-[0.75rem] font-bold tabular-nums lg:size-11 lg:text-[0.8rem]",
+                      isDiverz
+                        ? "bg-white text-abyss"
+                        : "bg-white text-accent ring-1 ring-abyss/15",
+                    )}
+                  >
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span
+                    className={`text-fluid-base leading-[1.45] font-semibold break-keep ${
+                      isDiverz ? "text-white/90" : "text-foreground/85"
+                    }`}
+                  >
+                    {item}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </Reveal>
+        </div>
+      </div>
     </div>
   );
 }

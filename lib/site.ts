@@ -6,10 +6,8 @@
 export const company = {
   name: "주식회사 다이버즈",
   nameEn: "DIVERZ",
-  ceo: "전재민",
-  /** 푸터에서 대표자 옆에 나란히 서는 영상 프로덕션 총괄.
-   *  WORK 지면 영상 제작 탭의 크레딧(Main PD.)과 같은 사람이다. */
-  production: "최원식",
+  /** 공동 대표. 푸터에 이 순서 그대로 나란히 선다. */
+  ceo: "전재민, 최원식",
   bizNumber: "174-88-03266",
   address: "경기도 고양시 일산동구 백마로 195, 5007호",
   email: "info@diverz.kr",

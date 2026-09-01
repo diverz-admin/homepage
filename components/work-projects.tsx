@@ -252,26 +252,25 @@ export default function WorkProjects() {
             className="hidden h-px flex-1 bg-gradient-to-r from-accent/35 to-transparent sm:block"
           />
 
-          {/* 영상 갈래를 이끄는 사람. 탭 줄의 오른쪽 끝, 헤어라인이 끝나는
-              자리에 작게 앉힌다 — 격자 위에 따로 한 줄을 내주면 작업물보다
-              크레딧이 먼저 읽힌다. 다른 갈래에는 붙지 않는다. */}
+          {/* 영상 갈래를 이끄는 사람. 넓은 화면에서는 탭 줄의 오른쪽 끝,
+              헤어라인이 끝나는 자리에 앉힌다. 다른 갈래에는 붙지 않는다. */}
           {tab === "video" && (
             <p className="hidden font-display text-xs font-bold tracking-[0.18em] whitespace-nowrap text-white/45 sm:block">
               Main PD. CHOI WON SIK
             </p>
           )}
         </div>
-
-        {/* 좁은 화면에서는 탭이 두 줄로 접히며 헤어라인이 사라진다 —
-            크레딧을 그 줄에 같이 두면 탭을 밀어내므로 아래로 내리고,
-            거기서는 가운데로 세운다(넓은 화면의 오른쪽 끝과 달리, 밑에
-            깔린 줄을 왼쪽에 붙이면 탭 알약에 딸린 꼬리처럼 읽힌다). */}
-        {tab === "video" && (
-          <p className="mt-5 text-center font-display text-xs font-bold tracking-[0.18em] text-white/45 sm:hidden">
-            Main PD. CHOI WON SIK
-          </p>
-        )}
       </div>
+
+      {/* 좁은 화면 전용. 거기서는 탭이 두 줄로 접히며 헤어라인이 사라져
+          위 줄에 크레딧을 같이 둘 자리가 없다 — 격자 바로 위로 내린다.
+          정렬은 넓은 화면과 같은 오른쪽이다. 아래 여백을 좁게 잡아 첫
+          썸네일에 붙인다. */}
+      {tab === "video" && (
+        <p className="page-container pb-4 text-right font-display text-xs font-bold tracking-[0.18em] text-white/45 sm:hidden">
+          Main PD. CHOI WON SIK
+        </p>
+      )}
 
       {projects.length === 0 ? (
         /* 아직 작업물이 없는 갈래. 빈 화면을 그대로 두면 지면이 고장 난

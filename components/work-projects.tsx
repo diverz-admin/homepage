@@ -263,9 +263,11 @@ export default function WorkProjects() {
         </div>
 
         {/* 좁은 화면에서는 탭이 두 줄로 접히며 헤어라인이 사라진다 —
-            크레딧을 그 줄에 같이 두면 탭을 밀어내므로 아래로 내린다. */}
+            크레딧을 그 줄에 같이 두면 탭을 밀어내므로 아래로 내리고,
+            거기서는 가운데로 세운다(넓은 화면의 오른쪽 끝과 달리, 밑에
+            깔린 줄을 왼쪽에 붙이면 탭 알약에 딸린 꼬리처럼 읽힌다). */}
         {tab === "video" && (
-          <p className="mt-5 font-display text-xs font-bold tracking-[0.18em] text-white/45 sm:hidden">
+          <p className="mt-5 text-center font-display text-xs font-bold tracking-[0.18em] text-white/45 sm:hidden">
             Main PD. CHOI WON SIK
           </p>
         )}

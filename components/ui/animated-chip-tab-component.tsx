@@ -24,6 +24,17 @@ type ChipTabsProps = {
    * 한 화면에 이 컴포넌트가 둘 이상이면 서로 알약을 주고받으므로 다르게 준다.
    */
   layoutId?: string;
+  /**
+   * 이 탭이 놓인 바닥의 밝기.
+   *
+   * "light"(기본) — 흰 지면(.on-light)용. 알약은 남색 그라디언트에 흰 글자다.
+   * "dark" — 어두운 지면(WORK 등)용. 남색 알약은 어두운 바탕에 묻혀
+   *   "지금 이 탭"이 안 읽히므로, 지면에서 가장 밝은 값(#acd4ff)을 통째로
+   *   채우고 글자를 뒤집는다. 안 눌린 탭도 흰색을 옅게 깔아 둔다 —
+   *   text-foreground 는 어두운 지면에서 이미 밝지만, 알약과의 대비를
+   *   확실히 벌리려면 한 단계 더 눌러야 한다.
+   */
+  tone?: "light" | "dark";
   className?: string;
 };
 
@@ -47,6 +58,7 @@ export function ChipTabs({
   selected,
   onSelect,
   layoutId = "chip-tab-pill",
+  tone = "light",
   className,
 }: ChipTabsProps) {
   const [uncontrolled, setUncontrolled] = useState(tabs[0]?.id);
@@ -60,7 +72,7 @@ export function ChipTabs({
     <div
       className={cn(
         "mx-auto flex w-fit flex-wrap items-center gap-1 p-1.5",
-        className
+        className,
       )}
     >
       {tabs.map((tab) => {
@@ -75,8 +87,14 @@ export function ChipTabs({
             // 트랙과 알약이 같은 반경이어야 알약이 트랙에 꼭 맞는 조각으로
             // 보인다(예전엔 버튼 rounded-lg, 알약 rounded-md로 서로 달랐다).
             "relative rounded-full px-5 py-2.5 text-sm font-bold tracking-[-0.02em] transition-colors sm:text-base",
-            // 활성 탭은 알약 위라 흰색을 유지해야 대비가 나온다.
-            isActive ? "text-white" : "text-foreground/60 hover:text-foreground"
+            // 활성 탭은 알약 위 글자다 — 알약 색에 맞춰 뒤집는다.
+            isActive
+              ? tone === "dark"
+                ? "text-abyss"
+                : "text-white"
+              : tone === "dark"
+                ? "text-white/55 hover:text-white"
+                : "text-foreground/60 hover:text-foreground",
           ),
         };
 
@@ -91,7 +109,12 @@ export function ChipTabs({
                     ? { duration: 0 }
                     : { type: "spring", duration: 0.5 }
                 }
-                className="absolute inset-0 z-0 rounded-full bg-gradient-to-r from-deep to-mid"
+                className={cn(
+                  "absolute inset-0 z-0 rounded-full",
+                  tone === "dark"
+                    ? "bg-[#acd4ff]"
+                    : "bg-gradient-to-r from-deep to-mid",
+                )}
               />
             )}
           </>

@@ -89,6 +89,10 @@ export default function SiteFooter() {
                 <span aria-hidden className="text-white/20">
                   |
                 </span>
+                <span>프로덕션 : {company.production}</span>
+                <span aria-hidden className="text-white/20">
+                  |
+                </span>
                 <span>사업자등록번호 : {company.bizNumber}</span>
               </p>
               <p className="mt-3 text-white/45">

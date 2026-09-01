@@ -7,6 +7,9 @@ export const company = {
   name: "주식회사 다이버즈",
   nameEn: "DIVERZ",
   ceo: "전재민",
+  /** 푸터에서 대표자 옆에 나란히 서는 영상 프로덕션 총괄.
+   *  WORK 지면 영상 제작 탭의 크레딧(Main PD.)과 같은 사람이다. */
+  production: "최원식",
   bizNumber: "174-88-03266",
   address: "경기도 고양시 일산동구 백마로 195, 5007호",
   email: "info@diverz.kr",
@@ -71,7 +74,12 @@ export const nav: readonly NavItem[] = [
 export const stats = [
   { label: "재계약률", value: 90, suffix: "%+", note: "다시 찾는 파트너" },
   { label: "누적 클라이언트", value: 300, suffix: "+", note: "함께한 브랜드" },
-  { label: "누적 프로젝트", value: 5000, suffix: "+", note: "다양한 업종 경험" },
+  {
+    label: "누적 프로젝트",
+    value: 5000,
+    suffix: "+",
+    note: "다양한 업종 경험",
+  },
 ] as const;
 
 /** WHO WE ARE — 5단계 프로세스 */
@@ -687,6 +695,504 @@ export const performanceChannels = [
   { name: "Instagram", src: "/images/performance/instagram.png" },
   { name: "YouTube", src: "/images/performance/youtube.png" },
   { name: "Google Analytics", src: "/images/performance/google-analytics.png" },
+] as const;
+
+/**
+ * WORK 지면의 포트폴리오.
+ *
+ * 격자에는 프로젝트마다 대표 컷(thumb) 한 장만 선다. 누르면 그 편의 컷
+ * 전체(shots)가 모달에 세로로 이어 뜬다(components/work-projects.tsx).
+ * thumb 은 shots 에 넣지 않는다 — 격자에서 이미 본 컷을 모달 첫 장에서
+ * 또 만나면 다음 장이 없는 것처럼 읽힌다.
+ *
+ * 컷 이미지는 모두 같은 가로세로(약 1.91:1 — 영상 프레임 그대로)로 맞춰
+ * 넣었다. 격자도 모달도 그 비율 상자에 object-cover 로 앉히므로, 비율이
+ * 다른 그림을 넣으면 좌우가 잘린다. 넣기 전에 같은 비율로 자른다.
+ *
+ * /public 파일은 이름에 해시가 붙지 않는다 — 같은 이름으로 그림만 갈아
+ * 끼우면 캐시가 옛 그림을 계속 물고 있으므로, 컷을 교체할 때는 파일명도
+ * 함께 바꾼다.
+ */
+export const workProjects = [
+  {
+    id: "usimsa",
+    /* 브랜드명은 컷 안에 로고 없이 마지막 타이틀 문구에만 나온다 —
+       "요즘 유심사는 법"에서 파랗게 켜지는 "유심사"가 그 자리다.
+       광고주 표기가 확인되면 여기만 고치면 된다. */
+    client: "유심사",
+    title: "요즘 유심사는 법",
+    role: "브랜드 캠페인 영상",
+    thumb: "/images/work/usimsa/usimsa-thumb.jpg",
+    thumbAlt: '유심사 캠페인 영상 — 모델 클로즈업과 "세상에 그런 법이" 자막',
+    shots: [
+      {
+        src: "/images/work/usimsa/usimsa-01.jpg",
+        alt: '유심사 캠페인 영상 — 노을 진 공항 라운지에서 휴대폰을 보는 모델, "세상에 그런 법이 어딨냐고?" 자막',
+      },
+      {
+        src: "/images/work/usimsa/usimsa-02.jpg",
+        alt: '유심사 캠페인 영상 — 밤 도심 횡단보도에 선 모델, "낯선 길에선" 자막',
+      },
+      {
+        src: "/images/work/usimsa/usimsa-03.jpg",
+        alt: '유심사 캠페인 영상 — 휴대폰 위로 떠오른 사진 피드 화면, "담고 싶은 순간에" 자막',
+      },
+      {
+        src: "/images/work/usimsa/usimsa-04.jpg",
+        alt: '유심사 캠페인 영상 — 여행 기록을 콜라주로 이어 붙인 화면과 "공유를 켜는" 자막',
+      },
+      {
+        src: "/images/work/usimsa/usimsa-05.jpg",
+        alt: '유심사 캠페인 영상 — 방 안에 앉은 모델과 "요즘 유심사는 법" 타이틀',
+      },
+    ],
+  },
+  {
+    id: "shoppingnt",
+    client: "쇼핑엔티",
+    title: "쇼핑은 티나게",
+    /** 타일에 겹쳐 뜨는 한 줄 — 무엇을 한 일인지. */
+    role: "브랜드 캠페인 영상",
+    /** 격자에 서는 대표 컷 — 브랜드가 가장 또렷하게 읽히는 마지막 장면. */
+    thumb: "/images/work/shoppingnt/shoppingnt-thumb-v2.jpg",
+    thumbAlt: "쇼핑엔티 캠페인 영상 — 모델 클로즈업과 쇼핑엔티 로고",
+    /* 자막 없는 두 컷(안경 클로즈업 · 소파)을 맨 앞에 둔다 — 모달을 열자마자
+       보이는 자리라, 글자가 얹히지 않은 장면이 먼저 서야 그림이 읽힌다. */
+    shots: [
+      {
+        src: "/images/work/shoppingnt/shoppingnt-glasses.jpg",
+        alt: "쇼핑엔티 캠페인 영상 — 안경을 고쳐 쓰며 카메라를 바라보는 모델 클로즈업",
+      },
+      {
+        src: "/images/work/shoppingnt/shoppingnt-sofa.jpg",
+        alt: "쇼핑엔티 캠페인 영상 — 거실 소파에 앉아 휴대폰을 보며 웃는 모델",
+      },
+      {
+        src: "/images/work/shoppingnt/shoppingnt-01.jpg",
+        alt: '쇼핑엔티 캠페인 영상 — 벽돌 건물 앞에 선 모델, "스타일 티나게" 자막',
+      },
+      {
+        src: "/images/work/shoppingnt/shoppingnt-02.jpg",
+        alt: "쇼핑엔티 캠페인 영상 — 앱 구매 고객 적립금 이벤트 화면과 함께 선 모델",
+      },
+      {
+        src: "/images/work/shoppingnt/shoppingnt-03.jpg",
+        alt: '쇼핑엔티 캠페인 영상 — 택배 상자를 들고 문을 나서는 모델, "쇼핑은 티나게" 자막',
+      },
+    ],
+  },
+  {
+    id: "antinol",
+    client: "안티놀 래피드",
+    title: "설채현이 선택한 안티놀 래피드",
+    role: "브랜드 캠페인 영상",
+    thumb: "/images/work/antinol/antinol-thumb.jpg",
+    thumbAlt:
+      '안티놀 래피드 캠페인 영상 — 스튜디오 세트에 앉은 수의사와 반려견, "안티놀 래피드!" 자막',
+    shots: [
+      {
+        src: "/images/work/antinol/antinol-package.jpg",
+        alt: '안티놀 래피드 캠페인 영상 — 제품 패키지 클로즈업과 "전 세계 동물병원에서 수의사가 처방하는" 자막',
+      },
+      {
+        src: "/images/work/antinol/antinol-research.jpg",
+        alt: '안티놀 래피드 캠페인 영상 — 클립보드를 든 수의사 측면과 "1997년부터 총 87편의 논문 발표, 다양한 연구 논문분야" 자막',
+      },
+      {
+        src: "/images/work/antinol/antinol-01.jpg",
+        alt: "안티놀 래피드 캠페인 영상 — 관절/피부/심혈관 연구 수치가 적힌 클립보드를 살펴보는 장면",
+      },
+      {
+        src: "/images/work/antinol/antinol-02.jpg",
+        alt: '안티놀 래피드 캠페인 영상 — 반려견을 안고 앉은 수의사, "91종 이상의 천연성분이 캡슐 하나에" 자막',
+      },
+      {
+        src: "/images/work/antinol/antinol-03.jpg",
+        alt: '안티놀 래피드 캠페인 영상 — 수의사 클로즈업과 "설채현이 선택한 안티놀 래피드" 자막',
+      },
+    ],
+  },
+  {
+    id: "s10-maxv-ultra",
+    /* 브랜드명은 넘겨받은 컷 안에 제품명(로봇청소기 S10 MaxV Ultra)만
+       찍혀 있어서 그대로 뒀다. 광고주 이름이 확인되면 여기만 고치면 된다. */
+    client: "S10 MaxV Ultra",
+    title: "둘이라서 가능한 완벽한 조합",
+    role: "브랜드 캠페인 영상",
+    thumb: "/images/work/s10-maxv-ultra/s10-thumb.jpg",
+    thumbAlt:
+      'S10 MaxV Ultra 캠페인 영상 — 로봇청소기와 무선청소기를 두고 선 두 사람, "둘이라서 가능한 완벽한 조합" 자막',
+    /* 이야기가 시작되는 밤 거실 컷(s10-03)을 맨 앞에 세우고, 침실 두 컷을
+       그 뒤에 붙인다 — 두 사람이 티격태격하는 대목이 먼저 와야 뒤의 제품
+       설명 컷(01/02)이 그 답으로 읽힌다. */
+    shots: [
+      {
+        src: "/images/work/s10-maxv-ultra/s10-03.jpg",
+        alt: 'S10 MaxV Ultra 캠페인 영상 — 밤 거실에서 대화하는 두 사람, "너 이거 카펫은 어쩌려고!" 자막',
+      },
+      {
+        src: "/images/work/s10-maxv-ultra/s10-turn.jpg",
+        alt: 'S10 MaxV Ultra 캠페인 영상 — 침실에서 무선청소기를 건네는 두 사람, "네 차례잖아~" 자막',
+      },
+      {
+        src: "/images/work/s10-maxv-ultra/s10-combo.jpg",
+        alt: 'S10 MaxV Ultra 캠페인 영상 — 침실에서 청소기를 주고받는 두 사람, "이 조합, 이대로 괜찮을까?" 자막',
+      },
+      {
+        src: "/images/work/s10-maxv-ultra/s10-01.jpg",
+        alt: 'S10 MaxV Ultra 캠페인 영상 — 바닥 얼룩을 닦으며 지나가는 로봇청소기, "강화된 압력으로 어떤 얼룩도 남김없이" 자막',
+      },
+      {
+        src: "/images/work/s10-maxv-ultra/s10-02.jpg",
+        alt: 'S10 MaxV Ultra 캠페인 영상 — 주방과 거실에서 각자 청소하는 두 사람, "둘이라서 가능한 완벽한 조합" 자막',
+      },
+    ],
+  },
+  {
+    id: "shinhan",
+    client: "신한투자증권",
+    /* 프로그램 이름은 마지막 타이틀 컷(shinhan-05)에 찍힌 그대로다. */
+    title: "하룻밤 소개팅",
+    role: "브랜디드 콘텐츠 영상",
+    thumb: "/images/work/shinhan/shinhan-thumb.jpg",
+    thumbAlt:
+      '신한투자증권 브랜디드 콘텐츠 — 촬영 장소인 주택의 정원 전경과 "Presented by 신한투자증권" 자막',
+    shots: [
+      {
+        src: "/images/work/shinhan/shinhan-01.jpg",
+        alt: "신한투자증권 브랜디드 콘텐츠 — 식탁에 마주 앉아 대화하는 두 출연자",
+      },
+      {
+        src: "/images/work/shinhan/shinhan-02.jpg",
+        alt: "신한투자증권 브랜디드 콘텐츠 — 거실에서 웃으며 이야기하는 출연자 클로즈업",
+      },
+      {
+        src: "/images/work/shinhan/shinhan-03.jpg",
+        alt: '신한투자증권 브랜디드 콘텐츠 — 테라스에서 내려다본 마을 풍경과 "1:1 데이트 종료, 처음으로 마주하는 네 사람" 자막',
+      },
+      {
+        src: "/images/work/shinhan/shinhan-04.jpg",
+        alt: "신한투자증권 브랜디드 콘텐츠 — 침실에서 인터뷰하는 출연자",
+      },
+      {
+        src: "/images/work/shinhan/shinhan-05.jpg",
+        alt: '신한투자증권 브랜디드 콘텐츠 — 프로그램 타이틀 "하룻밤 소개팅, 누구에게 투자할까요"',
+      },
+    ],
+  },
+  {
+    id: "huggies",
+    client: "유한킴벌리 하기스",
+    title: "그린플레이",
+    role: "브랜드 캠페인 영상",
+    thumb: "/images/work/huggies/huggies-thumb.jpg",
+    thumbAlt:
+      '하기스 그린플레이 캠페인 영상 — 텐트 앞에 앉은 엄마와 아기, 숲 놀이 사진과 습관보드가 함께 걸린 화면, "지금부터 시작하자" 자막',
+    shots: [
+      {
+        src: "/images/work/huggies/huggies-bunny.jpg",
+        alt: "하기스 그린플레이 캠페인 영상 — 나비와 토끼를 바라보는 아기",
+      },
+      {
+        src: "/images/work/huggies/huggies-nature.jpg",
+        alt: '하기스 그린플레이 캠페인 영상 — 나뭇잎 머리띠를 쓰고 노는 아이, "자연을 사랑하는 마음을 키워주자" 자막',
+      },
+      {
+        src: "/images/work/huggies/huggies-play.jpg",
+        alt: '하기스 그린플레이 캠페인 영상 — 거실에서 아기와 인형놀이를 하는 엄마, "우리의 모든 것을 따라하는 아기에겐" 자막',
+      },
+      {
+        src: "/images/work/huggies/huggies-board.jpg",
+        alt: "하기스 그린플레이 캠페인 영상 — 벽에 붙인 그린플레이 습관보드와 실천 스티커",
+      },
+      {
+        src: "/images/work/huggies/huggies-together.jpg",
+        alt: '하기스 그린플레이 캠페인 영상 — 거실 소파에서 함께 있는 엄마와 두 아이, "함께라면 어렵지 않은" 자막',
+      },
+    ],
+  },
+  {
+    id: "lg-uplus",
+    client: "LG U+",
+    title: "듀얼넘버 ON/OFF",
+    role: "브랜드 캠페인 영상",
+    thumb: "/images/work/lg-uplus/lgu-thumb.jpg",
+    thumbAlt:
+      '듀얼넘버 캠페인 영상 — 카메라를 바라보는 인물과 "택배 운송장에는 듀얼넘버 OFF" 자막',
+    shots: [
+      {
+        src: "/images/work/lg-uplus/lgu-monday.jpg",
+        alt: '듀얼넘버 캠페인 영상 — 이른 아침 택배 상자를 안고 나서는 인물, "06:40 AM MONDAY" 자막',
+      },
+      {
+        src: "/images/work/lg-uplus/lgu-onoff.jpg",
+        alt: '듀얼넘버 캠페인 영상 — 계단을 오르며 휴대폰을 보는 인물과 "듀얼넘버 ON OFF" 로고',
+      },
+      {
+        src: "/images/work/lg-uplus/lgu-sunday.jpg",
+        alt: '듀얼넘버 캠페인 영상 — 휴대폰을 밀어 두는 손과 휴일을 보내는 인물을 나란히 놓은 화면, "14:00 SUNDAY" 자막',
+      },
+      {
+        src: "/images/work/lg-uplus/lgu-weekend.jpg",
+        alt: '듀얼넘버 캠페인 영상 — 헤드폰을 낀 인물 클로즈업과 "주말에도 계속되는 업무연락, 좀 쉬자구요" 자막',
+      },
+      {
+        src: "/images/work/lg-uplus/lgu-triptych.jpg",
+        alt: '듀얼넘버 캠페인 영상 — 세 인물의 장면을 가로로 나눠 붙인 화면과 "번호 하나로 부족하시죠?" 자막',
+      },
+    ],
+  },
+  {
+    id: "titleist",
+    /* 브랜드는 컷 안의 모자/깃발/캐디백에 찍힌 타이틀리스트를 따랐다.
+       제목은 마지막 타이틀 컷(titleist-05)에 손글씨로 적힌 그대로다. */
+    client: "타이틀리스트",
+    title: "웨지 로프트 갭 선택 방법은?",
+    role: "브랜디드 콘텐츠 영상",
+    thumb: "/images/work/titleist/titleist-thumb.jpg",
+    thumbAlt:
+      "타이틀리스트 브랜디드 콘텐츠 — 이시우 프로 소개 자막이 얹힌 필드 인터뷰 화면",
+    shots: [
+      {
+        src: "/images/work/titleist/titleist-01.jpg",
+        alt: '타이틀리스트 브랜디드 콘텐츠 — 웨지를 살펴보며 이야기하는 두 사람, "미들 바운스와 하이 바운스의 차이를 느껴 보시죠" 자막',
+      },
+      {
+        src: "/images/work/titleist/titleist-02.jpg",
+        alt: '타이틀리스트 브랜디드 콘텐츠 — 필드에서 웨지 샷을 마친 뒷모습, "100m : SM9 50도 12 바운스 F 그라인드" 자막',
+      },
+      {
+        src: "/images/work/titleist/titleist-03.jpg",
+        alt: "타이틀리스트 브랜디드 콘텐츠 — 그린을 앞에 두고 어프로치를 준비하는 장면",
+      },
+      {
+        src: "/images/work/titleist/titleist-04.jpg",
+        alt: '타이틀리스트 브랜디드 콘텐츠 — 필드 인터뷰 장면, "잔디에 나와가지고 이렇게 직접 테스트를 해보니까" 자막',
+      },
+      {
+        src: "/images/work/titleist/titleist-05.jpg",
+        alt: '타이틀리스트 브랜디드 콘텐츠 — "웨지 로프트 갭 선택 방법은?" 손글씨 타이틀이 얹힌 인물 컷',
+      },
+    ],
+  },
+  {
+    id: "ping-g430",
+    client: "PING",
+    title: "핑 G430 챌린지",
+    role: "브랜디드 콘텐츠 영상",
+    thumb: "/images/work/ping-g430/ping-thumb.jpg",
+    thumbAlt: "핑 G430 챌린지 타이틀 화면",
+    shots: [
+      {
+        src: "/images/work/ping-g430/ping-driver.jpg",
+        alt: 'G430 드라이버 헤드 클로즈업과 "비거리, 관용성 UP" 자막',
+      },
+      {
+        src: "/images/work/ping-g430/ping-hosts.jpg",
+        alt: "핑 G430 챌린지 — 진행자 두 사람이 규칙을 설명하는 장면",
+      },
+      {
+        src: "/images/work/ping-g430/ping-lineup.jpg",
+        alt: "핑 G430 챌린지 — 양 팀 출전 선수를 소개하는 화면",
+      },
+      {
+        src: "/images/work/ping-g430/ping-longest.jpg",
+        alt: '핑 G430 챌린지 — 출연진이 모두 앉은 스튜디오, "첫 번째 대결! 롱기스트 챌린지" 자막',
+      },
+      {
+        src: "/images/work/ping-g430/ping-event.jpg",
+        alt: "핑 G430 챌린지 — 시청자 이벤트를 안내하며 박수치는 출연진",
+      },
+    ],
+  },
+  {
+    id: "beanpole-golf",
+    client: "빈폴골프",
+    title: "박성현 프로 일일 캐디 되다",
+    role: "브랜디드 콘텐츠 영상",
+    thumb: "/images/work/beanpole-golf/beanpole-thumb.jpg",
+    thumbAlt:
+      '빈폴골프 브랜디드 콘텐츠 — 스크린골프 스윙 장면과 코스 화면을 나란히 놓은 "Hole 1 / Par 5" 화면',
+    shots: [
+      {
+        src: "/images/work/beanpole-golf/beanpole-title.jpg",
+        alt: '빈폴골프 브랜디드 콘텐츠 타이틀 — "박성현 프로 일일 캐디 되다! feat. 스크린골프 with. 빈폴골프"',
+      },
+      {
+        src: "/images/work/beanpole-golf/beanpole-intro.jpg",
+        alt: '빈폴골프 브랜디드 콘텐츠 — 소파에 앉아 이야기하는 출연자와 "박성현 선수가 일일 캐디가 되어 소중한 노하우를 전수!" 자막',
+      },
+      {
+        src: "/images/work/beanpole-golf/beanpole-hole1.jpg",
+        alt: '빈폴골프 브랜디드 콘텐츠 — 어프로치 자세와 코스 화면을 나란히 놓은 "Hole 1 / Par 5" 장면',
+      },
+      {
+        src: "/images/work/beanpole-golf/beanpole-lesson.jpg",
+        alt: '빈폴골프 브랜디드 콘텐츠 — 스윙을 교정해 주는 장면과 "스윙 속도가 감속됐기 때문에 뒷땅을 치게 된다!" 자막',
+      },
+      {
+        src: "/images/work/beanpole-golf/beanpole-outro.jpg",
+        alt: '빈폴골프 브랜디드 콘텐츠 — 손을 흔드는 두 출연자와 "곧 이어, 2부 예고편이 나옵니다!" 자막',
+      },
+    ],
+  },
+  {
+    id: "footjoy",
+    client: "FootJoy",
+    title: "FJ INVITATIONAL Pro-Am",
+    role: "브랜드 이벤트 영상",
+    thumb: "/images/work/footjoy/footjoy-thumb.jpg",
+    thumbAlt: "FJ INVITATIONAL Pro-Am 타이틀 화면",
+    shots: [
+      {
+        src: "/images/work/footjoy/footjoy-players.jpg",
+        alt: "FJ INVITATIONAL — 대회장에 선 참가자 두 사람",
+      },
+      {
+        src: "/images/work/footjoy/footjoy-ongreen.jpg",
+        alt: '"그린을 노려라" 이벤트홀 — 룰렛 앞에서 티샷을 준비하는 참가자',
+      },
+      {
+        src: "/images/work/footjoy/footjoy-fairway.jpg",
+        alt: '"페어웨이를 지켜라" 이벤트홀 — 티샷하는 참가자',
+      },
+      {
+        src: "/images/work/footjoy/footjoy-dinner.jpg",
+        alt: "FJ INVITATIONAL — 코스 옆 야외 만찬장을 위에서 내려다본 전경",
+      },
+      {
+        src: "/images/work/footjoy/footjoy-interview.jpg",
+        alt: 'FJ INVITATIONAL — 캠코더 화면 연출로 담은 참가자 인터뷰, "안녕~!" 자막',
+      },
+    ],
+  },
+  {
+    id: "huayanxing",
+    /* 행사 이름은 무대 화면에 찍힌 그대로 — 국문 "화연싱", 한자 "花颜行",
+       영문 "Huayanxing K-Beauty Intelligence Summit". 국문 표기를 쓴다. */
+    client: "화연싱",
+    title: "제1회 K뷰티 인텔리전스 서밋",
+    role: "행사 스케치 영상",
+    thumb: "/images/work/huayanxing/huayanxing-thumb.jpg",
+    thumbAlt:
+      "화연싱 K뷰티 인텔리전스 서밋 — 분홍 무대 화면 앞에서 발표하는 연사와 객석",
+    shots: [
+      {
+        src: "/images/work/huayanxing/huayanxing-01.jpg",
+        alt: "화연싱 K뷰티 인텔리전스 서밋 — 분홍 무대 배경 앞에서 인터뷰하는 연사 클로즈업",
+      },
+      {
+        src: "/images/work/huayanxing/huayanxing-02.jpg",
+        alt: "화연싱 K뷰티 인텔리전스 서밋 — 목걸이 명찰을 건 참가자들이 앉아 있는 객석",
+      },
+      {
+        src: "/images/work/huayanxing/huayanxing-03.jpg",
+        alt: '화연싱 K뷰티 인텔리전스 서밋 — 연단에 선 진행자와 "VISION 제1회 화연싱 K뷰티 인텔리전스 서밋" 무대 화면',
+      },
+      {
+        src: "/images/work/huayanxing/huayanxing-04.jpg",
+        alt: '화연싱 K뷰티 인텔리전스 서밋 — 무대 위 발표자와 "지금 탄 분들만 모시고 로켓은 떠납니다" 화면 문구',
+      },
+      {
+        src: "/images/work/huayanxing/huayanxing-05.jpg",
+        alt: "화연싱 K뷰티 인텔리전스 서밋 — 중국 앱 화면 세 장을 띄운 무대와 객석 전경",
+      },
+    ],
+  },
+  {
+    id: "tiktok-pool-party",
+    client: "TikTok",
+    title: "Creator Summer Pool Party",
+    role: "브랜드 이벤트 영상",
+    thumb: "/images/work/tiktok-pool-party/tiktok-thumb.jpg",
+    thumbAlt:
+      'Creator Summer Pool Party 타이틀 화면 — 물결 배경 위 로고와 "내 방식대로, 재밌게" 슬로건',
+    shots: [
+      {
+        src: "/images/work/tiktok-pool-party/tiktok-venue.jpg",
+        alt: "Creator Summer Pool Party — 행사장 건물 외관에 얹은 타이틀",
+      },
+      {
+        src: "/images/work/tiktok-pool-party/tiktok-session.jpg",
+        alt: "Creator Summer Pool Party — 둘러앉은 참가자들 가운데서 게임을 이끄는 진행자",
+      },
+      {
+        src: "/images/work/tiktok-pool-party/tiktok-stage.jpg",
+        alt: "Creator Summer Pool Party — 야외 무대에서 공연하는 출연자들",
+      },
+      {
+        src: "/images/work/tiktok-pool-party/tiktok-watergun.jpg",
+        alt: "Creator Summer Pool Party — 물총 게임을 즐기는 참가자들",
+      },
+      {
+        src: "/images/work/tiktok-pool-party/tiktok-pool.jpg",
+        alt: "Creator Summer Pool Party — 조명이 켜진 수영장과 대형 TikTok 조형물",
+      },
+    ],
+  },
+  {
+    id: "pxg-hearing",
+    client: "PXG",
+    title: "PXG 청문회",
+    role: "브랜디드 콘텐츠 영상",
+    thumb: "/images/work/pxg-hearing/pxg-thumb.jpg",
+    thumbAlt: "PXG 청문회 타이틀 화면",
+    shots: [
+      {
+        src: "/images/work/pxg-hearing/pxg-panel.jpg",
+        alt: "PXG 청문회 — 청문회 형식으로 마주 앉은 출연진과 진행자",
+      },
+      {
+        src: "/images/work/pxg-hearing/pxg-guests.jpg",
+        alt: 'PXG 청문회 — 마이크 앞에서 이야기하는 출연자 두 사람, "역시 기자님이네~" 자막',
+      },
+      {
+        src: "/images/work/pxg-hearing/pxg-speakers.jpg",
+        alt: "PXG 청문회 — PXG 로고 벽 앞에 나란히 앉아 답하는 출연자 세 사람",
+      },
+      {
+        src: "/images/work/pxg-hearing/pxg-laugh.jpg",
+        alt: "PXG 청문회 — 웃음이 터진 청문회장 전경",
+      },
+      {
+        src: "/images/work/pxg-hearing/pxg-ball.jpg",
+        alt: 'PXG 청문회 — 티에 올린 골프공 클로즈업과 "PXG HAS THE ONE BALL" 자막',
+      },
+    ],
+  },
+] as const;
+
+/**
+ * WORK — 홈페이지 갈래(components/work-projects.tsx 의 "홈페이지" 탭).
+ *
+ * 생김새는 workProjects 와 같다(썸네일 한 장 + 모달에 이어 붙는 컷들). 다만
+ * 컷이 영상 프레임이 아니라 지면 캡처라 가로세로가 다르다 — 모달에서 쓰는
+ * 비율은 컴포넌트의 SITE_SHOT_ASPECT 다.
+ */
+export const workSites = [
+  {
+    id: "monocus",
+    client: "모노커스",
+    title: "프리미엄 커스텀 소파 브랜드 사이트",
+    role: "홈페이지 제작",
+    thumb: "/images/work/monocus/monocus-thumb.jpg",
+    thumbAlt:
+      "모노커스 홈페이지 — 창밖 호수가 보이는 거실에 놓인 검정 소파와 브랜드 로고가 얹힌 첫 화면",
+    shots: [
+      {
+        src: "/images/work/monocus/monocus-01.jpg",
+        alt: "모노커스 홈페이지 — 시그니처 소파를 가로로 넘겨 보는 제품 슬라이더",
+      },
+      {
+        src: "/images/work/monocus/monocus-02.jpg",
+        alt: '모노커스 홈페이지 — "Made for your space, Shaped by your taste." 브랜드 소개 지면',
+      },
+      {
+        src: "/images/work/monocus/monocus-03.jpg",
+        alt: '모노커스 홈페이지 — "일상이 머무는 자리에 깊은 편안함을" 브랜드 스토리 배너',
+      },
+    ],
+  },
 ] as const;
 
 /**
@@ -1550,8 +2056,6 @@ export const ecommerceMarketing = {
   },
 } as const;
 
-
-
 /**
  * CONTENTS — 영상 제작 지면(/service/contents) 하단에 붙는 세 묶음.
  *
@@ -1597,7 +2101,7 @@ export const contentsProduction = {
       {
         name: "종합 광고 영상",
         body: "기업, 공공기관 등에 필요한 브랜드 필름, TVCF, 사업/제품 광고 영상",
-        image: "/images/contents/ad-film.png",
+        image: "/images/contents/ad-film.jpg",
       },
       {
         name: "SNS 바이럴 콘텐츠",
@@ -1727,7 +2231,8 @@ export const recruit = {
 
   /** WHO WE WANT — 배너의 다섯 사람. */
   whoWeWant: {
-    title: "이런 사람과 함께 집요하게 파고들고\n브랜드의 성장을 만들고 싶습니다.",
+    title:
+      "이런 사람과 함께 집요하게 파고들고\n브랜드의 성장을 만들고 싶습니다.",
     /**
      * 다섯 사람.
      *

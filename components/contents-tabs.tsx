@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import ContentsProduction from "@/components/contents-production";
+import WorkLink from "@/components/work-link";
 import {
   ChipTabs,
   type ChipTab,
@@ -25,9 +26,11 @@ export default function ContentsTabs() {
   const [active, setActive] = useState(tabs[0].id);
 
   return (
-    /* 위 여백은 둔다 — 이 탭 위에는 상품 본문(제목 · 설명 · 알약)이 있어서,
-       벌리지 않으면 탭이 그 알약 줄에 딸린 것처럼 붙어 읽힌다. */
-    <div className="section-gap">
+    /* 위 여백(.section-gap)은 없다. 예전에는 이 탭 위에 콘텐츠 대제목
+       블록이 있어서 둘 사이를 벌려야 했는데, 그 블록이 빠지면서 이 탭이
+       지면의 첫 덩어리가 됐다 — 여기서 또 벌리면 상품 메뉴 띠와의 사이가
+       두 번 벌어진다. 글로벌 탭과 같다(components/global-marketing-tabs.tsx). */
+    <div>
       {/* 탭을 왼쪽으로 붙이고, 남는 폭은 헤어라인으로 마저 긋는다.
           선은 칸을 나누는 테두리가 아니라 "여기서부터 새 묶음"이라는 표시라
           오른쪽으로 갈수록 흐려져 사라진다.
@@ -49,10 +52,14 @@ export default function ContentsTabs() {
           layoutId="contents-tab-pill"
           className="mx-0 px-0"
         />
+        {/* 헤어라인은 알약과 WORK 버튼 사이를 잇는다 — 좁은 화면에서는
+            탭이 두 줄로 접히며 실오라기만 남으므로 감춘다. */}
         <span
           aria-hidden
           className="hidden h-px flex-1 bg-gradient-to-r from-accent/35 to-transparent sm:block"
         />
+        {/* 오른쪽 끝은 WORK 로 건너가는 자리 — components/work-link.tsx. */}
+        <WorkLink className="ml-auto sm:ml-0" />
       </div>
 
       {/* 회색 박스로 한 번 더 감싸지 않는다 — 패널이 그 자체로 이 페이지의

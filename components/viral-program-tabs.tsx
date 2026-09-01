@@ -5,6 +5,7 @@ import { useState } from "react";
 
 import RankingBoard from "@/components/ranking-board";
 import Reveal from "@/components/reveal";
+import WorkLink from "@/components/work-link";
 import {
   ChipTabs,
   type ChipTab,
@@ -213,10 +214,14 @@ export default function ViralProgramTabs({
           layoutId="viral-program-tab-pill"
           className="mx-0 px-0"
         />
+        {/* 헤어라인은 알약과 WORK 버튼 사이를 잇는다 — 좁은 화면에서는
+            탭이 두 줄로 접히며 실오라기만 남으므로 감춘다. */}
         <span
           aria-hidden
           className="hidden h-px flex-1 bg-gradient-to-r from-accent/35 to-transparent sm:block"
         />
+        {/* 오른쪽 끝은 WORK 로 건너가는 자리 — components/work-link.tsx. */}
+        <WorkLink className="ml-auto sm:ml-0" />
       </div>
 
       {/* 회색 박스로 한 번 더 감싸지 않는다 — 셋 다 그 자체로 이 페이지의

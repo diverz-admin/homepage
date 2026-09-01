@@ -4,7 +4,11 @@ import { useState } from "react";
 
 import EcommerceMarketing from "@/components/ecommerce-marketing";
 import HospitalMarketing from "@/components/hospital-marketing";
-import { ChipTabs, type ChipTab } from "@/components/ui/animated-chip-tab-component";
+import {
+  ChipTabs,
+  type ChipTab,
+} from "@/components/ui/animated-chip-tab-component";
+import WorkLink from "@/components/work-link";
 
 /**
  * 글로벌 마케팅 대제목 아래로 매달리는 두 상품을 탭으로 오간다.
@@ -56,10 +60,14 @@ export default function GlobalMarketingTabs() {
           layoutId="global-marketing-tab-pill"
           className="mx-0 px-0"
         />
+        {/* 헤어라인은 알약과 WORK 버튼 사이를 잇는다 — 좁은 화면에서는
+            탭이 두 줄로 접히며 실오라기만 남으므로 감춘다. */}
         <span
           aria-hidden
           className="hidden h-px flex-1 bg-gradient-to-r from-accent/35 to-transparent sm:block"
         />
+        {/* 오른쪽 끝은 WORK 로 건너가는 자리 — components/work-link.tsx. */}
+        <WorkLink className="ml-auto sm:ml-0" />
       </div>
 
       {/* 회색 박스로 한 번 더 감싸지 않는다 — HospitalMarketing은 그
@@ -69,7 +77,11 @@ export default function GlobalMarketingTabs() {
           그대로 얹어야 "박스가 아니라 페이지 전체가 이어진다"는 인상이
           난다. */}
       <div className="mt-14 sm:mt-16">
-        {active === "ecommerce" ? <EcommerceMarketing /> : <HospitalMarketing />}
+        {active === "ecommerce" ? (
+          <EcommerceMarketing />
+        ) : (
+          <HospitalMarketing />
+        )}
       </div>
     </div>
   );

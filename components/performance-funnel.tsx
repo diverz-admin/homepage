@@ -21,7 +21,16 @@ import { performanceFeatures, performanceFunnel } from "@/lib/site";
  */
 export default function PerformanceFunnel() {
   return (
-    <div className="section-gap">
+    /* .section-gap(112/152/176px) 대신 직접 잡는다 — 바로 위 상품 본문은
+       오른쪽 개념도가 왼쪽 글보다 훨씬 길어서, 그리드 행이 그림 높이에
+       맞춰지며 왼쪽 아래에 이미 빈 칸이 한참 남는다. 그 빈 칸이 사실상
+       여백 노릇을 하는 데다, 아래 띠도 자기 안쪽에 py-24~32 를 갖고 있어
+       지면 기본 리듬까지 얹으면 본문과 띠가 끊어져 보인다.
+       (콘텐츠 지면의 WHY DIVERZ 블록도 같은 이유로 같은 값을 쓴다 —
+       components/ui/feature-section-with-bento-grid.tsx)
+       globals.css 가 레이어 밖이라 .section-gap 을 같이 쓰면 mt-* 가 지므로
+       클래스를 아예 빼야 한다. */
+    <div className="mt-8 sm:mt-10 xl:mt-12">
       <div
         className="bleed-x py-24 sm:py-28 xl:py-32"
         style={{ backgroundImage: PROCESS_BAND_BG }}
@@ -53,16 +62,9 @@ export default function PerformanceFunnel() {
             <ul className="hidden gap-10 lg:grid lg:grid-cols-3 2xl:grid-cols-1 2xl:gap-7">
               {performanceFeatures.map((feature, i) => (
                 <Reveal as="li" key={feature.title} delay={i * 70}>
-                  {/* 머리 실선 — 셋을 가르는 유일한 경계다. 3열로 설 때는 세
-                실선이 한 줄로 이어져 칸의 윗변이 되고, 1열 레일로 접힐
-                때는 항목 사이 구분선이 된다. 카드나 테두리를 두르지 않는
-                이 지면의 문법(오른쪽 흐름 바도 선 하나로 서 있다)에서
-                실선 한 줄이 가장 조용한 경계다. */}
-                  <span
-                    aria-hidden
-                    className="block h-px w-full bg-gradient-to-r from-white/35 to-transparent"
-                  />
-                  <p className="mt-5 font-display text-[0.78rem] font-bold tracking-[0.2em] text-[#acd4ff] tabular-nums">
+                  {/* 머리 실선을 걷어냈다 — 라벨 옆 실선과 두 줄이 겹쳐 보여
+                번호 위가 시끄러웠다. 셋을 가르는 건 이제 여백뿐이다. */}
+                  <p className="font-display text-[0.78rem] font-bold tracking-[0.2em] text-[#acd4ff] tabular-nums">
                     {String(i + 1).padStart(2, "0")}
                   </p>
                   <h3 className="mt-2 font-display text-fluid-lg font-bold break-keep tracking-tight text-white">

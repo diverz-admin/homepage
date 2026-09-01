@@ -154,11 +154,11 @@ function DiagramAside({ diagram }: { diagram: (typeof diagrams)[string] }) {
  * 상품 한 종의 본문. /service/[slug]에서 쓴다.
  *
  * 오른쪽 개념도는 위 diagrams에서 slug로 고른다(없는 상품은 본문이 한 단을
- * 통째로 쓴다 — 콘텐츠가 그렇다). 그리고 본문 아래에는 상품별로
- * 딸린 블록이 이어진다 — 바이럴(프로그램 탭), 콘텐츠(영상 제작 세 묶음),
- * IMC(WHY DIVERZ), 퍼포먼스(성과 곡선).
+ * 통째로 쓴다). 그리고 본문 아래에는 상품별로 딸린 블록이 이어진다 —
+ * 바이럴(프로그램 탭), IMC(WHY DIVERZ), 퍼포먼스(성과 곡선).
  *
- * 글로벌만 예외로 대제목 블록 자체가 없다 — 아래 early return 참고.
+ * 글로벌 · 콘텐츠는 대제목 블록 자체가 없이 탭으로 바로 시작한다 —
+ * 아래 early return 참고.
  *
  * 프로세스 타임라인은 한때 둘 다(IMC PROCESS, PERFORMANCE PROCESS) 뺐었다 —
  * 오른쪽 개념도가 이미 그 상품이 무엇을 묶는지 보여 주는데, 그 아래 다시
@@ -184,6 +184,20 @@ export default function ServiceDetail({
     return (
       <section id={service.slug} className="scroll-mt-32">
         <GlobalMarketingTabs />
+      </section>
+    );
+  }
+
+  /* 콘텐츠도 대제목 블록(영문 라벨 · 대제목 · 설명 · 키워드 알약 ·
+     문의하기)을 세우지 않고 갈래 탭으로 바로 시작한다. 이 상품만 오른쪽
+     개념도가 없어서(위 diagrams 에 contents 가 없다) 그 블록이 폭 전체를
+     글자로만 채웠고, 바로 아래 영상 제작 패널이 같은 이야기(무엇을 어떻게
+     만드는지)를 그림과 함께 다시 풀고 있었다. 글로벌과 같은 판형이다.
+     (id는 그대로 둔다 — 상품 메뉴가 이 앵커로 자리를 잡는다.) */
+  if (service.slug === "contents") {
+    return (
+      <section id={service.slug} className="scroll-mt-32">
+        <ContentsTabs />
       </section>
     );
   }
@@ -229,11 +243,6 @@ export default function ServiceDetail({
       {/* 가설 → A/B 테스트 → 데이터 분석 → 리마케팅, 지속적인 분석으로
           성과를 끌어올린다는 이야기. */}
       {service.slug === "performance" && <PerformanceFunnel />}
-
-      {/* 콘텐츠 갈래 — 지금은 영상 하나뿐이라 탭이 한 칸이다.
-          패널 안에 갈래 넷(MEDIA SERVICES) · 프로덕션팀(MISSION) ·
-          아홉 단계(PROCESS)가 들어 있다. */}
-      {service.slug === "contents" && <ContentsTabs />}
     </ServiceSection>
   );
 }

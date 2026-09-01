@@ -1,5 +1,11 @@
 import Image from "next/image";
-import { BadgeCheck, LayoutGrid, Repeat2, Users, type LucideIcon } from "lucide-react";
+import {
+  BadgeCheck,
+  LayoutGrid,
+  Repeat2,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
 
 import Reveal from "@/components/reveal";
 import { Badge } from "@/components/ui/badge";
@@ -15,7 +21,10 @@ import { imcWhyDiverz } from "@/lib/site";
  * 혼자 다루는 모습, 높은 재계약률→계약서 앞의 악수, 검증된 실행력→
  * 데이터를 보며 논의하는 팀. */
 const REASON_META: Record<string, { icon: LucideIcon; image: string }> = {
-  "올인원 조직": { icon: Users, image: "/images/imc/why-diverz/allinone-photo.png" },
+  "올인원 조직": {
+    icon: Users,
+    image: "/images/imc/why-diverz/allinone-photo.png",
+  },
   "다양한 업종 경험": {
     icon: LayoutGrid,
     image: "/images/imc/why-diverz/industries-photo.png",
@@ -52,7 +61,15 @@ const REASON_META: Record<string, { icon: LucideIcon; image: string }> = {
  */
 function Feature() {
   return (
-    <div className="section-gap w-full">
+    /* .section-gap(112/152/176px) 대신 직접 잡는다 — 바로 위 IMC 본문은
+       오른쪽 개념도가 왼쪽 글보다 훨씬 길어서, 그리드 행이 그림 높이에
+       맞춰지며 왼쪽 아래에 이미 빈 칸이 한참 남는다. 그 빈 칸이 사실상
+       여백 노릇을 하므로 여기서는 최소한만 준다 — 지면 기본 리듬은 물론
+       그 절반(64/80/96px)도 개념도 아래로 한 번 더 벌어져 두 묶음이
+       끊어져 보였다.
+       globals.css 가 레이어 밖이라 .section-gap 을 같이 쓰면 mt-* 가 지므로
+       클래스를 아예 빼야 한다. */
+    <div className="mt-8 w-full sm:mt-10 xl:mt-12">
       <div className="flex flex-col gap-10">
         <div className="flex flex-col items-start gap-4">
           <Reveal>
@@ -90,7 +107,7 @@ function Feature() {
                     아래에는 빈 공간만 남는다. lg 미만(2단)에서는 큰 카드도
                     폭이 작은 카드와 같아져 같은 비율이 자연스럽다. */}
                 <div
-                  className={`group relative flex aspect-[5/4] w-full flex-col justify-between overflow-hidden rounded-2xl ${
+                  className={`group relative flex aspect-[5/4] w-full flex-col justify-between overflow-hidden ${
                     isLarge ? "h-full lg:aspect-auto" : ""
                   }`}
                 >

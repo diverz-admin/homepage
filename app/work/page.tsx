@@ -1,132 +1,46 @@
 import type { Metadata } from "next";
-import CountUp from "@/components/count-up";
 import GradientLine from "@/components/gradient-line";
 import PageHero from "@/components/page-hero";
-import Reveal from "@/components/reveal";
-import { clientLogos, stats } from "@/lib/site";
+import WorkProjects from "@/components/work-projects";
 
 export const metadata: Metadata = {
   title: "WORK",
   description: "다이버즈가 함께한 브랜드와 프로젝트 기록입니다.",
 };
 
-/** 한 줄에 들어가는 카드 수 — Reveal 지연을 열 단위로 묶는 데도 쓴다. */
-const COLUMNS = 5;
-
 /**
- * 배너 아래 성과 두 줄.
+ * WORK — 배너 아래로 곧장 작업물 격자가 오는 단순한 페이지.
  *
- * 수치는 lib/site.ts 의 stats 를 그대로 끌어다 쓴다 — 홈(WHY DIVERZ)과 같은
- * 숫자여야 하는데, 여기에 다시 적어 두면 한쪽만 고치는 일이 반드시 생긴다.
- * 라벨은 "누적"을 뗀 짧은 국문으로 쓴다 — 수치 바로 위에 붙는 자리라
- * 짧을수록 숫자가 먼저 읽힌다.
- */
-const WORK_STATS = [
-  { label: "프로젝트", from: "누적 프로젝트" },
-  { label: "클라이언트", from: "누적 클라이언트" },
-].map((item) => {
-  const stat = stats.find((s) => s.label === item.from);
-  if (!stat) throw new Error(`stats에 "${item.from}"가 없다`);
-  return { label: item.label, value: stat.value, suffix: stat.suffix };
-});
-
-/**
- * WORK — 로고 격자 한 장으로 끝나는 단순한 페이지.
- *
- * 페이지는 다크지만 로고 타일만 흰색이다. 로고 PNG가 "어두운 잉크 + 투명
- * 배경"이라 어두운 판에 올리면 검정 로고(HERMÈS·Porsche 등)가 통째로 사라진다.
+ * 한때 여기 두 가지가 더 있었다 — 누적 성과 두 줄(프로젝트/클라이언트 수치)과
+ * 클라이언트 로고 격자. 둘 다 걷어냈다. 수치는 홈(WHY DIVERZ)에서 이미 말하고,
+ * 로고는 홈의 3줄 마퀴(components/client-logos.tsx)에서 흐른다. 이 지면은
+ * 작업물만 보여 준다.
  */
 export default function WorkPage() {
   return (
     <>
-      {/* who-we-are·service와 같은 히어로 — 다크 배경 + 2줄 GradientLine 제목. */}
+      {/* who-we-are·service와 같은 히어로 — 다크 배경 + GradientLine 제목.
+          설명글은 두지 않는다. 무엇을 해 왔는지는 바로 아래 컷 격자가
+          말하고 있어서, 그 위에 세 줄로 다시 적으면 같은 말을 두 번 한다.
+          제목 위 WORK 는 eyebrow(12px 라벨)가 아니라 lead 로 넣는다 —
+          서비스 지면의 상품명("IMC Marketing")과 같은 자리·같은 크기·같은
+          키컬러다. lead 를 넘기면 배너 위아래 여백도 그 규격을 따라가므로
+          compact 는 함께 뺐다(어차피 lead 가 있으면 무시된다). */}
       <PageHero
+        lead="WORK"
         title={<GradientLine>다이버즈와 함께한 프로젝트</GradientLine>}
-        description={
-          "브랜드의 목표에 맞춰 전략을 세우고\n" +
-          "IMC마케팅, 퍼포먼스마케팅, 바이럴, 콘텐츠까지\n" +
-          "브랜드 성장에 필요한 실행을 함께 진행해왔습니다."
-        }
         center
-        compact
         borderless
         titleReveal
         noBackdrop
       />
 
-      {/* 배너 바로 아래 성과 두 줄. 라벨이 위, 수치가 아래로 크게 온다.
-          화면에 들어오면 0에서 목표값까지 굴러간다(CountUp).
-
-          히어로가 이미 아래 여백을 갖고 있어서 위 여백은 주지 않는다.
-          수치는 히어로와 같은 흰색 — 이 자리는 배너의 연장이라, 홈의
-          액센트 파랑을 쓰면 배너에서 떨어져 나온 다른 블록처럼 보인다. */}
-      <section className="page-container pb-24 sm:pb-32">
-        <Reveal>
-          <dl className="flex flex-wrap justify-center gap-x-16 gap-y-10 sm:gap-x-28">
-            {WORK_STATS.map((stat) => (
-              <div key={stat.label} className="text-center">
-                <dt className="font-display text-sm font-semibold tracking-tight text-white/60 sm:text-base">
-                  {stat.label}
-                </dt>
-                {/* tabular-nums — 굴러가는 동안 자릿수 폭이 흔들리지 않게 한다. */}
-                <dd className="mt-3 font-sans text-[clamp(3rem,7vw,5.5rem)] leading-[0.95] font-bold tracking-[-0.04em] text-white tabular-nums">
-                  <CountUp to={stat.value} suffix={stat.suffix} />
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </Reveal>
-      </section>
-
-      {/* 격자는 컨테이너 좌우 여백만 쓰고, 타일 사이는 완전히 붙인다.
-          흰 타일이 한 줄로 이어지고, 캡션만 다크 배경 위에 놓인다. */}
-      {/* 위 여백은 두지 않는다 — 히어로가 이미 아래쪽 여백(compact의 pb)을
-          갖고 있어서, 여기에 또 주면 히어로와 격자 사이가 두 배로 벌어진다. */}
-      <section className="page-container pb-28 sm:pb-40">
-        <Reveal>
-          <p className="font-display text-xs font-bold tracking-[0.35em] text-accent">
-            PARTNERS
-          </p>
-        </Reveal>
-
-        <ul className="mt-8 grid grid-cols-2 gap-x-0 gap-y-8 sm:mt-10 md:grid-cols-3 lg:grid-cols-5">
-          {clientLogos.map((logo, i) => (
-            <Reveal
-              as="li"
-              key={logo.name}
-              /* 열 위치로만 지연을 준다. 행 번호까지 더하면 아래쪽 행이
-                 화면에 들어온 뒤에도 1초 가까이 비어 있게 된다. */
-              delay={(i % COLUMNS) * 70}
-            >
-              <article className="group">
-                {/* 로고 타일 — 라운드·그림자 없이 각진 흰 판.
-                    타일끼리 붙어 있어서 1px 테두리로만 칸을 나눈다(테두리가
-                    없으면 한 줄이 통째로 흰 덩어리로 보인다). 테두리 색은
-                    페이지 배경과 같은 abyss라 칸 사이가 배경이 비치는 틈처럼
-                    보이고, 격자 바깥 테두리는 배경에 묻혀 안 보인다.
-                    로고 PNG는 이미 16:6 캔버스에 "잉크 면적이 같도록"
-                    정규화돼 있어서 여백을 더 주지 않는다. */}
-                <div className="work-tile flex aspect-[4/3] items-center justify-center border border-abyss bg-white px-5 sm:px-6">
-                  {/* 원본 비율을 그대로 살려야 해서 next/image 대신 img를 쓴다. */}
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={logo.src}
-                    alt={logo.name}
-                    loading="lazy"
-                    decoding="async"
-                    className="work-logo max-h-full w-full object-contain"
-                  />
-                </div>
-
-                {/* 캡션은 타일 밖, 다크 배경 위에 온다. */}
-                <p className="mt-3 font-display text-sm font-bold tracking-tight text-white">
-                  {logo.name}
-                </p>
-              </article>
-            </Reveal>
-          ))}
-        </ul>
-      </section>
+      {/* 포트폴리오 — 화면 끝까지 물린 컷 격자. 아무 타일이나 누르면 그
+          편의 컷 전체가 모달에 세로로 이어 뜬다(components/work-projects.tsx).
+          "그래서 무엇을 만들었는가"를 실물로 보여 주는 자리다. 아래에 있던
+          클라이언트 로고 격자는 걷어냈다 — 흰 타일 46장이 이 컷들 바로 밑에
+          붙으니 지면이 두 벌의 격자로 갈라졌다. */}
+      <WorkProjects />
     </>
   );
 }

@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import GradientLine from "@/components/gradient-line";
 import PageHero from "@/components/page-hero";
 import KeepSectionInView from "@/components/keep-section-in-view";
 import ServiceDetail from "@/components/service-detail";
+import WorkLink from "@/components/work-link";
 import { MenuHorizontal } from "@/components/ui/menu-horizontal";
 import { services } from "@/lib/site";
 
@@ -66,6 +66,26 @@ export async function generateMetadata({
   };
 }
 
+/**
+ * 본문이 갈래 탭 줄로 시작하는 상품. 그 줄의 오른쪽 끝이 WORK 버튼 자리라
+ * 지면 쪽에서 또 세우지 않는다(아래 본문 참고).
+ */
+const TAB_LED_SLUGS = new Set(["contents", "global", "viral"]);
+
+/**
+ * 본문이 화면 끝까지 덮는 어두운 띠(PROCESS 묶음)로 끝나는 상품.
+ *
+ * 이 지면의 흰 바탕 상자는 아래쪽 여백(pb-28/36)을 들고 있는데, 마지막
+ * 덩어리가 그 띠면 띠와 푸터(역시 어두운 면) 사이에 흰 조각이 그만큼
+ * 끼어 두 어두운 면이 끊겨 보인다. 이 상품들만 아래 여백을 걷는다 —
+ * 띠가 이미 자기 안쪽에 py-24~32 를 갖고 있어 숨이 모자라지도 않는다.
+ *
+ * 띠는 components/performance-funnel.tsx · contents-production.tsx 의
+ * PROCESS 묶음이다. 그 둘의 자리가 바뀌면(더 이상 마지막이 아니면)
+ * 여기서도 빼야 한다.
+ */
+const BAND_ENDED_SLUGS = new Set(["performance", "contents"]);
+
 export default async function ServiceDetailPage({
   params,
 }: {
@@ -76,8 +96,6 @@ export default async function ServiceDetailPage({
   if (index === -1) notFound();
 
   const service = services[index];
-  // 목록을 한 바퀴 돌게 이어 붙인다 — 마지막 다음은 처음.
-  const next = services[(index + 1) % services.length];
 
   return (
     <>
@@ -149,32 +167,30 @@ export default async function ServiceDetailPage({
         {/* 여기도 min-w-0 — 바이럴 페이지의 순위 보드가 가로로 흐르는
             마퀴라, 그 내용 폭(2,768px)이 이 칸의 최소 폭으로 잡힌다. */}
         {/* 위 여백은 색 띠와 본문 사이 숨이다. 띠가 화면 폭을 다 쓰는 덩어리라
-            56/80px 로는 본문이 띠에 붙어 읽혔다 — 80/112/144px 로 벌린다. */}
-        <div className="page-container pt-20 pb-28 sm:pt-28 sm:pb-36 xl:pt-36">
+            56/80px 로는 본문이 띠에 붙어 읽혔다 — 80/112/144px 로 벌린다.
+            아래 여백은 본문이 어두운 띠로 끝나는 상품에서만 뺀다(위 상수). */}
+        <div
+          className={`page-container pt-20 sm:pt-28 xl:pt-36 ${
+            BAND_ENDED_SLUGS.has(service.slug) ? "" : "pb-28 sm:pb-36"
+          }`}
+        >
           <div className="min-w-0">
             {/* 상품을 갈아탈 때 보던 자리를 지켜 준다 — 컴포넌트 주석 참고. */}
             <KeepSectionInView id={service.slug} />
 
-            <ServiceDetail service={service} />
+            {/* WORK 로 건너가는 버튼(components/work-link.tsx)은 다섯 지면
+                모두 흰 본문의 오른쪽 맨 위에 선다. 갈래 탭으로 시작하는
+                지면은 그 탭 줄이 이미 오른쪽 끝을 비워 두고 있어 버튼을
+                거기 앉히므로(콘텐츠 · 글로벌 · 바이럴 탭 컴포넌트), 여기서는
+                탭 줄이 없는 나머지 — 대제목 블록으로 바로 시작하는 지면 —
+                에만 자기 줄을 하나 내준다. */}
+            {!TAB_LED_SLUGS.has(service.slug) && (
+              <div className="mb-10 flex justify-end sm:mb-12">
+                <WorkLink />
+              </div>
+            )}
 
-            {/* 다음 상품으로 넘어가는 줄. 메뉴는 본문 위에 있지만, 다 읽고
-                난 뒤 손이 가는 자리는 여기다. */}
-            <div className="section-gap border-t border-line pt-8">
-              <Link
-                href={`/service/${next.slug}`}
-                className="group flex items-baseline justify-between gap-6"
-              >
-                <span className="font-display text-xs font-bold tracking-[0.3em] text-accent">
-                  NEXT
-                </span>
-                <span className="flex items-baseline gap-3 font-display text-fluid-lg font-bold tracking-tight text-foreground transition-opacity group-hover:opacity-60">
-                  {next.name}
-                  <span aria-hidden className="text-accent">
-                    →
-                  </span>
-                </span>
-              </Link>
-            </div>
+            <ServiceDetail service={service} />
           </div>
         </div>
       </div>

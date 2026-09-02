@@ -10,42 +10,47 @@ import {
   ChipTabs,
   type ChipTab,
 } from "@/components/ui/animated-chip-tab-component";
-import { workProjects, workSites } from "@/lib/site";
+import { clientLogos, workProjects } from "@/lib/site";
 
-type Project = (typeof workProjects)[number] | (typeof workSites)[number];
+type Project = (typeof workProjects)[number];
 
 /** 컷 이미지의 가로세로. 원본 영상 프레임(1280×670)을 그대로 쓴다.
  *  격자 타일은 갈래와 상관없이 이 값 하나로 선다 — 타일 높이가 갈래마다
  *  달라지면 탭을 옮길 때 지면이 출렁인다. */
 const SHOT_ASPECT = "1280 / 670";
 
-/** 홈페이지 갈래의 모달 비율. 지면 캡처(1920×880 안팎)는 영상보다 세로가
- *  길어서, 영상 비율 상자에 넣으면 위아래가 잘려 나간다. */
-const SITE_SHOT_ASPECT = "1920 / 890";
-
 /** 한 줄에 들어가는 타일 수 — Reveal 지연을 열 단위로 묶는 데 쓴다.
  *  아래 로고 격자(app/work/page.tsx)와 같은 3열이다. */
 const COLUMNS = 3;
 
+/** 마케팅 갈래의 로고 격자 열 수(md 이상 기준). 위 컷 격자와 열이 다르므로
+ *  Reveal 지연을 묶는 값도 따로 둔다.
+ *
+ *  화면 끝까지 물린 격자라 마지막 줄이 얼마나 차는지가 그대로 보인다.
+ *  로고가 46장이니 4열이면 46 = 11×4+2 로 두 장이 남고, 좁은 화면의
+ *  2열은 23줄로 딱 떨어진다. */
+const LOGO_COLUMNS = 4;
+
 /**
  * 작업물 갈래.
  *
- * 지금 채워진 건 영상 제작 하나다. 그래도 셋을 다 세우는 건 이 지면이
- * 무엇을 담는 자리인지 먼저 말해 주기 때문이다 — 서비스 지면의 갈래 탭과
- * 같은 판형이라(components/contents-tabs.tsx 등) 지면끼리 결이 이어진다.
- * 나머지 둘은 작업물이 들어오면 아래 PANEL_EMPTY 자리를 격자로 바꾼다.
+ * 두 갈래가 서로 다른 것을 보여 준다 — 영상 제작은 컷 격자(작업물 자체),
+ * 마케팅은 클라이언트 로고 격자(함께한 브랜드). 판형은 서비스 지면의 갈래
+ * 탭과 같아서(components/contents-tabs.tsx 등) 지면끼리 결이 이어진다.
+ *
+ * 한때 홈페이지·상세페이지 갈래가 있었다. 홈페이지에는 모노커스 한 편이
+ * 걸려 있었고(lib/site.ts 의 workSites 에 그대로 남아 있다), 상세페이지는
+ * 내내 비어 있었다. 둘 다 걷어내고 마케팅 하나로 바꿨다.
  */
 const tabs: ChipTab[] = [
   { id: "video", label: "영상 제작" },
-  { id: "homepage", label: "홈페이지" },
-  { id: "detail", label: "상세페이지" },
+  { id: "marketing", label: "마케팅" },
 ];
 
-/** 갈래마다 어떤 목록이 서는지. 빈 배열이면 "준비 중입니다"가 대신 선다. */
+/** 컷 격자가 서는 갈래와 그 목록. 여기 없는 갈래는 아래에서 따로 그린다
+ *  (마케팅 = 로고 격자). 빈 배열이면 "준비 중입니다"가 대신 선다. */
 const PROJECTS_BY_TAB: Record<string, readonly Project[]> = {
   video: workProjects,
-  homepage: workSites,
-  detail: [],
 };
 
 /**
@@ -63,12 +68,9 @@ const PROJECTS_BY_TAB: Record<string, readonly Project[]> = {
  */
 function ProjectModal({
   project,
-  shotAspect,
   onClose,
 }: {
   project: Project;
-  /** 컷 상자의 가로세로 — 갈래마다 다르다(SHOT_ASPECT / SITE_SHOT_ASPECT). */
-  shotAspect: string;
   onClose: () => void;
 }) {
   const panelRef = useRef<HTMLDivElement>(null);
@@ -169,7 +171,7 @@ function ProjectModal({
             <li
               key={shot.src}
               className="relative w-full overflow-hidden bg-black"
-              style={{ aspectRatio: shotAspect }}
+              style={{ aspectRatio: SHOT_ASPECT }}
             >
               <Image
                 src={shot.src}
@@ -186,6 +188,125 @@ function ProjectModal({
       </motion.div>
     </div>,
     document.body,
+  );
+}
+
+/**
+ * 마케팅 갈래 — 함께한 브랜드 로고 격자.
+ *
+ * 한때 이 지면 맨 아래에 통째로 깔려 있던 판이다. 컷 격자 바로 밑에 흰 타일
+ * 46장이 붙으니 지면이 두 벌의 격자로 갈라져 걷어냈었는데, 갈래 탭으로 들어온
+ * 지금은 그럴 일이 없다 — 한 번에 한 격자만 선다.
+ *
+ * 지면은 다크인데 타일만 흰색이다. 로고 PNG가 "어두운 잉크 + 투명 배경"이라
+ * 어두운 판에 올리면 검정 로고(HERMÈS·Porsche 등)가 통째로 사라진다.
+ *
+ * 위 컷 격자와 달리 이쪽은 page-container 안에 든다. 로고는 잉크가 작아서
+ * 화면 끝까지 물리면 타일만 커지고 로고는 그대로라 허전해진다.
+ */
+function MarketingLogos() {
+  return (
+    /* 위 컷 격자와 같은 판 — page-container 밖이라 화면 폭을 그대로 쓰고,
+       타일 사이 틈(gap)은 두지 않는다. 흰 타일이 좌우 끝까지 이어지며 한
+       장의 접촉 인화지처럼 읽힌다. */
+    <ul className="grid grid-cols-2 md:grid-cols-4">
+      {clientLogos.map((logo, i) => {
+        /* 컷을 뒤에 까는 칸(lib/site.ts 의 clientLogos 에서 photo 를 가진
+           것들). 로고를 대신하는 게 아니라 로고 뒤에 깔린다. */
+        const photo = "photo" in logo ? logo : null;
+
+        return (
+          <Reveal
+            as="li"
+            key={logo.name}
+            /* 열 위치로만 지연을 준다. 행 번호까지 더하면 아래쪽 행이
+             화면에 들어온 뒤에도 1초 가까이 비어 있게 된다. */
+            delay={(i % LOGO_COLUMNS) * 70}
+          >
+            {/* 로고 타일 — 라운드·그림자 없이 각진 흰 판.
+              타일끼리 붙어 있어서 1px 테두리로만 칸을 나눈다(테두리가
+              없으면 한 줄이 통째로 흰 덩어리로 보인다). 테두리 색은
+              페이지 배경과 같은 abyss라 칸 사이가 배경이 비치는 틈처럼
+              보이고, 격자 바깥 테두리는 배경에 묻혀 안 보인다.
+              로고 PNG는 이미 16:6 캔버스에 "잉크 면적이 같도록"
+              정규화돼 있어서 여백을 더 주지 않는다.
+
+              비율은 컷 타일과 같은 SHOT_ASPECT 다. 4:3 이던 것을 바꿨다 —
+              로고 PNG 가 16:6 캔버스라 세로로 긴 상자에 넣으면 위아래가
+              통째로 빈다. 옆 갈래의 컷 타일과 결이 맞는 건 덤이다. */}
+            <div
+              className={`work-tile group relative flex items-center justify-center overflow-hidden border border-abyss px-5 sm:px-8 ${
+                photo ? "bg-abyss" : "bg-white"
+              }`}
+              style={{ aspectRatio: SHOT_ASPECT }}
+            >
+              {/* 컷이 있는 칸은 컷을 배경으로 깔고 그 위에 로고를 얹는다.
+                  판을 어둡게 뒤집는다 — 컷이 배경 없는 투명 PNG라 흰
+                  타일에 그냥 얹으면 병과 로고가 같은 자리에서 겹쳐 둘 다
+                  못 읽는다. 어두운 판 위에서는 컷이 가라앉고 로고만 뜬다.
+
+                  스크림은 컷을 더 눌러 로고가 걸리는 자리를 비운다. */}
+              {photo && (
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={photo.photo}
+                    alt={photo.photoAlt}
+                    loading="lazy"
+                    decoding="async"
+                    className="absolute inset-0 size-full object-cover"
+                  />
+                  <span aria-hidden className="absolute inset-0 bg-abyss/70" />
+                </>
+              )}
+
+              {/* 원본 비율을 그대로 살려야 해서 next/image 대신 img를 쓴다.
+                  어두운 판에 얹히는 로고는 흰색으로 뒤집는다 — 로고 PNG가
+                  대개 "어두운 잉크 + 투명 배경"이라 그대로 두면 통째로
+                  사라진다. 뒤집으면 되레 뭉개지는 그림 로고만 예외로 둔다
+                  (keepLogoColor — lib/site.ts 의 photo 주석 참고). */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={logo.src}
+                alt={logo.name}
+                loading="lazy"
+                decoding="async"
+                className={`work-logo relative z-[1] max-h-full w-full object-contain ${
+                  photo && !("keepLogoColor" in logo)
+                    ? "brightness-0 invert"
+                    : ""
+                }`}
+              />
+
+              {/* 이름은 올렸을 때만 타일 위로 떠오른다 — 컷 격자의 타일과
+                같은 규칙이다. 타일 밖 다크 배경에 캡션 줄로 달면 흰 판과
+                검은 글줄이 번갈아 눕는 줄무늬가 되어, 화면을 꽉 채운
+                한 장으로 읽히지 않는다.
+
+                컷 격자와 달리 여기는 불투명하게 덮는다(bg-abyss/70 이 아니라
+                bg-abyss). 로고도 이름도 화면 한가운데에 앉는 것이라, 컷처럼
+                비쳐 보이게 두면 글자가 로고 위에 겹쳐 둘 다 읽히지 않는다.
+                z-10 은 로고 때문에 필요하다 — .work-logo 의 transform 이
+                쌓임 맥락을 만들어서, 없으면 로고가 덮개 위로 올라온다.
+
+                컷이 깔린 칸에는 달지 않는다 — 이름은 이미 어두운 판 위에
+                흰 로고로 늘 떠 있다. 거기에 또 덮으면 올릴 때마다 컷이
+                사라지고 같은 이름만 남는다. */}
+              {!photo && (
+                <span
+                  aria-hidden
+                  className="absolute inset-0 z-10 flex items-center justify-center bg-abyss px-4 text-center opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                >
+                  <span className="font-display text-sm font-bold tracking-tight text-white">
+                    {logo.name}
+                  </span>
+                </span>
+              )}
+            </div>
+          </Reveal>
+        );
+      })}
+    </ul>
   );
 }
 
@@ -218,8 +339,6 @@ export default function WorkProjects() {
   }, []);
 
   const projects = PROJECTS_BY_TAB[tab] ?? [];
-  /* 지면 캡처는 영상 프레임보다 세로가 길다 — 모달 상자만 갈래를 따른다. */
-  const shotAspect = tab === "homepage" ? SITE_SHOT_ASPECT : SHOT_ASPECT;
   /* 모달은 지금 열려 있는 갈래에서만 찾는다 — 갈래가 달라도 id는 안 겹치지만,
      탭을 옮기면 열려 있던 모달이 따라 닫히는 편이 자연스럽다. */
   const active = projects.find((p) => p.id === open);
@@ -272,7 +391,9 @@ export default function WorkProjects() {
         </p>
       )}
 
-      {projects.length === 0 ? (
+      {tab === "marketing" ? (
+        <MarketingLogos />
+      ) : projects.length === 0 ? (
         /* 아직 작업물이 없는 갈래. 빈 화면을 그대로 두면 지면이 고장 난
            것처럼 보이므로 한 줄로 상태를 말해 준다. */
         <div className="page-container py-20 text-center sm:py-28">
@@ -339,13 +460,7 @@ export default function WorkProjects() {
           내보낸 자식이라 exit 가 중간에 멈춘 채 겹이 살아남았다 — 그 동안
           투명한 배경 겹이 화면을 덮고 있어서 다음 클릭이 그리로 먹혔다.
           닫기는 즉시 언마운트한다(열 때의 페이드인만 남긴다). */}
-      {active && (
-        <ProjectModal
-          project={active}
-          shotAspect={shotAspect}
-          onClose={close}
-        />
-      )}
+      {active && <ProjectModal project={active} onClose={close} />}
     </section>
   );
 }

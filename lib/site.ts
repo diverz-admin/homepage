@@ -1161,11 +1161,14 @@ export const workProjects = [
 ] as const;
 
 /**
- * WORK — 홈페이지 갈래(components/work-projects.tsx 의 "홈페이지" 탭).
+ * 홈페이지 제작 작업물. 지금은 어느 지면에도 걸려 있지 않다 — WORK 의
+ * "홈페이지" 갈래를 걷어내며(components/work-projects.tsx) 갈 곳을 잃었다.
+ * 지우지 않고 세워 두는 건 컷이 실물이라서다. 갈래가 다시 서면 그대로
+ * 꽂으면 된다.
  *
  * 생김새는 workProjects 와 같다(썸네일 한 장 + 모달에 이어 붙는 컷들). 다만
- * 컷이 영상 프레임이 아니라 지면 캡처라 가로세로가 다르다 — 모달에서 쓰는
- * 비율은 컴포넌트의 SITE_SHOT_ASPECT 다.
+ * 컷이 영상 프레임이 아니라 지면 캡처(1920×880 안팎)라 세로가 길다 — 다시
+ * 쓸 때는 모달 상자 비율을 갈래에 맞춰 따로 줘야 한다.
  */
 export const workSites = [
   {
@@ -1202,55 +1205,306 @@ export const workSites = [
  * 달라져 하이드레이션이 어긋나므로 리터럴 순서 자체를 섞는다.
  */
 export const clientLogos = [
-  { name: "Hennessy", src: "/images/clients/hennessy.png" },
-  { name: "깐부치킨", src: "/images/clients/kkanbu-chicken.png" },
-  { name: "AXA", src: "/images/clients/axa.png" },
-  { name: "고향의봄", src: "/images/clients/hometown-spring.png" },
-  { name: "Bentley", src: "/images/clients/bentley.png" },
-  { name: "웅진", src: "/images/clients/woongjin.png" },
+  /* photo — WORK 마케팅 갈래의 격자에서 로고 뒤에 까는 컷이다
+     (components/work-projects.tsx). 그 칸만 흰 판이 어두운 판으로 뒤집히고,
+     컷 위에 스크림이 덮이고, 로고가 흰색으로 뒤집혀 그 위에 얹힌다.
+     홈 마퀴는 이 값을 보지 않고 언제나 src 의 로고를 쓴다.
+
+     컷은 가로세로 2:1 안팎이면 잘리는 데 없이 들어간다. 배경은 있어도
+     없어도 된다 — 어두운 판 위에 얹히므로 투명하면 판이 비쳐 보인다.
+
+     로고는 흰색으로 뒤집히는 게 기본이다. 대부분이 어두운 잉크 + 투명
+     배경이라 그래야 어두운 컷 위에서 보인다.
+
+     색 면이 채워진 로고는 갈린다. 씰리의 파란 나비 도형처럼 글자가 면에서
+     뚫려 있으면 뒤집는 편이 낫다 — 흰 배지에 글자가 구멍으로 남아 오히려
+     또렷하다. 반대로 우다다의 여우 얼굴처럼 면 안에 눈코가 그려진 그림은
+     뒤집으면 그 선까지 다 희어져 덩어리만 남는다. 그런 로고만
+     keepLogoColor 로 원색을 지킨다. */
+  {
+    name: "Hennessy",
+    src: "/images/clients/hennessy.png",
+    photo: "/images/clients/hennessy-shot.webp",
+    photoAlt: "헤네시 코냑 제품군 — 파라디·XO·VSOP·VS·블랙 등 병 여덟 종",
+  },
+  {
+    name: "깐부치킨",
+    src: "/images/clients/kkanbu-chicken.png",
+    photo: "/images/clients/kkanbu-chicken-shot.webp",
+    photoAlt:
+      "깐부치킨 — 돌 상판 위 나무 도마에 담긴 후라이드 치킨과 구운 레몬",
+  },
+  {
+    name: "AXA",
+    src: "/images/clients/axa.png",
+    photo: "/images/clients/axa-shot.webp",
+    photoAlt: "AXA 사옥 — 아래에서 올려다본 유리와 석재 외벽 건물",
+  },
+  {
+    name: "고향의봄",
+    src: "/images/clients/hometown-spring.png",
+    photo: "/images/clients/hometown-spring-shot.webp",
+    photoAlt: "고향의봄 베이커리 카페 — 통유리 외벽과 주황 차양이 있는 매장 앞면",
+  },
+  {
+    name: "Bentley",
+    src: "/images/clients/bentley.png",
+    photo: "/images/clients/bentley-shot.webp",
+    photoAlt: "벤틀리 벤테이가 스피드 — 고속도로를 달리는 샴페인색 SUV",
+  },
+  {
+    name: "웅진",
+    src: "/images/clients/woongjin.png",
+    photo: "/images/clients/woongjin-shot.webp",
+    photoAlt: "웅진 사옥 — 창마다 불이 켜진 밤의 오피스 빌딩",
+  },
   {
     name: "THE HANOI FOOT&BODY",
     src: "/images/clients/the-hanoi-foot-body.png",
+    photo: "/images/clients/the-hanoi-foot-body-shot.webp",
+    photoAlt: "더하노이 풋앤바디 매장 — 라탄 조명이 걸린 대기 벤치와 세족대",
+    /* 흰색으로 뒤집지 않는다 — 브랜드 이름이 갈색 원판 안에 흰 글자로
+       뚫려 있어서, 뒤집으면 판과 글자가 한 덩어리 흰 원이 된다. */
+    keepLogoColor: true,
   },
-  { name: "KB국민카드", src: "/images/clients/kb-card.png" },
-  { name: "Sealy", src: "/images/clients/sealy.png" },
-  { name: "SOOP", src: "/images/clients/soop.png" },
-  { name: "우다다", src: "/images/clients/udada.png" },
-  { name: "메리츠화재", src: "/images/clients/meritz-fire.png" },
-  { name: "The Balvenie", src: "/images/clients/the-balvenie.png" },
-  { name: "직폰", src: "/images/clients/ziphone.png" },
-  { name: "아모레퍼시픽", src: "/images/clients/amorepacific.png" },
-  { name: "MONOCUS", src: "/images/clients/monocus.png" },
-  { name: "Rolls-Royce", src: "/images/clients/rolls-royce.png" },
-  { name: "린센다이닝", src: "/images/clients/linsen-dining.png" },
-  { name: "하이투자증권", src: "/images/clients/dgb-hi-investment.png" },
-  { name: "Care by Me", src: "/images/clients/care-by-me.png" },
-  { name: "NS홈쇼핑", src: "/images/clients/ns-homeshopping.png" },
-  { name: "dr ROBBIN", src: "/images/clients/dr-robbin.png" },
-  { name: "라이나생명", src: "/images/clients/lina-life.png" },
-  { name: "웨이브히어링", src: "/images/clients/wave-hearing.png" },
-  { name: "Porsche", src: "/images/clients/porsche.png" },
-  { name: "우피아", src: "/images/clients/uffia.png" },
-  { name: "TV조선", src: "/images/clients/tv-chosun.png" },
-  { name: "살롱드하루", src: "/images/clients/salon-de-haru.png" },
-  { name: "삼성카드", src: "/images/clients/samsung-card.png" },
-  { name: "이품고", src: "/images/clients/ipoomgo.png" },
-  { name: "한화손해보험", src: "/images/clients/hanwha-insurance.png" },
-  { name: "BODYBEAN PILATES", src: "/images/clients/bodybean-pilates.png" },
-  { name: "코인원", src: "/images/clients/coinone.png" },
-  { name: "ALLERMAN", src: "/images/clients/allerman.png" },
-  { name: "SK브로드밴드", src: "/images/clients/sk-broadband.png" },
-  { name: "오키파", src: "/images/clients/okipa.png" },
-  { name: "미래에셋증권", src: "/images/clients/mirae-asset.png" },
-  { name: "SHINE U CLINIC", src: "/images/clients/shine-u-clinic.png" },
-  { name: "현대해상", src: "/images/clients/hyundai-insurance.png" },
-  { name: "Odorr", src: "/images/clients/odorr.png" },
-  { name: "한국경제TV", src: "/images/clients/hankyung-tv.png" },
-  { name: "THE LITER", src: "/images/clients/the-liter.png" },
-  { name: "HERMÈS", src: "/images/clients/hermes.png" },
-  { name: "DB손해보험", src: "/images/clients/db-insurance.png" },
-  { name: "Hendrick's Gin", src: "/images/clients/hendricks-gin.png" },
-  { name: "Lillet", src: "/images/clients/lillet.png" },
+  {
+    name: "KB국민카드",
+    src: "/images/clients/kb-card.png",
+    photo: "/images/clients/kb-card-shot.webp",
+    photoAlt: "KB국민카드 ALL 카드 — 노란 띠와 큰 ALL 레터링이 든 카드 앞면",
+  },
+  {
+    name: "Sealy",
+    src: "/images/clients/sealy.png",
+    photo: "/images/clients/sealy-shot.webp",
+    photoAlt: "씰리 침대 — 펜던트 조명이 걸린 침실에 놓인 매트리스와 헤드보드",
+  },
+  {
+    name: "SOOP",
+    src: "/images/clients/soop.png",
+    photo: "/images/clients/soop-shot.webp",
+    photoAlt: "SOOP 사옥 — 옥상에 SOOP 사인이 올라간 유리 외벽 건물",
+  },
+  {
+    name: "우다다",
+    src: "/images/clients/udada.png",
+    photo: "/images/clients/udada-shot.webp",
+    photoAlt: "우다다 매장 앞면 — 강아지 그림이 붙은 유리문과 창",
+    /* 흰색으로 뒤집지 않는다 — 면으로 그린 여우 얼굴이라 뒤집으면 눈코가
+       사라지고 흰 덩어리만 남는다. 컷이 밝은 편이라 원색으로도 읽힌다. */
+    keepLogoColor: true,
+  },
+  {
+    name: "메리츠화재",
+    src: "/images/clients/meritz-fire.png",
+    photo: "/images/clients/meritz-fire-shot.webp",
+    photoAlt: "메리츠타워 — 아래에서 올려다본 유리 외벽 고층 건물",
+  },
+  {
+    name: "The Balvenie",
+    src: "/images/clients/the-balvenie.png",
+    photo: "/images/clients/the-balvenie-shot.webp",
+    photoAlt:
+      "발베니 싱글 몰트 위스키 — 나무 탁자에 늘어선 더블우드 12년/캐리비언 캐스크 14년/더블우드 17년/포트우드 21년 병 넷",
+  },
+  {
+    name: "직폰",
+    src: "/images/clients/ziphone.png",
+    photo: "/images/clients/ziphone-shot.webp",
+    photoAlt: "직폰 — 색깔별로 늘어선 아이폰 뒷면 넷",
+  },
+  {
+    name: "아모레퍼시픽",
+    src: "/images/clients/amorepacific.png",
+    photo: "/images/clients/amorepacific-shot.webp",
+    photoAlt: "아모레퍼시픽 본사 — 밤에 빛나는 정육면체 유리 사옥",
+  },
+  {
+    name: "MONOCUS",
+    src: "/images/clients/monocus.png",
+    photo: "/images/clients/monocus-shot.webp",
+    photoAlt: "모노커스 소파 — 볕 드는 거실에 놓인 브라운 가죽 코너 소파",
+  },
+  {
+    name: "Rolls-Royce",
+    src: "/images/clients/rolls-royce.png",
+    photo: "/images/clients/rolls-royce-shot.webp",
+    photoAlt: "롤스로이스 팬텀 — 스튜디오 배경에 선 세이지 그린 세단",
+  },
+  {
+    name: "린선다이닝",
+    src: "/images/clients/linsen-dining.png",
+    photo: "/images/clients/linsen-dining-shot.webp",
+    photoAlt: "린선다이닝 — 대나무 무늬 조명 패널이 둘린 유리 매장 앞면",
+  },
+  {
+    name: "하이투자증권",
+    src: "/images/clients/dgb-hi-investment.png",
+    photo: "/images/clients/dgb-hi-investment-shot.webp",
+    photoAlt: "하이투자증권 사옥 — 아래에서 올려다본 곡면 유리 타워",
+  },
+  {
+    name: "Care by Me",
+    src: "/images/clients/care-by-me.png",
+    photo: "/images/clients/care-by-me-shot.webp",
+    photoAlt: "케어바이미 매장 — 아치 벽감과 원형 간접등이 놓인 흰 대기실",
+  },
+  {
+    name: "NS홈쇼핑",
+    src: "/images/clients/ns-homeshopping.png",
+    photo: "/images/clients/ns-homeshopping-shot.webp",
+    photoAlt: "NS홈쇼핑 사옥 — 유리와 색 패널이 섞인 외벽",
+  },
+  {
+    name: "dr ROBBIN",
+    src: "/images/clients/dr-robbin.png",
+    photo: "/images/clients/dr-robbin-shot.webp",
+    photoAlt: "닥터로빈 매장 앞면 — 아치 창이 늘어선 유리 파사드와 자동문",
+  },
+  {
+    name: "라이나생명",
+    src: "/images/clients/lina-life.png",
+    photo: "/images/clients/lina-life-shot.webp",
+    photoAlt: "라이나생명 사옥 — 해 질 녘 불이 들어온 유리 외벽 모서리",
+  },
+  {
+    name: "웨이브히어링",
+    src: "/images/clients/wave-hearing.png",
+    photo: "/images/clients/wave-hearing-shot.webp",
+    photoAlt: "웨이브히어링 보청기 — 귀에 거는 고리가 달린 검은 본체",
+  },
+  {
+    name: "Porsche",
+    src: "/images/clients/porsche.png",
+    photo: "/images/clients/porsche-shot.webp",
+    photoAlt: "포르쉐 파나메라 — 바닷가 도로를 달리는 오렌지색 세단",
+  },
+  {
+    name: "우피아",
+    src: "/images/clients/uffia.png",
+    photo: "/images/clients/uffia-shot.webp",
+    photoAlt: "우피아 가구 — 선반 시스템과 원목 식탁이 놓인 밝은 거실",
+  },
+  {
+    name: "TV조선",
+    src: "/images/clients/tv-chosun.png",
+    photo: "/images/clients/tv-chosun-shot.webp",
+    photoAlt: "TV조선 사옥 — 해 질 녘 세로 결이 새겨진 외벽과 불 켜진 창",
+  },
+  {
+    name: "살롱드하루",
+    src: "/images/clients/salon-de-haru.png",
+    photo: "/images/clients/salon-de-haru-shot.webp",
+    photoAlt: "살롱드하루 매장 앞면 — 원목 틀에 든 유리 파사드와 이발소 사인",
+  },
+  {
+    name: "삼성카드",
+    src: "/images/clients/samsung-card.png",
+    photo: "/images/clients/samsung-card-shot.webp",
+    photoAlt: "삼성카드 — 파란 바탕에 비스듬히 늘어놓은 카드 여러 장",
+  },
+  {
+    name: "아이품고",
+    src: "/images/clients/ipoomgo.png",
+    photo: "/images/clients/ipoomgo-shot.webp",
+    photoAlt: "아이품고 광고 한 장면 — 휴대폰을 든 채 웃는 여성의 얼굴",
+  },
+  {
+    name: "한화손해보험",
+    src: "/images/clients/hanwha-insurance.png",
+    photo: "/images/clients/hanwha-insurance-shot.webp",
+    photoAlt: "한화손해보험 사옥 — 맑은 하늘 아래 파란 유리 외벽 고층 건물",
+  },
+  {
+    name: "BODYBEAN PILATES",
+    src: "/images/clients/bodybean-pilates.png",
+    photo: "/images/clients/bodybean-pilates-shot.webp",
+    photoAlt: "바디빈필라테스 — 통유리 앞 리포머 위에서 동작 중인 회원",
+  },
+  {
+    name: "코인원",
+    src: "/images/clients/coinone.png",
+    photo: "/images/clients/coinone-shot.webp",
+    photoAlt: "코인원 앱 화면 — 시세/잔고/주문 화면이 나란히 선 휴대폰 셋",
+  },
+  {
+    name: "ALLERMAN",
+    src: "/images/clients/allerman.png",
+    photo: "/images/clients/allerman-shot.webp",
+    photoAlt: "알레르망 침구 — 몰딩 벽 앞 침대에 덮인 아이보리 이불과 베개",
+  },
+  {
+    name: "SK브로드밴드",
+    src: "/images/clients/sk-broadband.png",
+    photo: "/images/clients/sk-broadband-shot.webp",
+    photoAlt: "SK브로드밴드 사옥 — 맑은 하늘 아래 흰 외벽 고층 건물",
+  },
+  {
+    name: "오키파",
+    src: "/images/clients/okipa.png",
+    photo: "/images/clients/okipa-shot.webp",
+    photoAlt: "옆커폰 매장 앞면 — 유리문 안에 세워 둔 신제품 예약 안내판",
+  },
+  {
+    name: "미래에셋증권",
+    src: "/images/clients/mirae-asset.png",
+    photo: "/images/clients/mirae-asset-shot.webp",
+    photoAlt: "미래에셋 센터원 — 유리 타워 아래 광장과 캐노피",
+  },
+  {
+    name: "SHINE U CLINIC",
+    src: "/images/clients/shine-u-clinic.png",
+    photo: "/images/clients/shine-u-clinic-shot.webp",
+    photoAlt: "샤인유클리닉 — 빛나는 리셉션 데스크가 놓인 흰 로비",
+  },
+  {
+    name: "현대해상",
+    src: "/images/clients/hyundai-insurance.png",
+    photo: "/images/clients/hyundai-insurance-shot.webp",
+    photoAlt: "현대해상 사옥 — 파란 하늘 아래 격자 무늬 유리 외벽 건물",
+  },
+  {
+    name: "Odorr",
+    src: "/images/clients/odorr.png",
+    photo: "/images/clients/odorr-shot.webp",
+    photoAlt: "오도르 차량용 디퓨저 — 바닷가 러그 위에 놓인 흰 패키지",
+  },
+  {
+    name: "한국경제TV",
+    src: "/images/clients/hankyung-tv.png",
+    photo: "/images/clients/hankyung-tv-shot.webp",
+    photoAlt: "한국경제 사옥 — 유리 원통형 타워와 맞붙은 사무동 외벽",
+  },
+  {
+    name: "THE LITER",
+    src: "/images/clients/the-liter.png",
+    photo: "/images/clients/the-liter-shot.webp",
+    photoAlt: "더리터 매장 — 주문대 앞에 줄지어 선 손님들",
+  },
+  {
+    name: "HERMÈS",
+    src: "/images/clients/hermes.png",
+    photo: "/images/clients/hermes-shot.webp",
+    photoAlt: "에르메스 매장 — 유리문을 활짝 연 부티크 앞면과 내부 진열",
+  },
+  {
+    name: "DB손해보험",
+    src: "/images/clients/db-insurance.png",
+    photo: "/images/clients/db-insurance-shot.webp",
+    photoAlt: "DB손해보험 사옥 — 파란 하늘 아래 유리 외벽 고층 건물",
+  },
+  {
+    name: "Hendrick's Gin",
+    src: "/images/clients/hendricks-gin.png",
+    photo: "/images/clients/hendricks-gin-shot.webp",
+    photoAlt: "핸드릭스 진 — 오이를 두른 진토닉 잔과 검은 병, 지거",
+  },
+  {
+    name: "Lillet",
+    src: "/images/clients/lillet.png",
+    photo: "/images/clients/lillet-shot.webp",
+    photoAlt: "릴레 로제 — 카페 테이블에 놓인 병과 탄산수를 따르는 잔",
+  },
 ] as const;
 
 /**

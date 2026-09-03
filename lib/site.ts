@@ -812,9 +812,9 @@ export const workProjects = [
   },
   {
     id: "s10-maxv-ultra",
-    /* 브랜드명은 넘겨받은 컷 안에 제품명(로봇청소기 S10 MaxV Ultra)만
-       찍혀 있어서 그대로 뒀다. 광고주 이름이 확인되면 여기만 고치면 된다. */
-    client: "로봇청소기 S10 MaxV Ultra",
+    /* 넘겨받은 컷에는 제품명만 찍혀 있었고, 광고주가 로보락으로 확인돼
+       브랜드명을 앞에 세웠다. */
+    client: "로보락 S10 MaxV Ultra",
     title: "둘이라서 가능한 완벽한 조합",
     role: "브랜드 캠페인 영상",
     thumb: "/images/work/s10-maxv-ultra/s10-thumb.jpg",

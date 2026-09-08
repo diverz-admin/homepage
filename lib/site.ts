@@ -6,8 +6,8 @@
 export const company = {
   name: "주식회사 다이버즈",
   nameEn: "DIVERZ",
-  /** 공동 대표. 푸터에 이 순서 그대로 나란히 선다. */
-  ceo: "전재민, 최원식",
+  /** 푸터 "대표자" 줄에 그대로 나간다. */
+  ceo: "전재민",
   bizNumber: "174-88-03266",
   address: "경기도 고양시 일산동구 백마로 195, 5007호",
   email: "info@diverz.kr",

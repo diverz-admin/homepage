@@ -23,6 +23,12 @@ export const metadata: Metadata = {
     locale: "ko_KR",
     images: ["/images/hero-deep.png"],
   },
+  // <meta name="facebook-domain-verification" content="..." /> 로 출력된다.
+  verification: {
+    other: {
+      "facebook-domain-verification": "93gy94tiyzobxglb49oc8j49ozx6zc",
+    },
+  },
 };
 
 export default function RootLayout({

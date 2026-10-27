@@ -63,6 +63,9 @@ export default function ContactForm() {
         return;
       }
 
+      // 메타 픽셀 전환 이벤트 — 문의 접수가 성공했을 때만 보낸다.
+      window.fbq?.("track", "Lead");
+
       form.reset();
       setTypePicked(false);
       setStatus("sent");

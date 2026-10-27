@@ -3,6 +3,7 @@ import Script from "next/script";
 import SiteHeader from "@/components/site-header";
 import SiteFooter from "@/components/site-footer";
 import Cursor from "@/components/cursor";
+import MetaPixelPageView from "@/components/meta-pixel-pageview";
 import { company } from "@/lib/site";
 // 한글 본문 폰트 Pretendard (유니코드 dynamic-subset — 필요한 글리프만 로드)
 import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
@@ -67,6 +68,7 @@ fbq('track', 'PageView');`}
           />
         </noscript>
         {/* End Meta Pixel Code */}
+        <MetaPixelPageView />
         <Cursor />
         <SiteHeader />
         <main className="flex-1">{children}</main>

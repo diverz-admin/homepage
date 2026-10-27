@@ -13,8 +13,8 @@ export const OG_IMAGE = "/images/hero-deep.png";
  * - NAVER_SITE_VERIFICATION: 네이버 서치어드바이저 HTML 태그의 content 값
  */
 export const GA_MEASUREMENT_ID: string = "";
-export const GOOGLE_SITE_VERIFICATION: string = "";
-export const NAVER_SITE_VERIFICATION: string = "";
+export const GOOGLE_SITE_VERIFICATION: string = "bwY6Q_PNn29G4zm6agnD6Gx3N8VWV4ojBM4Hqbix88A";
+export const NAVER_SITE_VERIFICATION: string = "1de5bc42333993b63f05c6f82b1c2d7828a43b17";
 
 /** intro/positioning의 "\n" 줄바꿈과 "**강조**" 마커는 메타 문구에서 걷어낸다. */
 export function plain(text: string) {

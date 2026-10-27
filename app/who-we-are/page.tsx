@@ -10,7 +10,7 @@ export const metadata: Metadata = pageMetadata({
   path: "/who-we-are",
   title: "WHO WE ARE",
   description:
-    "다이버즈는 단순한 마케팅 대행사가 아닙니다. 브랜드의 본질을 탐색하고, 다이버즈만의 전략과 실행으로 성장을 함께 만들어내는 IMC 마케팅 파트너입니다.",
+    "다이버즈는 브랜드의 본질을 탐색하고, 전략과 실행으로 성장을 함께 만들어내는 IMC 마케팅 파트너입니다.",
 });
 
 /**

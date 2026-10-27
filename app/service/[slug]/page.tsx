@@ -54,6 +54,18 @@ export function generateStaticParams() {
   return services.map((service) => ({ slug: service.slug }));
 }
 
+/**
+ * 검색 결과용 설명. 본문의 summary는 길어서 네이버 권장 길이(80자 이내)를
+ * 넘기므로 메타 설명만 따로 짧게 둔다.
+ */
+const metaDescriptions: Record<string, string> = {
+  imc: "흩어진 채널을 하나의 메시지로 묶는 다이버즈 IMC 마케팅. 브랜드 진단부터 채널 믹스, 전환 퍼널 설계까지 함께합니다.",
+  performance: "META/GDN/NAVER 광고를 ROAS 중심으로 운영하는 다이버즈 퍼포먼스 마케팅. 데이터로 소재와 타깃을 개선합니다.",
+  viral: "바이럴 마케팅 솔루션 블루에그. 네이버 블로그/카페/리뷰와 리워드 캠페인을 수수료 부담 없이 운영합니다.",
+  global: "중국 콰징 입점부터 샤오홍슈/도우인 현지 마케팅까지 연결하는 다이버즈 글로벌 마케팅입니다.",
+  contents: "영상, 상세페이지, 숏폼, 광고 소재까지 기획부터 제작까지 함께하는 다이버즈 콘텐츠 제작 서비스입니다.",
+};
+
 export async function generateMetadata({
   params,
 }: {
@@ -65,7 +77,7 @@ export async function generateMetadata({
   return pageMetadata({
     path: `/service/${service.slug}`,
     title: `${service.name} | SERVICE`,
-    description: service.summary,
+    description: metaDescriptions[service.slug] ?? service.summary,
   });
 }
 

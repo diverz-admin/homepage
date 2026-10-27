@@ -21,7 +21,9 @@ export function plain(text: string) {
   return text.replace(/\n/g, " ").replace(/\*\*/g, "");
 }
 
-export const SITE_DESCRIPTION = `${plain(company.positioning)} ${plain(company.intro)}`;
+/** 네이버 서치어드바이저 권장 길이(80자 이내)에 맞춘 사이트 설명. */
+export const SITE_DESCRIPTION =
+  "브랜드를 발굴하고 성장시키는 IMC 마케팅 그룹 다이버즈. 퍼포먼스/바이럴/글로벌 마케팅과 콘텐츠 제작을 함께합니다.";
 
 export const KEYWORDS = [
   "다이버즈",

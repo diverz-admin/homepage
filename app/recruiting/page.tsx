@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Image from "next/image";
 import {
   ArrowRight,
@@ -75,11 +76,12 @@ const TRAIT_SPANS = [
 const TRAIT_CARD_DARK =
   "text-white [&_h3]:text-white [&_p]:text-white/75 [&_svg]:text-white";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: "/recruiting",
   title: "RECRUITING",
   description:
     "다이버즈 하반기 채용. 퍼포먼스 마케팅 팀장, 콘텐츠팀 PD, 광고 영업기획 팀장을 모집합니다.",
-};
+});
 
 /**
  * 지원 메일 링크. 직군을 넘기면 제목까지 채워진 메일이 열려서, 받는 쪽에서

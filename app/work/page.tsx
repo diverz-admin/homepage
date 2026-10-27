@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import GradientLine from "@/components/gradient-line";
 import PageHero from "@/components/page-hero";
 import WorkProjects from "@/components/work-projects";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: "/work",
   title: "WORK",
-  description: "다이버즈가 함께한 브랜드와 프로젝트 기록입니다.",
-};
+  description:
+    "다이버즈가 함께한 브랜드와 프로젝트 기록입니다.",
+});
 
 /**
  * WORK — 배너 아래로 곧장 갈래 탭과 격자가 오는 단순한 페이지.

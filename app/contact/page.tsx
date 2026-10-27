@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import ContactForm from "@/components/contact-form";
 import Bubbles from "@/components/bubbles";
 import Reveal from "@/components/reveal";
 import { company } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: "/contact",
   title: "CONTACT",
   description:
     "문의 내용에 따라 전담 매니저가 무료로 맞춤형 컨설팅을 제공합니다. 다이버즈에 프로젝트를 문의하세요.",
-};
+});
 
 /**
  * 레퍼런스대로 히어로 없이 통짜 다크 섹션 하나로 짠다.

@@ -7,7 +7,9 @@ import KeepSectionInView from "@/components/keep-section-in-view";
 import ServiceDetail from "@/components/service-detail";
 import WorkLink from "@/components/work-link";
 import { MenuHorizontal } from "@/components/ui/menu-horizontal";
+import JsonLd from "@/components/json-ld";
 import { services } from "@/lib/site";
+import { SITE_URL, pageMetadata } from "@/lib/seo";
 
 /**
  * 히어로 상단에 고정으로 서는 서비스명(영문).
@@ -60,10 +62,11 @@ export async function generateMetadata({
   const { slug } = await params;
   const service = services.find((s) => s.slug === slug);
   if (!service) return { title: "SERVICE" };
-  return {
+  return pageMetadata({
+    path: `/service/${service.slug}`,
     title: `${service.name} | SERVICE`,
     description: service.summary,
-  };
+  });
 }
 
 /**
@@ -96,9 +99,33 @@ export default async function ServiceDetailPage({
   if (index === -1) notFound();
 
   const service = services[index];
+  const url = `${SITE_URL}/service/${service.slug}`;
 
   return (
     <>
+      <JsonLd
+        data={[
+          {
+            "@context": "https://schema.org",
+            "@type": "Service",
+            name: service.name,
+            alternateName: service.en,
+            description: service.summary,
+            url,
+            serviceType: service.name,
+            areaServed: "KR",
+            provider: { "@id": `${SITE_URL}/#organization` },
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "홈", item: SITE_URL },
+              { "@type": "ListItem", position: 2, name: service.name, item: url },
+            ],
+          },
+        ]}
+      />
       <PageHero
         title={
           <>

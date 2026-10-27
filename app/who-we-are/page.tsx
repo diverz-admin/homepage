@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import GradientLine from "@/components/gradient-line";
 import PageHero from "@/components/page-hero";
 import Reveal from "@/components/reveal";
 import HoverRevealCards from "@/components/ui/cards";
 import { process, team } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: "/who-we-are",
   title: "WHO WE ARE",
   description:
     "다이버즈는 단순한 마케팅 대행사가 아닙니다. 브랜드의 본질을 탐색하고, 다이버즈만의 전략과 실행으로 성장을 함께 만들어내는 IMC 마케팅 파트너입니다.",
-};
+});
 
 /**
  * 5단계 프로세스의 "수심". 내려갔다(01→03) 떠오르는(04→05) 여정을

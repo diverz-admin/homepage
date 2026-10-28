@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: DEFAULT_TITLE,
-    template: "%s | DIVERZ",
+    template: `%s | ${SITE_NAME}`,
   },
   // intro의 "**강조**" 마커(components/ui/text-reveal.tsx가 강조색으로 읽는 표시)는
   // 메타 설명에는 필요 없는 표기라 걷어낸다(lib/seo.ts plain).
@@ -105,8 +105,9 @@ const websiteLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   "@id": `${SITE_URL}/#website`,
-  name: SITE_NAME,
-  alternateName: "다이버즈",
+  // 구글 검색 결과의 사이트 이름 후보. 짧은 한글명을 주 이름으로 둔다.
+  name: "다이버즈",
+  alternateName: ["DIVERZ", SITE_NAME],
   url: SITE_URL,
   inLanguage: "ko-KR",
   publisher: { "@id": `${SITE_URL}/#organization` },

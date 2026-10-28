@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { company } from "@/lib/site";
 
 export const SITE_URL = "https://diverz.kr";
-export const SITE_NAME = "DIVERZ";
-export const DEFAULT_TITLE = "DIVERZ — DIVE DEEP, RISE FAST";
+// "다이버즈"로 검색했을 때 영문 DIVERZ와 같은 브랜드로 묶이도록 한글명을 함께 둔다.
+export const SITE_NAME = "다이버즈 DIVERZ";
+export const DEFAULT_TITLE = "다이버즈 DIVERZ — DIVE DEEP, RISE FAST";
 export const OG_IMAGE = "/images/hero-deep.png";
 
 /**

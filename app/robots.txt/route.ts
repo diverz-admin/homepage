@@ -7,7 +7,7 @@ export const dynamic = "force-static";
  * robots.txt. Next의 robots.ts(MetadataRoute.Robots)는 주석 줄을 넣을 수 없는데,
  * Daum 웹마스터도구가 소유 확인 문자열을 robots.txt 주석으로 요구해서 직접 쓴다.
  */
-const body = `#DaumWebMasterTool:ecc2e6c8f8f292aa7303c39e3a98b9944500f79fe47b3273f1163f28bfdc0488:/Dn1va1+69DmjyIIIsTgww==
+const body = `#DaumWebMasterTool:ffa7e8088fcf8dd751c1020dabab978903c086716ec1756730ae8a4043ba1156:7v7Co2KibzUex4fH7zWmNA==
 
 User-Agent: *
 Allow: /

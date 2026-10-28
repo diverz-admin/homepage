@@ -399,7 +399,7 @@ export const performanceFunnel = [
  *
  * 각 프로그램에 실리는 내용은 아래 데이터를 그대로 쓴다 —
  *   바이럴 마케팅 → 아래 programs.viral 의 summary · points
- *   리워드 마케팅 → searchRankingBoost (플레이스 · 스마트스토어) + smartstoreRankings
+ *   리워드 마케팅 → programs.reward 의 summary · points · items
  */
 export const viralSolution = {
   en: "BLUE EGG",
@@ -494,12 +494,6 @@ export const viralSolution = {
 } as const;
 
 /**
- * 상위노출 2종 — 서비스 페이지 VIRAL 블록의 두 번째 묶음.
- * 기존 사이트 diverz.kr/35 (SEARCH RANKING BOOST)의 내용을 그대로 옮겼다.
- * 바이럴과 별개 서비스지만 이 사이트에서는 VIRAL 안의 키워드로 묶여 있어
- * (points에 "상위노출"이 있다) 같은 블록에서 이어 보여 준다.
- */
-/**
  * 상위노출 실적 — 키워드별 순위 상승 기록.
  * from(초기 순위) → to(현재 순위). 상승 폭은 화면에서 from - to로 계산한다.
  *
@@ -519,26 +513,6 @@ export const smartstoreRankings = [
   { keyword: "샴푸", from: 25, to: 3 },
   { keyword: "방향제", from: 122, to: 1 },
   { keyword: "스킨케어", from: 169, to: 1 },
-] as const;
-
-export const searchRankingBoost = [
-  {
-    en: "NAVER PLACE",
-    logo: "/images/viral/naver-place.png",
-    title: "플레이스 상위노출",
-    body:
-      "블로그 리뷰, 영수증 리뷰, 리워드 트래픽, 저장하기 등 다양한 사용자 행동 데이터를 정교하게 설계합니다. " +
-      "단순 광고가 아닌, 네이버 알고리즘에 최적화된 유기적 노출 구조를 통해 브랜드의 플레이스 상위노출을 안정적으로 만들어 냅니다.",
-  },
-  {
-    // TODO: 로고 원본 없음. "Service page/viral/"에 스마트스토어 파일이 들어오면
-    // scripts/normalize-viral-logos.mjs의 FILES에 추가하고 여기 logo를 채운다.
-    en: "NAVER SMARTSTORE",
-    title: "스마트스토어 상위노출",
-    body:
-      "SEO 최적화부터 상품 찜, 관심고객수, 리워드 기반 트래픽까지. " +
-      "스마트스토어의 검색 상위노출을 위해 주요 지표들을 정교하게 조합해 노출 경쟁력을 높이고 실질적인 매출 성장을 유도합니다.",
-  },
 ] as const;
 
 /**

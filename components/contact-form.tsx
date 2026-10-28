@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import { services } from "@/lib/site";
 
@@ -32,6 +32,11 @@ export default function ContactForm() {
    * 고르면 푼다 — 브라우저 기본 검증을 그대로 쓰면서 그룹 필수를 만든다.
    */
   const [typePicked, setTypePicked] = useState(false);
+  /** 스팸 방지: 폼이 처음 그려진 시각. 서버가 너무 빨리 온 제출을 거른다. */
+  const startedAt = useRef(0);
+  useEffect(() => {
+    startedAt.current = Date.now();
+  }, []);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -53,6 +58,8 @@ export default function ContactForm() {
           budget: data.get("budget"),
           inquiryTypes: data.getAll("inquiryTypes"),
           consent: data.get("consent") === "on",
+          website: data.get("website"),
+          elapsedMs: Date.now() - startedAt.current,
         }),
       });
 
@@ -77,6 +84,14 @@ export default function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit} className="grid gap-8">
+      {/* 스팸 방지 함정 칸. 사람에게는 보이지 않고 Tab으로도 닿지 않는다.
+          봇이 채우면 서버가 저장하지 않고 성공처럼 응답한다. */}
+      <div aria-hidden className="absolute -left-[9999px] h-px w-px overflow-hidden">
+        <label>
+          Website
+          <input name="website" type="text" tabIndex={-1} autoComplete="off" defaultValue="" />
+        </label>
+      </div>
       <div className="grid gap-2 sm:grid-cols-[88px_1fr] sm:gap-6">
         <span className={`${label} sm:pt-1`}>문의유형 *</span>
         {/* 6개를 flex-wrap으로 흘리면 폭에 따라 갈려 마지막 칸만 아래에 혼자

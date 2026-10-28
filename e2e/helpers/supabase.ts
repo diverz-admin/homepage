@@ -15,7 +15,7 @@ export function testSupabase() {
 }
 
 /** 테스트가 만든 문의만 지운다. */
-export async function deleteContactsByEmail(email: string) {
-  const { error } = await testSupabase().from("contacts").delete().eq("email", email);
+export async function deleteContactsByPhone(phone: string) {
+  const { error } = await testSupabase().from("contacts").delete().eq("phone", phone);
   if (error) throw new Error(`테스트 데이터 정리 실패: ${error.message}`);
 }

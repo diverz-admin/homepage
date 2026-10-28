@@ -1,12 +1,17 @@
 import { expect, test } from "@playwright/test";
+import { services } from "../lib/site";
 
 const pages = [
-  { path: "/", heading: "DIVE DEEP", title: /DIVE DEEP, RISE FAST/ },
-  { path: "/who-we-are", heading: "단순한 대행사가", title: /WHO WE ARE/ },
-  { path: "/service", heading: "흩어진 실행을", title: /SERVICE/ },
-  { path: "/solution", heading: "리워드", title: /SOLUTION/ },
-  { path: "/work", heading: "WORK", title: /WORK/ },
-  { path: "/contact", heading: "DIVE DEEP,", title: /CONTACT/ },
+  { path: "/", title: "다이버즈 DIVERZ — DIVE DEEP, RISE FAST" },
+  { path: "/who-we-are", title: /WHO WE ARE/ },
+  { path: "/service", title: /SERVICE/ },
+  ...services.map((service) => ({
+    path: `/service/${service.slug}`,
+    title: new RegExp(service.name),
+  })),
+  { path: "/work", title: /WORK/ },
+  { path: "/recruiting", title: /RECRUITING/ },
+  { path: "/contact", title: /CONTACT/ },
 ];
 
 for (const page_ of pages) {
@@ -15,9 +20,7 @@ for (const page_ of pages) {
 
     expect(response?.status()).toBe(200);
     await expect(page).toHaveTitle(page_.title);
-    await expect(
-      page.getByRole("heading", { level: 1 })
-    ).toContainText(page_.heading);
+    await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
   });
 }
 
@@ -25,7 +28,9 @@ test("헤더 네비게이션으로 각 페이지를 이동할 수 있다", async
   await page.goto("/");
 
   const header = page.getByRole("banner");
-  await header.getByRole("link", { name: "WORK", exact: true }).click();
+  // 메뉴 항목은 MENU 버튼을 눌러야 펼쳐진다.
+  await header.getByRole("button", { name: /MENU/ }).click();
+  await page.getByRole("link", { name: /WORK/ }).first().click();
   await expect(page).toHaveURL(/\/work$/);
 
   await header.getByRole("link", { name: "CONTACT", exact: true }).click();

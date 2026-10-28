@@ -11,7 +11,14 @@ type ContactPayload = {
   inquiryTypes?: unknown;
   budget?: unknown;
   consent?: unknown;
+  /** 스팸 방지 함정 칸(화면에 안 보임). 값이 있으면 봇이다. */
+  website?: unknown;
+  /** 폼이 그려진 뒤 제출까지 걸린 시간(ms). */
+  elapsedMs?: unknown;
 };
+
+/** 사람이 필수 항목을 채우는 데 이보다 빨리 끝내기 어렵다. */
+const MIN_FILL_MS = 3000;
 
 function asTrimmedString(value: unknown, max: number): string {
   return typeof value === "string" ? value.trim().slice(0, max) : "";
@@ -32,6 +39,19 @@ export async function POST(request: Request) {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "잘못된 요청입니다." }, { status: 400 });
+  }
+
+  /**
+   * 봇으로 보이면 저장/메일 없이 성공처럼 응답한다. 실패를 돌려주면 봇이
+   * 방식을 바꿔 다시 시도하기 때문이다.
+   */
+  const honeypot = asTrimmedString(body.website, 200);
+  const elapsedMs = typeof body.elapsedMs === "number" ? body.elapsedMs : 0;
+  if (honeypot || elapsedMs < MIN_FILL_MS) {
+    console.warn(
+      `[contact] spam blocked (honeypot=${Boolean(honeypot)}, elapsedMs=${elapsedMs})`
+    );
+    return NextResponse.json({ ok: true }, { status: 201 });
   }
 
   const name = asTrimmedString(body.name, 80);

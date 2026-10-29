@@ -1,5 +1,6 @@
 import Image from "next/image";
 
+import { BLUEEGG } from "@/lib/seo";
 import ContentsTabs from "@/components/contents-tabs";
 import GlobalMarketingTabs from "@/components/global-marketing-tabs";
 import PerformanceFunnel from "@/components/performance-funnel";
@@ -222,6 +223,7 @@ export default function ServiceDetail({
               /* 영문 라벨(VIRAL) 자리에 공감 한 줄을 세운다 — 탭 안이라
                  이름표는 활성 탭이 이미 맡고 있다. */
               lead={viralSolution.hook}
+              externalLink={{ href: BLUEEGG.url, label: "블루에그 바로가기" }}
               asideBleed={diagram?.bleedRight}
               aside={diagram ? <DiagramAside diagram={diagram} /> : undefined}
             />

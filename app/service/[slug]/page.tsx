@@ -9,7 +9,7 @@ import WorkLink from "@/components/work-link";
 import { MenuHorizontal } from "@/components/ui/menu-horizontal";
 import JsonLd from "@/components/json-ld";
 import { services } from "@/lib/site";
-import { SITE_URL, pageMetadata } from "@/lib/seo";
+import { BLUEEGG, SITE_URL, pageMetadata } from "@/lib/seo";
 
 /**
  * 히어로 상단에 고정으로 서는 서비스명(영문).
@@ -127,6 +127,7 @@ export default async function ServiceDetailPage({
             serviceType: service.name,
             areaServed: "KR",
             provider: { "@id": `${SITE_URL}/#organization` },
+            ...(service.slug === "viral" && { brand: BLUEEGG }),
           },
           {
             "@context": "https://schema.org",

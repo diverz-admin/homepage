@@ -9,6 +9,8 @@ import { company } from "@/lib/site";
 import {
   DEFAULT_TITLE,
   GA_MEASUREMENT_ID,
+  BING_SITE_VERIFICATION,
+  BLUEEGG,
   GOOGLE_SITE_VERIFICATION,
   KEYWORDS,
   NAVER_SITE_VERIFICATION,
@@ -75,6 +77,9 @@ export const metadata: Metadata = {
       ...(NAVER_SITE_VERIFICATION && {
         "naver-site-verification": NAVER_SITE_VERIFICATION,
       }),
+      ...(BING_SITE_VERIFICATION && {
+        "msvalidate.01": BING_SITE_VERIFICATION,
+      }),
     },
   },
 };
@@ -85,6 +90,7 @@ const organizationLd = {
   "@type": "Organization",
   "@id": `${SITE_URL}/#organization`,
   name: company.name,
+  legalName: company.name,
   alternateName: [company.nameEn, "다이버즈"],
   url: SITE_URL,
   logo: `${SITE_URL}/icon.png`,
@@ -92,13 +98,17 @@ const organizationLd = {
   description: SITE_DESCRIPTION,
   email: company.email,
   slogan: company.slogan.join(", "),
-  founder: { "@type": "Person", name: company.ceo },
+  // 대표자. schema.org에 "대표" 속성이 따로 없어 employee + jobTitle로 적는다.
+  employee: { "@type": "Person", name: company.ceo, jobTitle: "대표이사" },
   taxID: company.bizNumber,
   address: {
     "@type": "PostalAddress",
-    streetAddress: company.address,
+    streetAddress: "백마로 195, 5007호 (장항동, 엠시티타워&엠시티오피스텔)",
+    addressLocality: "고양시 일산동구",
+    addressRegion: "경기도",
     addressCountry: "KR",
   },
+  brand: BLUEEGG,
 };
 
 const websiteLd = {

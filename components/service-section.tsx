@@ -32,6 +32,7 @@ export default function ServiceSection({
   riseReveal = false,
   unwrapped = false,
   lead,
+  externalLink,
 }: {
   service: (typeof services)[number];
   /**
@@ -93,6 +94,8 @@ export default function ServiceSection({
    * (components/ecommerce-marketing.tsx · hospital-marketing.tsx).
    */
   lead?: string;
+  /** 문의하기 앞에 놓는 외부 사이트 링크(새 창). 바이럴의 블루에그 바로가기. */
+  externalLink?: { href: string; label: string };
 }) {
   const grid = (
     <>
@@ -209,14 +212,28 @@ export default function ServiceSection({
           </Reveal>
 
           <Reveal delay={180}>
-            {/* 상세 페이지 안에서 다음으로 갈 곳은 결국 문의다. */}
-            <Link
-              href="/contact"
-              className="mt-12 inline-flex items-baseline gap-2 border-b border-accent/40 pb-1.5 text-base font-bold text-accent transition-colors hover:border-accent"
-            >
-              문의하기
-              <span aria-hidden>↗</span>
-            </Link>
+            {/* 상세 페이지 안에서 다음으로 갈 곳은 결국 문의다.
+                외부 링크가 있으면 같은 규격으로 문의하기 앞에 나란히 둔다. */}
+            <div className="mt-12 flex flex-wrap gap-x-8 gap-y-4">
+              {externalLink && (
+                <a
+                  href={externalLink.href}
+                  target="_blank"
+                  rel="noopener"
+                  className="inline-flex items-baseline gap-2 border-b border-accent/40 pb-1.5 text-base font-bold text-accent transition-colors hover:border-accent"
+                >
+                  {externalLink.label}
+                  <span aria-hidden>→</span>
+                </a>
+              )}
+              <Link
+                href="/contact"
+                className="inline-flex items-baseline gap-2 border-b border-accent/40 pb-1.5 text-base font-bold text-accent transition-colors hover:border-accent"
+              >
+                문의하기
+                <span aria-hidden>↗</span>
+              </Link>
+            </div>
           </Reveal>
         </div>
 

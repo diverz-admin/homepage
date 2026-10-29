@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { permanentRedirect } from "next/navigation";
 
 import { services } from "@/lib/site";
 
@@ -11,5 +11,5 @@ import { services } from "@/lib/site";
  * 그대로 쓰므로, 상품 순서를 바꾸면 첫 화면도 따라 바뀐다.
  */
 export default function ServicePage() {
-  redirect(`/service/${services[0].slug}`);
+  permanentRedirect(`/service/${services[0].slug}`);
 }

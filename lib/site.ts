@@ -10,6 +10,9 @@ export const company = {
   ceo: "전재민",
   bizNumber: "174-88-03266",
   address: "경기도 고양시 일산동구 백마로 195, 5007호",
+  /** 건물명까지 적은 전체 주소. 푸터와 구조화 데이터에 쓴다. */
+  addressFull:
+    "경기도 고양시 일산동구 백마로 195, 5007호 (장항동, 엠시티타워&엠시티오피스텔)",
   email: "info@diverz.kr",
   tagline: "가장 깊이 잠수하고, 빠르게 떠오릅니다.",
   slogan: ["DIVE DEEP", "RISE FAST"] as const,

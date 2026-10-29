@@ -15,6 +15,20 @@ export const OG_IMAGE = "/images/hero-deep.png";
 export const GA_MEASUREMENT_ID: string = "";
 export const GOOGLE_SITE_VERIFICATION: string = "bwY6Q_PNn29G4zm6agnD6Gx3N8VWV4ojBM4Hqbix88A";
 export const NAVER_SITE_VERIFICATION: string = "1de5bc42333993b63f05c6f82b1c2d7828a43b17";
+/** Bing 웹마스터 도구 HTML 메타 태그(msvalidate.01)의 content 값. */
+export const BING_SITE_VERIFICATION: string = "";
+
+/**
+ * 다이버즈가 운영하는 바이럴 마케팅 셀프 플랫폼. @id는 블루에그 사이트의
+ * 구조화 데이터와 같은 값을 써서 검색엔진이 한 대상으로 묶게 한다.
+ */
+export const BLUEEGG = {
+  "@type": "Organization",
+  "@id": "https://www.blueeggbiz.com/#organization",
+  name: "블루에그",
+  alternateName: ["BLUE EGG", "블루에그비즈"],
+  url: "https://www.blueeggbiz.com/",
+} as const;
 
 /** intro/positioning의 "\n" 줄바꿈과 "**강조**" 마커는 메타 문구에서 걷어낸다. */
 export function plain(text: string) {

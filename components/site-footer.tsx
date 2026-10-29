@@ -65,7 +65,7 @@ export default function SiteFooter() {
             <dl className="grid content-start gap-10">
               <div>
                 <dt className="font-bold text-white">Address</dt>
-                <dd className="mt-3 text-muted">{company.address}</dd>
+                <dd className="mt-3 text-muted">{company.addressFull}</dd>
               </div>
               <div>
                 <dt className="font-bold text-white">Contact</dt>

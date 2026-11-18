@@ -15,6 +15,13 @@ type ContactPayload = {
   website?: unknown;
   /** 폼이 그려진 뒤 제출까지 걸린 시간(ms). */
   elapsedMs?: unknown;
+  /** 광고 랜딩(app/(landing))에서만 온다. 문의한 상품의 스토어 주소. */
+  storeUrl?: unknown;
+  /**
+   * 광고 랜딩에서만 온다. 어느 랜딩으로 들어왔는지(경로 + UTM).
+   * 홈페이지 문의 폼은 보내지 않으므로 비어 있으면 홈페이지 문의다.
+   */
+  source?: unknown;
 };
 
 /** 사람이 필수 항목을 채우는 데 이보다 빨리 끝내기 어렵다. */
@@ -24,7 +31,11 @@ function asTrimmedString(value: unknown, max: number): string {
   return typeof value === "string" ? value.trim().slice(0, max) : "";
 }
 
-function asStringArray(value: unknown, maxItems: number, maxLen: number): string[] {
+function asStringArray(
+  value: unknown,
+  maxItems: number,
+  maxLen: number,
+): string[] {
   if (!Array.isArray(value)) return [];
   return value
     .filter((item): item is string => typeof item === "string")
@@ -49,7 +60,7 @@ export async function POST(request: Request) {
   const elapsedMs = typeof body.elapsedMs === "number" ? body.elapsedMs : 0;
   if (honeypot || elapsedMs < MIN_FILL_MS) {
     console.warn(
-      `[contact] spam blocked (honeypot=${Boolean(honeypot)}, elapsedMs=${elapsedMs})`
+      `[contact] spam blocked (honeypot=${Boolean(honeypot)}, elapsedMs=${elapsedMs})`,
     );
     return NextResponse.json({ ok: true }, { status: 201 });
   }
@@ -61,18 +72,29 @@ export async function POST(request: Request) {
   const budget = asTrimmedString(body.budget, 80);
   const inquiryTypes = asStringArray(body.inquiryTypes, 10, 120);
   const consent = body.consent === true;
+  const storeUrl = asTrimmedString(body.storeUrl, 300);
+  const source = asTrimmedString(body.source, 500);
+
+  /**
+   * 랜딩 문의의 추가 정보는 contacts.message 에 담는다. 자유 문의 칸을 없애며
+   * 비워 둔 컬럼이라(supabase/schema.sql) 테이블을 바꾸지 않고 쓸 수 있다.
+   */
+  const message =
+    [storeUrl && `스토어: ${storeUrl}`, source && `유입: ${source}`]
+      .filter(Boolean)
+      .join("\n") || null;
 
   if (!name || !phone || !consent) {
     return NextResponse.json(
       { error: "성함, 연락처, 개인정보 수집 동의는 필수입니다." },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   if (!/^[0-9+\-\s]{7,20}$/.test(phone)) {
     return NextResponse.json(
       { error: "연락처 형식이 올바르지 않습니다." },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -80,7 +102,7 @@ export async function POST(request: Request) {
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return NextResponse.json(
       { error: "이메일 형식이 올바르지 않습니다." },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -104,6 +126,7 @@ export async function POST(request: Request) {
         budget: budget || null,
         inquiry_types: inquiryTypes,
         consent,
+        message,
       });
 
       if (!error) {
@@ -114,7 +137,7 @@ export async function POST(request: Request) {
       lastError = error.message;
       console.error(
         `[contact] insert failed (${attempt}/${ATTEMPTS}):`,
-        error.message
+        error.message,
       );
 
       if (attempt < ATTEMPTS) {
@@ -125,14 +148,14 @@ export async function POST(request: Request) {
     if (lastError) {
       return NextResponse.json(
         { error: "문의 저장에 실패했습니다. 잠시 후 다시 시도해 주세요." },
-        { status: 500 }
+        { status: 500 },
       );
     }
   } catch (error) {
     console.error("[contact] unexpected error:", error);
     return NextResponse.json(
       { error: "서버 오류가 발생했습니다." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -149,6 +172,8 @@ export async function POST(request: Request) {
       email,
       budget,
       inquiryTypes,
+      storeUrl,
+      source,
     });
   } catch (error) {
     console.error("[contact] 알림 메일 발송 중 예외:", error);

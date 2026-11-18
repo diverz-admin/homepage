@@ -29,3 +29,17 @@ alter table public.contacts
 alter table public.contacts
   alter column email drop not null,
   alter column message drop not null;
+
+-- 광고 랜딩 방문 기록 — "오늘 N명이 보고 M명이 문의했어요" 알림 바의 N.
+-- 방문(세션) 하나에 한 줄. 서버(API Route, service_role)만 쓰고 읽는다.
+-- M(문의 수)은 contacts 에서 랜딩 문의유형으로 센다 — 따로 기록하지 않는다.
+create table if not exists public.landing_views (
+  id bigint generated always as identity primary key,
+  path text not null,
+  created_at timestamptz not null default now()
+);
+
+alter table public.landing_views enable row level security;
+
+create index if not exists landing_views_path_created_at_idx
+  on public.landing_views (path, created_at desc);

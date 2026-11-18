@@ -1096,9 +1096,26 @@ html.lenis [data-lenis-prevent] {
   animation-play-state: paused;
 }
 
+/* 위에서 아래로 그어지는 세로선. 감싼 .reveal 이 보이는 순간 늘어난다.
+   (광고 랜딩 TRUST 섹션) */
+.draw-line {
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 1.4s cubic-bezier(0.65, 0, 0.35, 1) 0.4s;
+}
+
+.reveal[data-visible="true"] .draw-line {
+  transform: scaleY(1);
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  .draw-line {
+    transform: none;
+    transition: none;
   }
 
   .reveal,
@@ -1141,5 +1158,302 @@ html.lenis [data-lenis-prevent] {
      한 화면짜리 정적 히어로로 접어, 빈 화면을 스크롤하게 두지 않는다. */
   .parallax {
     height: 100svh;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   광고 랜딩 히어로 — "쾅" 하고 찍히는 제목 (app/(landing)/lp/9q7v0hft4z)
+
+   .slam       글자가 화면 앞에서 크게 날아와 꽂힌다(살짝 눌렸다 튕김).
+   .slam-shake 꽂히는 순간 히어로 내용 전체가 짧게 흔들린다.
+
+   두 애니메이션의 "충돌 시점"을 --slam-at 하나로 맞춘다 — 첫 줄이
+   Reveal 로 떠오른 뒤에 둘째 줄이 내려찍히도록 0.9s.
+   slam 의 60% 지점이 충돌이라, 시작을 그만큼 앞당겨 맞춘다.
+   ───────────────────────────────────────────────────────────── */
+.slam-stage {
+  --slam-at: 0.9s;
+  --slam-dur: 0.5s;
+}
+
+.slam {
+  display: block;
+  opacity: 0;
+  animation: slam-in var(--slam-dur) cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  animation-delay: calc(var(--slam-at) - var(--slam-dur) * 0.6);
+  will-change: transform, opacity, filter;
+}
+
+@keyframes slam-in {
+  0% {
+    opacity: 0;
+    transform: scale(2.8);
+    filter: blur(10px);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(0.94);
+    filter: blur(0);
+  }
+  80% {
+    transform: scale(1.03);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.slam-shake {
+  animation: slam-shake 0.45s linear var(--slam-at) both;
+}
+
+@keyframes slam-shake {
+  0%,
+  100% {
+    transform: none;
+  }
+  15% {
+    transform: translate(-7px, 4px);
+  }
+  30% {
+    transform: translate(6px, -5px);
+  }
+  45% {
+    transform: translate(-4px, -2px);
+  }
+  60% {
+    transform: translate(3px, 3px);
+  }
+  80% {
+    transform: translate(-1px, -1px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* 움직임을 줄이는 설정이면 날아오기/흔들기 없이 그냥 나타난다. */
+  .slam {
+    animation: none;
+    opacity: 1;
+  }
+  .slam-shake {
+    animation: none;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   광고 랜딩 히어로 — "순위는 높게 광고비는 적게 매출은 크게"의
+   강조 낱말 모션 (app/(landing)/lp/9q7v0hft4z, lib/landing.ts hero.kicker)
+
+   낱말 뜻대로 움직인다.
+     .kick-up    높게 — 위로 튀어 올랐다 내려앉는다.
+     .kick-down  적게 — 작게 쪼그라들었다 돌아온다.
+     .kick-grow  크게 — 크게 부풀었다 돌아온다.
+   움직이는 동안 강조색(accent)으로 물든다.
+
+   둘째 줄 제목이 꽂힌 뒤(.slam, 0.9s)에 시선을 다시 위로 끌어오도록
+   1.4s 부터 0.45s 간격으로 하나씩 움직이고, 4.5s 주기로 되풀이한다.
+   한 주기 중 움직이는 건 앞쪽 15% 뿐이라 나머지 시간은 가만히 있다.
+   ───────────────────────────────────────────────────────────── */
+.kick {
+  --kick-dur: 4.5s;
+  --kick-delay: calc(1.4s + var(--kick-i, 0) * 0.45s);
+  display: inline-block;
+  color: #fff;
+  animation-duration: var(--kick-dur);
+  animation-delay: var(--kick-delay);
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+.kick-up {
+  animation-name: kick-up;
+  transform-origin: center bottom;
+}
+.kick-down {
+  animation-name: kick-down;
+}
+/* 부풀 때 왼쪽으로 커지면 앞 낱말("매출은")에 닿는다. 줄 끝 낱말이라
+   왼쪽을 고정하고 오른쪽 빈자리로만 커지게 한다. */
+.kick-grow {
+  animation-name: kick-grow;
+  transform-origin: left center;
+}
+
+@keyframes kick-up {
+  0% { transform: translateY(0); color: #fff; }
+  4% { transform: translateY(-0.32em); color: var(--accent); }
+  9% { transform: translateY(0.05em); }
+  12% { transform: translateY(0); color: var(--accent); }
+  25%, 100% { transform: translateY(0); color: #fff; }
+}
+
+@keyframes kick-down {
+  0% { transform: scale(1); color: #fff; }
+  4% { transform: scale(0.72); color: var(--accent); }
+  9% { transform: scale(1.06); }
+  12% { transform: scale(1); color: var(--accent); }
+  25%, 100% { transform: scale(1); color: #fff; }
+}
+
+@keyframes kick-grow {
+  0% { transform: scale(1); color: #fff; }
+  4% { transform: scale(1.35); color: var(--accent); }
+  9% { transform: scale(0.95); }
+  12% { transform: scale(1); color: var(--accent); }
+  25%, 100% { transform: scale(1); color: #fff; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* 움직임 없이 강조색만 남긴다. */
+  .kick {
+    animation: none;
+    color: var(--accent);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   광고 랜딩 첫 제목 — "78위가 1위로" 네온 (app/(landing)/lp/9q7v0hft4z)
+
+   사이트 강조색(accent) 한 가지로만 빛낸다. 글자 속은 거의 흰빛,
+   바깥으로 갈수록 accent 빛이 넓게 번진다. 쾅(.slam) 하고 꽂힌 뒤
+   네온관에 불이 들어오듯 두어 번 깜빡이고, 그다음은 천천히 숨 쉬듯
+   밝아졌다 어두워진다. 시점은 .slam-stage 의 --slam-at 을 따른다.
+   ───────────────────────────────────────────────────────────── */
+.neon {
+  --neon-glow:
+    0 0 2px rgb(255 255 255 / 0.6), 0 0 10px var(--accent),
+    0 0 24px var(--accent), 0 0 48px rgb(172 212 255 / 0.55),
+    0 0 90px rgb(172 212 255 / 0.35);
+  color: #e6f2ff;
+  text-shadow: var(--neon-glow);
+  animation:
+    neon-on 0.7s linear calc(var(--slam-at, 0s) + 0.05s) both,
+    neon-breathe 3.2s ease-in-out calc(var(--slam-at, 0s) + 0.8s) infinite;
+}
+
+@keyframes neon-on {
+  0% {
+    text-shadow: none;
+  }
+  12% {
+    text-shadow: var(--neon-glow);
+  }
+  22% {
+    text-shadow: none;
+  }
+  38% {
+    text-shadow: var(--neon-glow);
+  }
+  46% {
+    text-shadow: 0 0 6px rgb(172 212 255 / 0.4);
+  }
+  60%,
+  100% {
+    text-shadow: var(--neon-glow);
+  }
+}
+
+@keyframes neon-breathe {
+  0%,
+  100% {
+    text-shadow: var(--neon-glow);
+  }
+  50% {
+    text-shadow:
+      0 0 2px rgb(255 255 255 / 0.5),
+      0 0 8px var(--accent),
+      0 0 18px rgb(172 212 255 / 0.8),
+      0 0 34px rgb(172 212 255 / 0.4),
+      0 0 64px rgb(172 212 255 / 0.22);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* 깜빡임/숨쉬기 없이 빛만 켜 둔다. */
+  .neon {
+    animation: none;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   광고 랜딩 스크롤 연출 (app/(landing)/lp/9q7v0hft4z, main.lp-motion)
+
+   사이트 공용 .reveal(살짝 떠오르며 나타남)을 랜딩에서만 더 힘 있게
+   바꾼다. 다른 페이지의 .reveal 은 건드리지 않도록 .lp-motion 아래로
+   묶었다. 지연은 Reveal 의 인라인 transitionDelay 를 그대로 따른다.
+
+     .fx-title   제목 묶음 — 흐릿하게 아래에서 올라오며 초점이 맞고,
+                 제목의 줄(.block)이 한 줄씩 차례로 따라 올라온다.
+     .fx-pop     본문 덩어리(이미지/그림/카드) — 조금 작고 흐린
+                 상태에서 커지며 제자리에 선다.
+     .fx-bubble  말풍선 — 아래쪽 꼬리를 축으로 톡 튀어나온다.
+
+   Tailwind v4 의 translate-* 는 transform 이 아니라 translate 속성을
+   쓰므로 여기 transform 과 겹치지 않는다.
+   ───────────────────────────────────────────────────────────── */
+.lp-motion .fx-title {
+  transform: translateY(40px);
+  filter: blur(10px);
+  transition:
+    opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 1.1s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.lp-motion .fx-title :is(h2, h3) > .block {
+  opacity: 0;
+  transform: translateY(0.45em);
+  transition:
+    opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: 0.12s;
+}
+.lp-motion .fx-title :is(h2, h3) > .block:nth-child(2) {
+  transition-delay: 0.3s;
+}
+.lp-motion .fx-title :is(h2, h3) > .block:nth-child(3) {
+  transition-delay: 0.48s;
+}
+.lp-motion .fx-title[data-visible="true"] {
+  transform: none;
+  filter: none;
+}
+.lp-motion .fx-title[data-visible="true"] :is(h2, h3) > .block {
+  opacity: 1;
+  transform: none;
+}
+
+.lp-motion .fx-pop {
+  transform: translateY(56px) scale(0.94);
+  filter: blur(6px);
+  transition:
+    opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.lp-motion .fx-pop[data-visible="true"] {
+  transform: none;
+  filter: none;
+}
+
+.lp-motion .fx-bubble {
+  transform: translateY(24px) scale(0.6);
+  transform-origin: 50% 100%;
+  transition:
+    opacity 0.5s ease-out,
+    transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.lp-motion .fx-bubble[data-visible="true"] {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* 움직임 없이 서서히 나타나기만 한다. */
+  .lp-motion :is(.fx-title, .fx-pop, .fx-bubble),
+  .lp-motion .fx-title :is(h2, h3) > .block {
+    transform: none;
+    filter: none;
+    transition: opacity 0.4s ease-out;
   }
 }

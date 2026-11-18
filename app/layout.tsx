@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import SiteHeader from "@/components/site-header";
-import SiteFooter from "@/components/site-footer";
 import Cursor from "@/components/cursor";
 import MetaPixelPageView from "@/components/meta-pixel-pageview";
 import JsonLd from "@/components/json-ld";
@@ -129,10 +127,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="ko"
-      className="h-full antialiased"
-    >
+    <html lang="ko" className="h-full antialiased">
       <body className="flex min-h-full flex-col">
         <JsonLd data={[organizationLd, websiteLd]} />
         {/* Google Analytics 4 — 측정 ID가 있을 때만 넣는다. 페이지 이동은
@@ -177,9 +172,9 @@ fbq('track', 'PageView');`}
         {/* End Meta Pixel Code */}
         <MetaPixelPageView />
         <Cursor />
-        <SiteHeader />
-        <main className="flex-1">{children}</main>
-        <SiteFooter />
+        {/* 헤더/푸터는 app/(site)/layout.tsx 가 붙인다. 광고 랜딩
+            (app/(landing))은 헤더/푸터 없이 단독으로 서야 해서 여기서 뺐다. */}
+        {children}
       </body>
     </html>
   );

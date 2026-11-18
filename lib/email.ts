@@ -27,6 +27,9 @@ export type ContactMail = {
   email: string;
   budget: string;
   inquiryTypes: string[];
+  /** 광고 랜딩 문의에만 있다. 비어 있으면 메일에 줄을 만들지 않는다. */
+  storeUrl?: string;
+  source?: string;
 };
 
 /** 메일 본문에 그대로 들어가므로 HTML 특수문자를 막아 둔다. */
@@ -72,6 +75,8 @@ export async function sendContactNotification(
       ${row("연락처", contact.phone)}
       ${row("이메일", contact.email)}
       ${row("예산", contact.budget)}
+      ${contact.storeUrl ? row("스토어", contact.storeUrl) : ""}
+      ${contact.source ? row("유입", contact.source) : ""}
     </table>
     <p style="margin:20px 0 0;font-size:12px;color:#9ca3af;">
       diverz.kr 문의 폼에서 자동 발송된 메일입니다.${
@@ -89,6 +94,8 @@ export async function sendContactNotification(
     `연락처: ${contact.phone}`,
     `이메일: ${contact.email || "-"}`,
     `예산: ${contact.budget || "-"}`,
+    ...(contact.storeUrl ? [`스토어: ${contact.storeUrl}`] : []),
+    ...(contact.source ? [`유입: ${contact.source}`] : []),
   ].join("\n");
 
   const response = await fetch("https://api.resend.com/emails", {

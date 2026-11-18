@@ -817,7 +817,11 @@ export default function RankingLandingPage() {
       {/* 하단 고정 알림 바 — 오늘 방문/문의 수 + 신청 버튼.
           위 main 의 pb 가 바의 높이만큼 바닥을 비워 둬서 마지막 줄이
           가려지지 않는다. */}
-      <LiveStatsBar path={lp.path} cta={lp.hero.cta} />
+      <LiveStatsBar
+        path={lp.path}
+        message={lp.hero.barMessage}
+        cta={lp.hero.cta}
+      />
     </main>
   );
 }

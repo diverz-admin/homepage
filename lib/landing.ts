@@ -83,6 +83,8 @@ export const rankingLanding = {
     ] as [string, "up" | "down" | "grow" | null][],
     title: ["지금 이 순간에도", "경쟁사가 내 매출을 가져갑니다"],
     cta: "무료 상담 신청",
+    // 하단 고정 바 안내 문구 (components/landing/live-stats-bar.tsx)
+    barMessage: "무료 순위 진단 신청받아보세요, 매출 상승에 도움 드리겠습니다.",
     badges: ["1분 신청", "담당자 즉시 배정", "3시간 내 상담 연락"],
   },
 

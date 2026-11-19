@@ -152,6 +152,7 @@ export default function LandingForm({
       }
 
       // 메타 픽셀 전환 이벤트 — 문의 접수가 성공했을 때만 보낸다.
+      // track 이라 이 페이지에 뜬 픽셀 모두(사이트 공통 + 랜딩 전용)에 간다.
       window.fbq?.("track", "Lead");
 
       form.reset();

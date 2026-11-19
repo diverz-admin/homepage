@@ -146,7 +146,10 @@ gtag('config', '${GA_MEASUREMENT_ID}');`}
             </Script>
           </>
         )}
-        {/* Meta Pixel Code */}
+        {/* Meta Pixel Code — 사이트 공통 픽셀. 광고 랜딩은 자기 픽셀을 따로
+            더 단다(components/landing/landing-pixel.tsx). 한 페이지에 픽셀이
+            둘이면 fbq('track') 이 둘 다에 가므로, PageView 는 trackSingle 로
+            이 픽셀에만 보낸다. */}
         <Script id="meta-pixel" strategy="afterInteractive">
           {`!function(f,b,e,v,n,t,s)
 {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -157,7 +160,7 @@ t.src=v;s=b.getElementsByTagName(e)[0];
 s.parentNode.insertBefore(t,s)}(window, document,'script',
 'https://connect.facebook.net/en_US/fbevents.js');
 fbq('init', '1441874957911031');
-fbq('track', 'PageView');`}
+fbq('trackSingle', '1441874957911031', 'PageView');`}
         </Script>
         <noscript>
           {/* eslint-disable-next-line @next/next/no-img-element */}

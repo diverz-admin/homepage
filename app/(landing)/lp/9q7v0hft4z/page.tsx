@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Reveal from "@/components/reveal";
 import LandingForm from "@/components/landing/landing-form";
+import LandingPixel from "@/components/landing/landing-pixel";
 import LiveStatsBar from "@/components/landing/live-stats-bar";
 import AdLabelMockup from "@/components/landing/ad-label-mockup";
 import SlotHeatmap from "@/components/landing/slot-heatmap";
@@ -194,6 +195,8 @@ function Check() {
 export default function RankingLandingPage() {
   return (
     <main className="lp-motion flex-1 bg-abyss pb-36 text-foreground sm:pb-28">
+      {/* 이 랜딩 전용 메타 픽셀(사이트 공통 픽셀과 별도로 관리). */}
+      <LandingPixel />
       {/* 상단 띠 — 로고 + 앵커 메뉴. 광고로 들어온 사람을 다른 지면으로
           흘려보내지 않도록 홈 링크는 걸지 않는다. */}
       <header className="absolute inset-x-0 top-0 z-20">

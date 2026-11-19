@@ -78,10 +78,10 @@ const UTM_KEYS = [
 /**
  * 광고 랜딩 전용 간편 신청 폼.
  *
- * 받은 레퍼런스와 같은 구성: 휴대폰 번호 → 판매 플랫폼 → 트래픽 광고
+ * 받은 레퍼런스와 같은 구성: 상호명 → 휴대폰 번호 → 판매 플랫폼 → 트래픽 광고
  * 경험 → 월 예상 광고비(모두 한 줄 선택지) → 개인정보처리방침 전문보기
- * → 동의. 성함/업체명은 묻지 않는다 — 광고로 들어온 사람은 망설이는 칸이
- * 하나 늘 때마다 빠져나간다. 판매 플랫폼/광고 경험은 contacts.message 에,
+ * → 동의. 성함은 묻지 않는다 — 광고로 들어온 사람은 망설이는 칸이
+ * 하나 늘 때마다 빠져나간다. 상호명은 contacts.company 에, 판매 플랫폼/광고 경험은 contacts.message 에,
  * 광고비는 budget 에 담긴다(app/api/contact/route.ts). 문의유형은 랜딩이 이미 정하고 있어서 묻지
  * 않고 고정값(inquiryType)으로 보낸다.
  *
@@ -132,6 +132,7 @@ export default function LandingForm({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          company: data.get("company"),
           phone: data.get("phone"),
           platform: data.get("platform"),
           adExperience: data.get("adExperience"),
@@ -195,6 +196,18 @@ export default function LandingForm({
         </label>
       </div>
       <label className="grid gap-3">
+        <Label>상호명</Label>
+        <input
+          name="company"
+          type="text"
+          required
+          maxLength={120}
+          autoComplete="organization"
+          placeholder="상호명을 입력해주세요"
+          className={box}
+        />
+      </label>
+      <label className="grid gap-3">
         <Label>휴대폰 번호</Label>
         <input
           name="phone"
@@ -240,7 +253,7 @@ export default function LandingForm({
             <dl className="mt-2 grid grid-cols-[5.5rem_1fr] gap-x-3 gap-y-1.5">
               <dt className="text-white/45">수집 항목</dt>
               <dd>
-                휴대폰 번호, 판매 플랫폼, 트래픽 광고 경험, 월 예상 광고비
+                상호명, 휴대폰 번호, 판매 플랫폼, 트래픽 광고 경험, 월 예상 광고비
               </dd>
               <dt className="text-white/45">이용 목적</dt>
               <dd>무료 순위 진단 및 상담 연락</dd>

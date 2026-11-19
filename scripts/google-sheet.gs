@@ -9,6 +9,7 @@ const KEY = "여기에-아무도-모를-긴-비밀값";
 
 const HEADERS = [
   "접수 시각",
+  "상호명",
   "연락처",
   "판매 플랫폼",
   "트래픽 광고 경험",
@@ -17,7 +18,6 @@ const HEADERS = [
   "유입 경로",
   "문의 유형",
   "성함",
-  "회사",
   "이메일",
 ];
 
@@ -36,6 +36,7 @@ function doPost(e) {
 
   sheet.appendRow([
     Utilities.formatDate(new Date(), "Asia/Seoul", "yyyy-MM-dd HH:mm:ss"),
+    d.company || "",
     // 0으로 시작하는 번호가 숫자로 바뀌지 않게 글자로 넣는다.
     "'" + (d.phone || ""),
     d.platform || "",
@@ -45,7 +46,6 @@ function doPost(e) {
     d.source || "",
     (d.inquiryTypes || []).join(", "),
     d.name || "",
-    d.company || "",
     d.email || "",
   ]);
 

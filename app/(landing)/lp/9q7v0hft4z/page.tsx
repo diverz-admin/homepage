@@ -119,10 +119,16 @@ const TREND_PATHS = {
   drop: { d: "M4 24 L60 22 L104 28 L132 30 L156 64 L196 72", end: [196, 72] },
 } as const;
 
-function RealityTrend({ kind }: { kind: keyof typeof TREND_PATHS }) {
+function RealityTrend({
+  kind,
+  className = "h-24 w-full",
+}: {
+  kind: keyof typeof TREND_PATHS;
+  className?: string;
+}) {
   const { d, end } = TREND_PATHS[kind];
   return (
-    <svg aria-hidden viewBox="0 0 200 80" className="h-24 w-full" fill="none">
+    <svg aria-hidden viewBox="0 0 200 80" className={className} fill="none">
       {[20, 40, 60].map((y) => (
         <line
           key={y}
@@ -133,6 +139,18 @@ function RealityTrend({ kind }: { kind: keyof typeof TREND_PATHS }) {
           stroke="rgb(255 255 255 / 0.06)"
         />
       ))}
+      <defs>
+        <linearGradient id={`trend-fill-${kind}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="var(--color-accent)" stopOpacity="0.28" />
+          <stop offset="1" stopColor="var(--color-accent)" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      {/* 선 아래 면 — 선이 다 그려질 즈음 옅게 차오른다. */}
+      <path
+        d={`${d} L196 80 L4 80 Z`}
+        fill={`url(#trend-fill-${kind})`}
+        className="opacity-0 transition-opacity delay-[1400ms] duration-700 group-data-[visible=true]/spark:opacity-100 motion-reduce:opacity-100"
+      />
       <path
         d={d}
         pathLength={1}
@@ -142,6 +160,14 @@ function RealityTrend({ kind }: { kind: keyof typeof TREND_PATHS }) {
         strokeLinecap="round"
         strokeLinejoin="round"
         className="[stroke-dasharray:1] [stroke-dashoffset:1] transition-[stroke-dashoffset] delay-300 duration-[1600ms] ease-out group-data-[visible=true]/spark:[stroke-dashoffset:0] motion-reduce:[stroke-dashoffset:0]"
+      />
+      {/* 끝점 — 지금 머문 자리. 바깥 고리가 퍼지며 눈길을 끈다. */}
+      <circle
+        cx={end[0]}
+        cy={end[1]}
+        r="4"
+        fill="var(--color-accent)"
+        className="invisible origin-center transition-[visibility] delay-[1800ms] [transform-box:fill-box] group-data-[visible=true]/spark:visible group-data-[visible=true]/spark:animate-ping motion-reduce:hidden"
       />
       <circle
         cx={end[0]}
@@ -207,7 +233,7 @@ export default function RankingLandingPage() {
               (slam-shake). 키프레임은 globals.css "광고 랜딩 히어로" 묶음. */}
           <Reveal className="text-center">
             <div className="slam-stage slam-shake">
-              <h1 className="font-display text-[clamp(2.8rem,8.5vw,7rem)] leading-[1.1] font-bold tracking-tight break-keep">
+              <h1 className="font-display text-[clamp(3rem,14vw,7rem)] leading-[1.1] font-bold tracking-tight break-keep">
                 <span className="block text-white">
                   {lp.rankBoard.title[0]}
                 </span>
@@ -217,12 +243,14 @@ export default function RankingLandingPage() {
                   <span className="neon">{lp.rankBoard.title[1]}</span>
                 </span>
               </h1>
-              <p className={`mx-auto max-w-2xl ${BODY}`}>{lp.rankBoard.body}</p>
+              <p className={`mx-auto max-w-2xl ${BODY} max-sm:text-lg`}>
+                {lp.rankBoard.body}
+              </p>
             </div>
           </Reveal>
           <div className={`mx-auto max-w-6xl ${GAP_HEAD}`}>
-            {/* 넓은 화면은 한 줄에 3장씩 두 줄, 중간 폭은 2장씩, 좁은 화면은 1장씩. */}
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+            {/* 넓은 화면은 한 줄에 3장씩 두 줄, 그보다 좁으면 모바일까지 2장씩. */}
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-5 lg:grid-cols-3 lg:gap-6">
               {lp.rankBoard.images.map((image, i) => (
                 <Reveal
                   key={image.src}
@@ -234,8 +262,8 @@ export default function RankingLandingPage() {
                     alt={image.alt}
                     width={1396}
                     height={1127}
-                    sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw"
-                    className="h-auto w-full rounded-xl shadow-[0_10px_30px_rgb(0_0_0/0.35)]"
+                    sizes="(min-width: 1024px) 380px, 50vw"
+                    className="h-auto w-full rounded-lg shadow-[0_10px_30px_rgb(0_0_0/0.35)] sm:rounded-xl"
                   />
                 </Reveal>
               ))}
@@ -287,6 +315,9 @@ export default function RankingLandingPage() {
               ))}
             </div>
           </div>
+          <p className="page-container mt-5 text-center text-xs text-white/40">
+            {lp.chats.note}
+          </p>
         </Reveal>
       </section>
 
@@ -296,7 +327,7 @@ export default function RankingLandingPage() {
         {/* 제목과 그림을 한 덩어리로 가운데 모은다(양 끝으로 벌리지 않음).
             넓은 화면에서 제목은 그림 위쪽 선에 맞춘다. */}
         <div className="page-container flex flex-col gap-12 sm:gap-16 lg:flex-row lg:items-start lg:justify-center lg:gap-20 xl:gap-28">
-          <Reveal className="fx-title lg:pt-2">
+          <Reveal className="fx-title text-center lg:pt-2 lg:text-left">
             <h2 className={`text-white ${TITLE}`}>
               <Lines text={lp.firstPage.title} />
             </h2>
@@ -387,44 +418,53 @@ export default function RankingLandingPage() {
               {lp.reality.lead}
             </p>
           </Reveal>
-          {/* 휴대폰 알림처럼 쌓인 영업 연락 셋 — 좌우로 살짝 어긋나며 차례로
-              내려앉는다. */}
-          <ul className={`mx-auto grid max-w-md gap-3 ${GAP_LEAD}`}>
+          {/* 대행사에게 받은 메시지 셋 — 휴대폰 알림 카드. 아래 결과 카드와
+              같은 폭/모서리/배경으로 맞춰 "받은 약속 → 실제 결과"가 한 짝으로
+              읽히게 한다. 차례로 도착한다.
+              좁은 화면은 세 장을 가로 한 줄(3칸)에 한 번에 보이게 세로형
+              카드로 줄인다. */}
+          <ul
+            className={`mx-auto grid max-w-xl grid-cols-3 gap-2 sm:grid-cols-1 sm:gap-2.5 ${GAP_LEAD}`}
+          >
             {lp.reality.claims.map((claim, i) => (
               <Reveal
                 as="li"
                 key={claim}
-                delay={i * 220}
-                className={`fx-bubble ${i === 1 ? "sm:translate-x-10" : i === 2 ? "sm:-translate-x-6" : "sm:-translate-x-10"}`}
+                delay={i * 260}
+                className="fx-bubble relative flex flex-col items-center justify-center rounded-2xl border border-white/15 bg-gradient-to-b from-white/[0.1] to-white/[0.03] px-2 pt-4 pb-5 text-center shadow-[0_12px_30px_rgb(0_0_0/0.3)] sm:flex-row sm:items-center sm:gap-4 sm:border-white/10 sm:bg-gradient-to-br sm:from-white/[0.07] sm:to-white/[0.02] sm:py-4 sm:pr-5 sm:pl-4 sm:text-left"
               >
-                <div className="flex items-start gap-3.5 rounded-2xl border border-white/10 bg-white/[0.07] px-4 py-3.5 shadow-[0_12px_30px_rgb(0_0_0/0.3)] backdrop-blur-sm sm:px-5 sm:py-4">
+                <span
+                  aria-hidden
+                  className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/10 text-white/65 sm:flex"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="h-4 w-4 sm:h-5 sm:w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M4 5h16v11H9l-5 4z" />
+                  </svg>
+                </span>
+                <div className="min-w-0 flex-1">
+                  {/* 좁은 화면: 큰 따옴표로 "그들이 한 말"을 먼저 보인다 */}
                   <span
                     aria-hidden
-                    className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/10 text-white/70"
+                    className="block font-display text-3xl leading-none font-black text-accent/70 sm:hidden"
                   >
-                    <svg
-                      viewBox="0 0 24 24"
-                      className="h-4.5 w-4.5"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.8"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M4 5h16v11H9l-5 4z" />
-                    </svg>
+                    &ldquo;
                   </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="flex items-center justify-between text-xs text-white/45">
-                      <span className="font-bold text-white/60">
-                        {lp.reality.sender}
-                      </span>
-                      <span>{lp.reality.sentAt[i]}</span>
-                    </p>
-                    <p className="mt-1 text-sm font-bold break-keep text-white sm:text-base">
-                      {claim}
-                    </p>
-                  </div>
+                  <p className="mt-1 text-[0.65rem] font-medium text-white/50 sm:mt-0 sm:text-xs">
+                    {lp.reality.sender}
+                  </p>
+                  <p className="mt-1.5 text-[0.95rem] leading-[1.35] font-bold break-keep whitespace-pre-line text-white sm:mt-0.5 sm:whitespace-normal sm:text-lg sm:leading-normal">
+                    <span className="hidden sm:inline">&ldquo;</span>
+                    {claim}
+                    <span className="hidden sm:inline">&rdquo;</span>
+                  </p>
                 </div>
               </Reveal>
             ))}
@@ -435,25 +475,40 @@ export default function RankingLandingPage() {
               {lp.reality.turn}
             </p>
           </Reveal>
-          {/* 결과 카드 셋 — 위에 순위 그래프(위가 상위)가 화면에 들어오면
-              그려지고, 아래 두 줄 문구. */}
+          {/* 결과 카드 셋 — 순위 그래프(위가 상위)가 화면에 들어오면
+              그려지고, 두 줄 문구가 붙는다. 넓은 화면은 그래프 위/문구 아래,
+              좁은 화면은 세로로 너무 길어져 한 줄(문구 왼쪽 | 작은 그래프
+              오른쪽)로 누른다. */}
           <ul
-            className={`mx-auto grid max-w-5xl gap-5 md:grid-cols-3 ${GAP_LEAD}`}
+            className={`mx-auto grid max-w-5xl gap-2.5 md:grid-cols-3 md:gap-5 ${GAP_LEAD}`}
           >
             {lp.reality.outcomes.map((item, i) => (
               <Reveal
                 as="li"
                 key={item.strong}
                 delay={i * 150}
-                className="group/spark fx-pop rounded-2xl border border-line bg-deep/50 p-6 sm:p-7"
+                className="group/spark fx-pop relative flex items-center gap-4 overflow-hidden rounded-2xl border border-line bg-gradient-to-br from-deep/80 to-deep/30 py-4 pr-4 pl-5 md:block md:p-7"
               >
-                <RealityTrend kind={item.trend} />
-                <p className="mt-6 text-sm font-medium text-white/55 sm:text-base">
-                  {item.lead}
-                </p>
-                <p className="mt-1 text-fluid-xl font-bold text-white">
-                  ‘{item.strong}’
-                </p>
+                {/* 왼쪽 가장자리 accent 띠 — 좁은 화면에서 카드 셋을 한 묶음으로 */}
+                <span
+                  aria-hidden
+                  className="absolute inset-y-4 left-0 w-[3px] rounded-r-full bg-accent/60 md:hidden"
+                />
+                <RealityTrend
+                  kind={item.trend}
+                  className="order-last h-16 w-32 shrink-0 rounded-lg bg-white/[0.03] md:h-24 md:w-full md:rounded-none md:bg-transparent"
+                />
+                <div className="min-w-0 flex-1 md:mt-6">
+                  <p className="flex items-center gap-2 text-xs font-medium text-white/55 sm:text-base">
+                    <span className="font-display text-[0.7rem] font-black tracking-wider text-accent sm:text-xs">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    {item.lead}
+                  </p>
+                  <p className="mt-1 text-lg leading-snug font-bold break-keep text-white md:text-fluid-xl">
+                    ‘{item.strong}’
+                  </p>
+                </div>
               </Reveal>
             ))}
           </ul>
@@ -468,7 +523,7 @@ export default function RankingLandingPage() {
           {/* 카드가 보이면: 약속 줄 지우기(~1.7s) → 경고 제목이 앞에서
               날아와 "쾅" 꽂히고(slam-in) 그 순간 카드가 흔들린다(slam-shake)
               → 설명이 떠오른다. 키프레임은 globals.css 히어로 묶음 것을 쓴다. */}
-          <Reveal className="group/slam mx-auto max-w-3xl rounded-[2rem] border border-line bg-deep/50 px-6 py-14 text-center data-[visible=true]:animate-[slam-shake_0.45s_linear_2.1s_both] motion-reduce:animate-none sm:px-14 sm:py-16">
+          <Reveal className="group/slam mx-auto max-w-3xl py-6 text-center data-[visible=true]:animate-[slam-shake_0.45s_linear_2.1s_both] motion-reduce:animate-none sm:py-10">
             <ul className="grid gap-3 sm:gap-4">
               {lp.reality.claims.map((claim, i) => (
                 <Reveal
@@ -513,13 +568,16 @@ export default function RankingLandingPage() {
               {lp.platform.body}
             </p>
           </Reveal>
-          <ul className="mx-auto mt-16 grid max-w-6xl gap-5 md:grid-cols-3 sm:mt-20">
+          {/* 좁은 화면은 카드가 길어 세로로 쌓으면 스크롤이 너무 길다 —
+              옆으로 밀어 넘기는 한 줄(스크롤 스냅)로 두고, 다음 카드가 살짝
+              보여 넘길 수 있다는 걸 알린다. md 부터는 3열 격자. */}
+          <ul className="mx-[calc(var(--page-pad)*-1)] mt-16 flex snap-x snap-mandatory scroll-px-(--page-pad) gap-4 overflow-x-auto px-(--page-pad) pb-2 [scrollbar-width:none] sm:mt-20 md:mx-auto md:grid md:max-w-6xl md:grid-cols-3 md:gap-5 md:overflow-visible md:px-0 md:pb-0 [&::-webkit-scrollbar]:hidden">
             {lp.platform.items.map((item, i) => (
               <Reveal
                 as="li"
                 key={item.title}
                 delay={i * 120}
-                className="fx-pop group/logic relative flex flex-col rounded-2xl border border-line bg-deep/50 p-4 transition-colors duration-300 hover:border-accent/40 sm:p-5"
+                className="fx-pop group/logic relative flex w-[84%] shrink-0 snap-start flex-col rounded-2xl border border-line bg-deep/50 p-4 md:w-auto transition-colors duration-300 hover:border-accent/40 sm:p-5"
               >
                 <LogicVisual name={item.icon} />
                 <div className="px-3 pt-7 pb-4 sm:px-4">
@@ -540,7 +598,7 @@ export default function RankingLandingPage() {
       </section>
 
       {/* 1-7. SOLUTION — 위 섹션들과 같은 틀: 가운데 라벨 + 두 톤 제목 +
-          설명, 그 아래 숫자 셋(10명 / 24시간 / 직접 개발), 그 아래 대응
+          설명, 그 아래 숫자 둘(24시간 / 직접 개발), 그 아래 대응
           사이클 카드 넷(PLATFORM 카드와 같은 모양). 카드 사이는 → 로 잇고,
           맨 아래 "다시 감지로"가 고리를 닫는다. */}
       <section
@@ -602,83 +660,54 @@ export default function RankingLandingPage() {
             </p>
           </Reveal>
 
-          {/* 전담 개발자 10명 — 사람 아이콘 열 개를 한 줄로 크게 세우고
-              빠르게 하나씩 톡 나타나게 한다. 그 아래 나머지 숫자 둘. */}
-          <Reveal delay={100} className="group/stats fx-pop">
-            {lp.solution.stats
-              .filter((stat) => "people" in stat)
-              .map((stat) => (
-                <div key={stat.label} className="mt-14 text-center sm:mt-16">
-                  <p className="sr-only">{stat.label}</p>
-                  <div
-                    aria-hidden
-                    className="mx-auto flex w-max flex-wrap justify-center gap-2 sm:gap-3.5"
-                  >
-                    {Array.from({ length: stat.people ?? 0 }, (_, i) => (
-                      <svg
-                        key={i}
-                        viewBox="0 0 24 24"
-                        className="h-7 w-7 translate-y-2 scale-50 text-white opacity-0 transition duration-300 ease-out group-data-[visible=true]/stats:translate-y-0 group-data-[visible=true]/stats:scale-100 group-data-[visible=true]/stats:opacity-100 motion-reduce:translate-y-0 motion-reduce:scale-100 motion-reduce:opacity-100 sm:h-12 sm:w-12"
-                        style={{ transitionDelay: `${500 + i * 90}ms` }}
-                        fill="currentColor"
-                      >
-                        <circle cx="12" cy="7" r="4" />
-                        <path d="M4 21a8 8 0 0 1 16 0z" />
-                      </svg>
-                    ))}
-                  </div>
-                  <p
-                    aria-hidden
-                    className="mt-4 text-sm font-bold text-white/70 sm:text-base"
-                  >
-                    {stat.label}
-                  </p>
+          <Reveal delay={100} className="fx-pop">
+            <dl className="mx-auto mt-14 grid max-w-xl grid-cols-2 divide-x divide-line sm:mt-16">
+              {lp.solution.stats.map((stat) => (
+                <div key={stat.label} className="px-2 text-center">
+                  <dt className="sr-only">{stat.label}</dt>
+                  <dd>
+                    <span className="font-display text-[clamp(2rem,4.5vw,3.25rem)] leading-none font-bold text-white tabular-nums">
+                      {stat.value}
+                    </span>
+                    {stat.unit && (
+                      <span className="ml-1 text-fluid-lg font-bold text-white/70">
+                        {stat.unit}
+                      </span>
+                    )}
+                    <span
+                      aria-hidden
+                      className="mt-3 block text-xs font-medium break-keep text-white/50 sm:text-sm"
+                    >
+                      {stat.label}
+                    </span>
+                  </dd>
                 </div>
               ))}
-            <dl className="mx-auto mt-10 grid max-w-xl grid-cols-2 divide-x divide-line sm:mt-12">
-              {lp.solution.stats
-                .filter((stat) => !("people" in stat))
-                .map((stat) => (
-                  <div key={stat.label} className="px-2 text-center">
-                    <dt className="sr-only">{stat.label}</dt>
-                    <dd>
-                      <span className="font-display text-[clamp(2rem,4.5vw,3.25rem)] leading-none font-bold text-white tabular-nums">
-                        {stat.value}
-                      </span>
-                      {stat.unit && (
-                        <span className="ml-1 text-fluid-lg font-bold text-white/70">
-                          {stat.unit}
-                        </span>
-                      )}
-                      <span
-                        aria-hidden
-                        className="mt-3 block text-xs font-medium break-keep text-white/50 sm:text-sm"
-                      >
-                        {stat.label}
-                      </span>
-                    </dd>
-                  </div>
-                ))}
             </dl>
           </Reveal>
 
-          <ol className="mx-auto mt-16 grid max-w-6xl gap-5 sm:mt-20 sm:grid-cols-2 lg:grid-cols-4">
+          {/* 좁은 화면은 단계마다 한 줄(번호 | 제목 + 설명)로 눌러 세로 길이를
+              줄이고, 번호를 세로선으로 이어 순서가 흐르게 보인다.
+              sm 부터는 카드 2열, lg 는 4열 + → 연결. */}
+          <ol className="relative mx-auto mt-14 grid max-w-6xl gap-2.5 before:absolute before:top-6 before:bottom-6 before:left-[2.375rem] before:w-px before:bg-accent/25 sm:mt-20 sm:grid-cols-2 sm:gap-5 sm:before:hidden lg:grid-cols-4">
             {lp.solution.cycle.map((step, i) => (
               <Reveal
                 as="li"
                 key={step.title}
                 delay={i * 120}
-                className="fx-pop relative rounded-2xl border border-line bg-deep/50 p-8"
+                className="fx-pop relative flex items-center gap-4 rounded-xl border border-line bg-deep/50 px-4 py-3.5 sm:block sm:rounded-2xl sm:p-8"
               >
-                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent/10 font-display text-sm font-bold text-accent tabular-nums">
+                <span className="relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#13233a] font-display text-sm font-bold text-accent tabular-nums sm:bg-accent/10">
                   {String(i + 1).padStart(2, "0")}
                 </span>
-                <h3 className="mt-6 text-fluid-xl font-bold text-white">
-                  {step.title}
-                </h3>
-                <p className="mt-3 text-sm leading-relaxed break-keep text-white/60 sm:text-base">
-                  {step.body}
-                </p>
+                <div className="min-w-0">
+                  <h3 className="text-base font-bold text-white sm:mt-6 sm:text-fluid-xl">
+                    {step.title}
+                  </h3>
+                  <p className="mt-0.5 text-[0.8rem] leading-snug break-keep text-white/60 sm:mt-3 sm:text-base sm:leading-relaxed">
+                    {step.body}
+                  </p>
+                </div>
                 {i < lp.solution.cycle.length - 1 && (
                   <span
                     aria-hidden
@@ -711,7 +740,7 @@ export default function RankingLandingPage() {
         </div>
       </section>
 
-      {/* 1-8. CREW — "풀스택 개발자와 정규직 마케터가 끝까지 책임집니다".
+      {/* 1-8. CREW — "풀스택 개발자와 평균 5년 이상 경력의 전문 마케터가 끝까지 책임집니다".
           두 톤 제목 + 살짝 겹친 원 셋. 원 테두리는 한쪽에서 밝아지는
           그라데이션 고리(배경 그라데이션을 고리 모양으로 마스크)라 겹친
           자리에서도 서로의 선이 보인다. */}
@@ -729,14 +758,21 @@ export default function RankingLandingPage() {
               ))}
             </h2>
           </Reveal>
-          <ul className="mt-16 flex flex-col items-center sm:mt-20 lg:flex-row lg:justify-center">
+          {/* lg 미만은 트라이앵글 — 위에 둘(살짝 겹침), 아래 가운데 하나가
+              위 둘에 걸쳐 올라온다. 위 두 원 폭 합이 줄 폭을 거의 채워 셋째
+              원은 저절로 다음 줄로 넘어간다. lg 부터는 한 줄로 셋. */}
+          <ul className="mt-14 flex flex-wrap justify-center sm:mt-20 lg:flex-nowrap">
             {lp.crew.items.map((item, i) => (
               <Reveal
                 as="li"
                 key={item.title}
                 delay={i * 150}
-                className={`relative flex aspect-square w-[min(84vw,340px)] flex-col items-center justify-center px-10 text-center lg:w-[min(31vw,380px)] ${
-                  i > 0 ? "-mt-10 lg:mt-0 lg:-ml-10" : ""
+                className={`relative flex aspect-square w-[min(46vw,340px)] flex-col items-center justify-center px-4 text-center sm:px-10 lg:w-[min(31vw,380px)] ${
+                  [
+                    "",
+                    "-ml-[min(6vw,64px)] lg:-ml-10",
+                    "-mt-[min(10vw,72px)] lg:mt-0 lg:-ml-10",
+                  ][i]
                 }`}
               >
                 <span
@@ -749,11 +785,17 @@ export default function RankingLandingPage() {
                 <span className="text-accent">
                   <CrewIcon name={item.icon} />
                 </span>
-                <h3 className="mt-5 text-fluid-xl font-bold text-white">
+                <h3 className="mt-2 text-sm font-bold break-keep text-white sm:mt-5 sm:text-fluid-xl">
                   {item.title}
                 </h3>
-                <p className="mt-3 text-sm leading-relaxed break-keep text-white/60 sm:text-base">
-                  <Lines text={item.body} />
+                {/* 좁은 원 안에서는 정해 둔 줄바꿈 없이 흘려 쓴다. */}
+                <p className="mt-1.5 max-w-[9.5rem] text-[0.7rem] leading-snug break-keep text-white/60 sm:mt-3 sm:max-w-none sm:text-base sm:leading-relaxed">
+                  <span className="sm:hidden">
+                    {item.body.replace(/\n/g, " ")}
+                  </span>
+                  <span className="hidden sm:inline">
+                    <Lines text={item.body} />
+                  </span>
                 </p>
               </Reveal>
             ))}
@@ -795,7 +837,7 @@ export default function RankingLandingPage() {
             delay={100}
             className="fx-pop mx-auto mt-12 max-w-xl rounded-[1.75rem] border border-line bg-deep/60 p-6 shadow-[0_24px_60px_rgb(0_0_0/0.35)] sm:mt-14 sm:p-10"
           >
-            <LandingForm inquiryType={lp.inquiryType} />
+            <LandingForm inquiryType={lp.inquiryType} {...lp.form} />
           </Reveal>
         </div>
       </section>

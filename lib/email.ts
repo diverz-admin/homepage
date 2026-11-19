@@ -30,6 +30,8 @@ export type ContactMail = {
   /** 광고 랜딩 문의에만 있다. 비어 있으면 메일에 줄을 만들지 않는다. */
   storeUrl?: string;
   source?: string;
+  platform?: string;
+  adExperience?: string;
 };
 
 /** 메일 본문에 그대로 들어가므로 HTML 특수문자를 막아 둔다. */
@@ -53,7 +55,7 @@ function row(label: string, value: string): string {
  * 키가 없으면(로컬 개발 등) 조용히 건너뛴다 — 문의 저장까지 막을 이유는 없다.
  */
 export async function sendContactNotification(
-  contact: ContactMail
+  contact: ContactMail,
 ): Promise<boolean> {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
@@ -75,6 +77,8 @@ export async function sendContactNotification(
       ${row("연락처", contact.phone)}
       ${row("이메일", contact.email)}
       ${row("예산", contact.budget)}
+      ${contact.platform ? row("판매 플랫폼", contact.platform) : ""}
+      ${contact.adExperience ? row("트래픽 광고 경험", contact.adExperience) : ""}
       ${contact.storeUrl ? row("스토어", contact.storeUrl) : ""}
       ${contact.source ? row("유입", contact.source) : ""}
     </table>
@@ -94,6 +98,10 @@ export async function sendContactNotification(
     `연락처: ${contact.phone}`,
     `이메일: ${contact.email || "-"}`,
     `예산: ${contact.budget || "-"}`,
+    ...(contact.platform ? [`판매 플랫폼: ${contact.platform}`] : []),
+    ...(contact.adExperience
+      ? [`트래픽 광고 경험: ${contact.adExperience}`]
+      : []),
     ...(contact.storeUrl ? [`스토어: ${contact.storeUrl}`] : []),
     ...(contact.source ? [`유입: ${contact.source}`] : []),
   ].join("\n");

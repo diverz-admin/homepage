@@ -5,11 +5,66 @@ import { ArrowRight } from "lucide-react";
 
 type Status = "idle" | "sending" | "sent" | "error";
 
-/** 홈페이지 문의 폼(components/contact-form.tsx)과 같은 밑줄 입력. */
-const field =
-  "w-full border-b border-white/15 bg-transparent py-3 text-base text-white outline-none transition placeholder:text-white/30 focus:border-accent sm:text-sm";
+/** 칸 하나 — 둥근 상자. 선택지 줄과 같은 모양이다. */
+const box =
+  "w-full rounded-lg border border-line bg-white/[0.04] px-4 py-3.5 text-base text-white outline-none transition placeholder:text-white/30 focus:border-accent sm:text-sm";
 
-const label = "text-sm font-bold text-white";
+/** 질문 제목 + 필수 표시(작은 동그라미 안 별표). */
+function Label({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="flex items-center gap-1.5 text-base font-bold text-white">
+      {children}
+      <span
+        aria-hidden
+        className="flex h-4 w-4 items-center justify-center rounded-full bg-white/10 text-[0.65rem] leading-none text-white/80"
+      >
+        *
+      </span>
+    </span>
+  );
+}
+
+const LETTERS = "ABCDEFGH";
+
+/** 한 줄짜리 선택지 묶음 — 줄마다 A/B/C 글자 배지. 고르면 강조색 테두리. */
+function Choices({
+  name,
+  legend,
+  options,
+}: {
+  name: string;
+  legend: string;
+  options: readonly string[];
+}) {
+  return (
+    <fieldset className="grid gap-2.5">
+      <legend className="mb-3">
+        <Label>{legend}</Label>
+      </legend>
+      {options.map((option, i) => (
+        <label
+          key={option}
+          className="flex cursor-pointer items-center gap-3 rounded-lg border border-line bg-white/[0.04] px-4 py-3.5 text-sm text-white/85 transition hover:border-white/25 has-[:checked]:border-accent has-[:checked]:bg-accent/10 has-[:checked]:text-white has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent/50"
+        >
+          <input
+            type="radio"
+            name={name}
+            value={option}
+            required
+            className="peer sr-only"
+          />
+          <span
+            aria-hidden
+            className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-white/15 text-[0.65rem] font-bold text-white/80 transition peer-checked:bg-accent peer-checked:text-abyss"
+          >
+            {LETTERS[i]}
+          </span>
+          {option}
+        </label>
+      ))}
+    </fieldset>
+  );
+}
 
 /** 유입 기록에 남길 UTM 키. 메타 광고 링크에 붙어 오는 것들이다. */
 const UTM_KEYS = [
@@ -23,14 +78,28 @@ const UTM_KEYS = [
 /**
  * 광고 랜딩 전용 간편 신청 폼.
  *
- * 홈페이지 문의 폼보다 칸을 줄였다 — 광고로 들어온 사람은 망설이는 칸이
- * 하나 늘 때마다 빠져나간다. 문의유형은 랜딩이 이미 정하고 있어서 묻지
+ * 받은 레퍼런스와 같은 구성: 휴대폰 번호 → 판매 플랫폼 → 트래픽 광고
+ * 경험 → 월 예상 광고비(모두 한 줄 선택지) → 개인정보처리방침 전문보기
+ * → 동의. 성함/업체명은 묻지 않는다 — 광고로 들어온 사람은 망설이는 칸이
+ * 하나 늘 때마다 빠져나간다. 판매 플랫폼/광고 경험은 contacts.message 에,
+ * 광고비는 budget 에 담긴다(app/api/contact/route.ts). 문의유형은 랜딩이 이미 정하고 있어서 묻지
  * 않고 고정값(inquiryType)으로 보낸다.
  *
  * 같은 /api/contact 로 보내되, 어느 랜딩에서 어떤 광고로 왔는지(경로 +
  * UTM)를 source 로 붙인다. 문의 메일과 DB 에 "유입" 으로 남는다.
  */
-export default function LandingForm({ inquiryType }: { inquiryType: string }) {
+export default function LandingForm({
+  inquiryType,
+  platforms,
+  adExperience,
+  budgets,
+}: {
+  inquiryType: string;
+  platforms: readonly string[];
+  adExperience: readonly string[];
+  budgets: readonly string[];
+}) {
+  const [policyOpen, setPolicyOpen] = useState(false);
   const [status, setStatus] = useState<Status>("idle");
   const [errorMessage, setErrorMessage] = useState("");
   /** 스팸 방지: 폼이 처음 그려진 시각. 서버가 너무 빨리 온 제출을 거른다
@@ -63,10 +132,10 @@ export default function LandingForm({ inquiryType }: { inquiryType: string }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          company: data.get("company"),
-          name: data.get("name"),
           phone: data.get("phone"),
-          storeUrl: data.get("storeUrl"),
+          platform: data.get("platform"),
+          adExperience: data.get("adExperience"),
+          budget: data.get("budget"),
           inquiryTypes: [inquiryType],
           consent: data.get("consent") === "on",
           source,
@@ -107,7 +176,7 @@ export default function LandingForm({ inquiryType }: { inquiryType: string }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="grid gap-7">
+    <form onSubmit={handleSubmit} className="grid gap-9">
       {/* 스팸 방지 함정 칸. 사람에게는 보이지 않고 Tab으로도 닿지 않는다. */}
       <div
         aria-hidden
@@ -124,69 +193,82 @@ export default function LandingForm({ inquiryType }: { inquiryType: string }) {
           />
         </label>
       </div>
-      <label className="grid gap-1">
-        <span className={label}>업체명/스토어명 *</span>
+      <label className="grid gap-3">
+        <Label>휴대폰 번호</Label>
         <input
-          name="company"
+          name="phone"
+          type="tel"
           required
-          maxLength={120}
-          placeholder="스토어 이름을 입력해주세요."
-          className={field}
+          maxLength={40}
+          autoComplete="tel"
+          inputMode="numeric"
+          placeholder="'-'를 제외한 휴대폰 번호를 입력해주세요"
+          className={box}
         />
       </label>
 
-      <div className="grid gap-7 sm:grid-cols-2 sm:gap-6">
-        <label className="grid gap-1">
-          <span className={label}>성함 *</span>
-          <input
-            name="name"
-            required
-            maxLength={80}
-            autoComplete="name"
-            placeholder="성함을 입력해주세요."
-            className={field}
-          />
-        </label>
+      <Choices
+        name="platform"
+        legend="상품 판매중인 플랫폼"
+        options={platforms}
+      />
+      <Choices
+        name="adExperience"
+        legend="트래픽 광고 경험"
+        options={adExperience}
+      />
+      <Choices name="budget" legend="월 예상 광고비" options={budgets} />
 
-        <label className="grid gap-1">
-          <span className={label}>연락처 *</span>
+      <div className="grid gap-4">
+        <p className="text-sm text-white/70">
+          개인정보처리방침{" "}
+          <button
+            type="button"
+            onClick={() => setPolicyOpen((open) => !open)}
+            aria-expanded={policyOpen}
+            className="font-bold text-accent underline underline-offset-4"
+          >
+            {policyOpen ? "접기" : "전문보기"}
+          </button>
+        </p>
+        {policyOpen && (
+          <div className="rounded-lg border border-line bg-white/[0.03] px-4 py-4 text-xs leading-relaxed text-white/60">
+            <p className="font-bold text-white/80">
+              개인정보 수집 및 이용 안내
+            </p>
+            <dl className="mt-2 grid grid-cols-[5.5rem_1fr] gap-x-3 gap-y-1.5">
+              <dt className="text-white/45">수집 항목</dt>
+              <dd>
+                휴대폰 번호, 판매 플랫폼, 트래픽 광고 경험, 월 예상 광고비
+              </dd>
+              <dt className="text-white/45">이용 목적</dt>
+              <dd>무료 순위 진단 및 상담 연락</dd>
+              <dt className="text-white/45">보유 기간</dt>
+              <dd>상담 종료 후 1년, 또는 동의 철회 시 즉시 파기</dd>
+            </dl>
+            <p className="mt-2">
+              동의를 거부할 수 있으며, 거부 시 상담 신청이 제한됩니다.
+            </p>
+          </div>
+        )}
+        <label className="flex cursor-pointer items-center gap-3 text-sm text-white/80">
           <input
-            name="phone"
-            type="tel"
+            type="checkbox"
+            name="consent"
             required
-            maxLength={40}
-            autoComplete="tel"
-            inputMode="tel"
-            placeholder="010-0000-0000"
-            className={field}
+            className="h-5 w-5 shrink-0 rounded accent-accent"
           />
+          <span className="flex items-center gap-1.5">
+            다이버즈 개인정보 수집 및 이용에 동의합니다
+            <span
+              aria-hidden
+              className="flex h-4 w-4 items-center justify-center rounded-full bg-white/10 text-[0.65rem] leading-none text-white/80"
+            >
+              *
+            </span>
+          </span>
         </label>
       </div>
-
-      <label className="grid gap-1">
-        <span className={label}>진단받을 상품/스토어 주소</span>
-        <input
-          name="storeUrl"
-          type="text"
-          maxLength={300}
-          inputMode="url"
-          placeholder="smartstore.naver.com/... (선택)"
-          className={field}
-        />
-      </label>
-
-      <label className="flex cursor-pointer items-start gap-2.5 text-sm leading-relaxed text-white/70">
-        <input
-          type="checkbox"
-          name="consent"
-          required
-          className="mt-0.5 h-4 w-4 shrink-0 accent-accent"
-        />
-        <span>
-          상담을 위한 개인정보(업체명, 성함, 연락처) 수집 및 이용에 동의합니다.
-          *
-        </span>
-      </label>
 
       <button
         type="submit"

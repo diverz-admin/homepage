@@ -54,6 +54,13 @@ export const rankingLanding = {
   /** 문의 메일/DB 에 남는 문의유형. 홈페이지 문의 폼의 유형과 구분된다. */
   inquiryType: "스마트스토어 상위노출 (광고 랜딩)",
 
+  /** 무료 진단 신청 폼 선택지 (components/landing/landing-form.tsx). */
+  form: {
+    platforms: ["쿠팡", "네이버쇼핑", "스마트플레이스"],
+    adExperience: ["있어요", "없어요"],
+    budgets: ["0 ~ 100만원", "100 ~ 500만원", "500만원 이상", "상담 후 결정"],
+  },
+
   /** 상단 띠의 앵커 메뉴. id 는 page.tsx 의 섹션 id 와 맞춘다. */
   nav: [
     { href: "#results", label: "순위 성과" },
@@ -129,7 +136,8 @@ export const rankingLanding = {
   },
 
   /**
-   * 순위 추이 바로 다음 — 순위가 오른 뒤 고객사와 나눈 대화 캡처 5장.
+   * 순위 추이 바로 다음 — 순위가 오른 뒤 고객사와 나눈 대화 5장.
+   * 실제 대화를 개인정보 보호를 위해 재구성한 화면이라 note 를 함께 단다.
    * 옆으로 저절로 흘러가는 띠(마퀴)로 놓는다. 이미지는 1036x1518(카톡 다크 화면).
    * 위 rankBoard 의 상품들과 같은 사례라 순서도 맞춰 둔다.
    */
@@ -137,26 +145,27 @@ export const rankingLanding = {
     // 제목은 1페이지의 의미 섹션 제목과 같은 크기로 크게 쓴다.
     title: "“상위노출되니까\n확실히 매출이 올라가네요”",
     body: "순위가 오른 뒤, 대표님들이 먼저 보내온 메시지입니다.",
+    note: "실제 상담 대화를 개인정보 보호를 위해 재구성한 화면입니다.",
     images: [
-      {
-        src: "/images/landing/chats/kakao-sofa.png",
-        alt: "고객사 대화: 쇼파 42위에서 1위, 다음 달도 그대로 진행",
-      },
-      {
-        src: "/images/landing/chats/kakao-cleanser.png",
-        alt: "고객사 대화: 청결제 14위에서 3위, 고객사가 커피 선물을 보냄",
-      },
       {
         src: "/images/landing/chats/kakao-whitening-serum.png",
         alt: "고객사 대화: 미백세럼 78위에서 1위, 상품 사진 보완 협의",
       },
       {
-        src: "/images/landing/chats/kakao-pajama.png",
-        alt: "고객사 대화: 파자마 23위에서 2위, 다음 달에도 이어서 진행",
+        src: "/images/landing/chats/kakao-cleanser.png",
+        alt: "고객사 대화: 청결제 14위에서 3위, 고객사가 감사 선물을 보냄",
+      },
+      {
+        src: "/images/landing/chats/kakao-sleep-socks-sales.png",
+        alt: "고객사 대화: 수면양말 상위 노출 이후 매출이 많이 올라 다음 달에도 계속 진행",
       },
       {
         src: "/images/landing/chats/kakao-sleep-socks.png",
         alt: "고객사 대화: 수면양말 34위에서 1위, 고객사가 커피 선물을 보내고 겨울 행사 일정 협의",
+      },
+      {
+        src: "/images/landing/chats/kakao-sofa.png",
+        alt: "고객사 대화: 쇼파 42위에서 1위, 다음 달도 그대로 진행",
       },
     ],
   },
@@ -259,13 +268,13 @@ export const rankingLanding = {
       ["순위는 알아서 오를까요?", true],
     ] as [string, boolean][],
     lead: "이런 연락, 한 번쯤 받아 보셨을 겁니다",
-    /** 알림 카드 머리에 붙는 보낸 곳/시각. claims 와 순서가 같다. */
+    /** 알림 카드 머리에 붙는 보낸 곳. */
     sender: "광고 대행사",
-    sentAt: ["방금", "12분 전", "1시간 전"],
+    /** \n 은 좁은 화면 카드에서만 줄바꿈된다(넓은 화면/경고 카드는 한 줄). */
     claims: [
-      "클릭 수만 채우면 1위 갑니다",
-      "상위노출 100% 보장",
-      "한 달이면 1페이지 고정",
+      "클릭 수만 채우면\n1위 갑니다",
+      "상위노출\n100% 보장",
+      "한 달이면\n1페이지 고정",
     ],
     turn: "그런데 결과는 어땠나요?",
     /**
@@ -419,17 +428,15 @@ export const rankingLanding = {
   },
 
   /**
-   * PLATFORM 다음 — 솔루션. "개발자 10명이 24시간 로직 변화를 지켜보고,
+   * PLATFORM 다음 — 솔루션. "개발팀이 24시간 로직 변화를 지켜보고,
    * 대응 도구를 직접 만든다"는 맥락. 가운데 두 톤 제목 + 숫자 셋 + 대응
    * 사이클 카드 넷(감지 → 분석 → 개발 → 반영 → 다시 감지).
    * 받은 레퍼런스(탭 + 카드 셋)와는 구성을 일부러 다르게 했다.
    */
   solution: {
     title: ["로직이 바뀌는 그 순간에도", "다이버즈 개발팀은 깨어 있습니다"],
-    body: "개발자 10명이 24시간 순위 로직을 지켜보고, 변화가 감지되면 대응에 필요한 도구를 직접 만들어 바로 적용합니다.",
+    body: "개발팀이 24시간 순위 로직을 지켜보고, 변화가 감지되면 대응에 필요한 도구를 직접 만들어 바로 적용합니다.",
     stats: [
-      // people 이 있으면 숫자 대신 사람 모양 아이콘을 그 수만큼 줄 세운다.
-      { value: "10", unit: "명", label: "전담 개발자 10명", people: 10 },
       { value: "24", unit: "시간", label: "쉬지 않는 모니터링" },
       { value: "직접", unit: "", label: "개발하는 대응 솔루션" },
     ],
@@ -463,24 +470,24 @@ export const rankingLanding = {
     title: [
       ["풀스택 개발자", true],
       ["와 ", false],
-      ["정규직 마케터", true],
+      ["평균 5년 이상 경력의 전문 마케터", true],
       ["가\n끝까지 책임집니다", false],
     ] as [string, boolean][],
     items: [
       {
         icon: "code",
         title: "풀스택 개발팀 직접 운영",
-        body: "기획부터 서버까지 한 팀이\n직접 만들고 바로 고칩니다.",
+        body: "풀스택 개발팀이 24시간 모니터링을 통해\n변경되는 로직에 실시간으로 대응합니다.",
       },
       {
         icon: "person",
-        title: "정규직 전담 마케터",
-        body: "외주 없이 내부 정규직 마케터가\n처음부터 끝까지 맡습니다.",
+        title: "1:1 전문 컨설턴트",
+        body: "광고의 시작부터 끝까지\n전문 컨설턴트가 1:1로 밀착 관리해 드립니다.",
       },
       {
         icon: "talk",
-        title: "숨김 없는 소통",
-        body: "되는 것과 안 되는 것을\n있는 그대로 말씀드립니다.",
+        title: "매일 운영관리 지원",
+        body: "순위 보고 등 운영 현황을\n담당 컨설턴트가 매일 공유해 드립니다.",
       },
     ] as { icon: "code" | "person" | "talk"; title: string; body: string }[],
   },

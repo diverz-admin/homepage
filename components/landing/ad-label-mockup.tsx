@@ -1,77 +1,22 @@
+import Image from "next/image";
 import Reveal from "@/components/reveal";
+import searchShot from "@/public/images/landing/ad-search.png";
 
 /**
- * 광고 표시 비교 그림 — 쇼핑 검색 결과 화면 위에 "광고 상품"과
- * "광고 표시 없음" 자리를 짚어 보이는 개념 그림.
+ * 광고 표시 비교 그림 — 실제 쇼핑 검색 결과 캡처를 흐리게 깔고, 그 위에
+ * "광고" 배지 자리와 "광고 표시 없음" 상품 자리를 짚어 보인다.
  *
- * 받은 레퍼런스(실제 쇼핑 검색 캡처 + 초록 강조)를 다이버즈 톤으로 다시
- * 그렸다. 특정 플랫폼 로고/화면은 쓰지 않고 상품은 뼈대(회색 블록)로만
- * 그린다. 강조는 초록 대신 accent. 강조 칸 아래로 세로선이 그어지며
- * 맺음 문구(caption)로 이어진다.
+ * 캡처는 상품/판매처가 읽히지 않을 만큼 블러 처리한다. 배지/강조 칸은
+ * 캡처 위 실제 자리에 퍼센트 좌표로 얹는다(캡처 710x841 기준). 강조는
+ * accent. 강조 칸 아래로 세로선이 그어지며 맺음 문구(caption)로 이어진다.
  */
 
-type Slot = { ad?: "광고" | "광고+"; pointer?: boolean; highlight?: boolean };
-
-/** 2열 x 3줄. 위 두 줄은 광고, 셋째 줄 왼쪽이 광고 표시 없는 상단 상품. */
-const SLOTS: Slot[] = [
-  { ad: "광고" },
-  {},
-  { ad: "광고", pointer: true },
-  { ad: "광고+" },
-  { highlight: true },
-  {},
+/** 캡처 위 광고 배지 자리 — [left%, top%, 문구, 짚는 표시 여부] */
+const BADGES: [number, number, string, boolean][] = [
+  [38.6, 25.3, "광고", false],
+  [38.6, 59.9, "광고", true],
+  [87.4, 57, "광고+", false],
 ];
-
-function Product({
-  slot,
-  adLabel,
-  cleanLabel,
-}: {
-  slot: Slot;
-  adLabel: string;
-  cleanLabel: string;
-}) {
-  return (
-    <div
-      className={`relative rounded-xl p-2.5 transition sm:p-3.5 ${
-        slot.highlight
-          ? "z-10 border-2 border-accent bg-accent/10"
-          : "border border-transparent"
-      }`}
-    >
-      {slot.highlight && (
-        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-3 py-1 text-[0.65rem] font-bold whitespace-nowrap text-abyss sm:-top-3.5 sm:text-xs">
-          {cleanLabel}
-        </span>
-      )}
-      {/* 상품 내용은 흐리게 — 읽히는 건 표시(배지)뿐이어야 한다. */}
-      <div aria-hidden className="flex gap-2.5 blur-[1.5px] sm:gap-3">
-        <span
-          className={`block aspect-square w-[38%] shrink-0 rounded-md ${slot.highlight ? "bg-white/25" : "bg-white/12"}`}
-        />
-        <div className="flex flex-1 flex-col gap-1.5 pt-0.5">
-          <span className="block h-1.5 w-11/12 rounded-full bg-white/25 sm:h-2" />
-          <span className="block h-1.5 w-3/4 rounded-full bg-white/15 sm:h-2" />
-          <span className="block h-1.5 w-1/2 rounded-full bg-accent/40 sm:h-2" />
-          <span className="mt-1 block h-1.5 w-2/3 rounded-full bg-white/10 sm:h-2" />
-          <span className="block h-1.5 w-1/3 rounded-full bg-white/10 sm:h-2" />
-        </div>
-      </div>
-      {slot.ad && (
-        <span className="absolute right-2.5 bottom-2.5 rounded border border-white/35 px-1.5 py-px text-[0.6rem] font-bold text-white/70 sm:right-3.5 sm:bottom-3.5 sm:text-[0.7rem]">
-          {slot.ad}
-        </span>
-      )}
-      {slot.pointer && (
-        // 넓은 화면에서는 배지 옆에 "← 광고 상품" 짚는 표시.
-        <span className="absolute right-[-0.5rem] bottom-2 z-20 hidden translate-x-full items-center gap-1.5 rounded bg-[#0f1a2b] px-1.5 text-xs font-bold whitespace-nowrap text-white/80 sm:bottom-3 sm:flex">
-          <span aria-hidden>←</span>
-          {adLabel}
-        </span>
-      )}
-    </div>
-  );
-}
 
 export default function AdLabelMockup({
   adLabel,
@@ -85,41 +30,46 @@ export default function AdLabelMockup({
   return (
     <figure className="mx-auto flex w-full max-w-[540px] flex-col items-center">
       <Reveal className="w-full">
-        <div className="rounded-[1.6rem] border border-white/15 bg-[#0f1a2b] p-3 shadow-[0_24px_60px_rgb(0_0_0/0.45)] sm:p-4">
-          {/* 검색창 — 특정 플랫폼 로고 대신 비어 있는 자리 표시 */}
-          <div className="flex items-center gap-3 rounded-full border border-white/12 bg-white/[0.05] px-4 py-2.5">
+        <div className="relative overflow-hidden rounded-[1.6rem] border border-white/15 bg-white shadow-[0_24px_60px_rgb(0_0_0/0.45)]">
+          <Image
+            src={searchShot}
+            alt=""
+            aria-hidden
+            sizes="(min-width: 640px) 540px, 100vw"
+            className="h-auto w-full scale-[1.06] blur-[8px] brightness-[0.8] saturate-[0.6]"
+          />
+          {/* 네이버 로고 자리만 또렷하게 — 같은 캡처를 블러 없이 로고 칸만
+              잘라 얹는다(clip-path, 710x841 기준 x 37~63 / y 35~61). */}
+          <Image
+            src={searchShot}
+            alt=""
+            aria-hidden
+            sizes="(min-width: 640px) 540px, 100vw"
+            className="absolute inset-0 h-full w-full brightness-[0.8] [clip-path:inset(4.2%_91.1%_92.8%_5.2%_round_3px)]"
+          />
+          {BADGES.map(([left, top, label, pointer]) => (
             <span
-              aria-hidden
-              className="block h-4 w-4 rounded-md bg-accent/70"
-            />
-            <span className="block h-2 w-24 rounded-full bg-white/15" />
-            <svg
-              aria-hidden
-              viewBox="0 0 24 24"
-              className="ml-auto h-4 w-4 text-accent"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
+              key={`${left}-${top}`}
+              className="absolute flex items-center"
+              style={{ left: `${left}%`, top: `${top}%` }}
             >
-              <circle cx="11" cy="11" r="6.5" />
-              <path d="m16 16 4 4" />
-            </svg>
-          </div>
-          <div className="mt-4 grid grid-cols-2 gap-x-2 gap-y-4 sm:gap-x-3">
-            {SLOTS.map((slot, i) => (
-              <div
-                key={i}
-                className={i < 4 ? "border-b border-white/[0.07] pb-3" : ""}
-              >
-                <Product
-                  slot={slot}
-                  adLabel={adLabel}
-                  cleanLabel={cleanLabel}
-                />
-              </div>
-            ))}
-          </div>
+              <span className="rounded border border-[#8a93a3] bg-white px-1.5 py-px whitespace-nowrap text-[0.6rem] font-bold text-[#4b5563] shadow-sm sm:text-[0.7rem]">
+                {label}
+              </span>
+              {pointer && (
+                <span className="ml-1.5 hidden items-center gap-1 rounded bg-[#0f1a2b] px-1.5 py-0.5 text-xs font-bold whitespace-nowrap text-white sm:flex">
+                  <span aria-hidden>←</span>
+                  {adLabel}
+                </span>
+              )}
+            </span>
+          ))}
+          {/* 광고 표시 없는 상단 상품 — 셋째 줄 왼쪽 */}
+          <span className="absolute top-[66%] left-[3.5%] h-[26.5%] w-[46.5%] rounded-xl border-2 border-accent bg-accent/15 shadow-[0_0_0_9999px_rgb(9_17_30/0.25)]">
+            <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-3 py-1 text-[0.65rem] font-bold whitespace-nowrap text-abyss sm:-top-3.5 sm:text-xs">
+              {cleanLabel}
+            </span>
+          </span>
         </div>
       </Reveal>
 

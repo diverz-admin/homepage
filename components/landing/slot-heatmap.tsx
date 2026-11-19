@@ -1,75 +1,66 @@
+import Image from "next/image";
 import Reveal from "@/components/reveal";
+import coupangFoot from "@/public/images/landing/scroll-coupang-foot.jpg";
+import coupangHead from "@/public/images/landing/scroll-coupang-head.jpg";
+import coupangStrip from "@/public/images/landing/scroll-coupang-strip.jpg";
+import naverFoot from "@/public/images/landing/scroll-naver-foot.jpg";
+import naverHead from "@/public/images/landing/scroll-naver-head.jpg";
+import naverStrip from "@/public/images/landing/scroll-naver-strip.jpg";
 
 /**
  * 구좌별 반응 분포도 — 검색 결과 화면 두 개(네이버 쇼핑형 격자 / 쿠팡형
  * 2열) 위에 "위쪽일수록 반응이 몰린다"는 열지도를 덮은 개념 그림.
  *
  * 받은 레퍼런스(빨강~노랑 열지도 + 실제 쇼핑 앱 캡처)를 다이버즈 톤으로
- * 다시 그렸다. 화면 속 상품은 실제 캡처 대신 뼈대(회색 블록)로 그리고
- * 계속 아래로 스크롤되게 움직인다. 열지도는 사용자 요청으로 위 빨강 →
+ * 다시 그렸다. 화면 속은 실제 검색 결과(네이버 쇼핑/쿠팡 휴대폰 화면 녹화를
+ * 이어 붙인 긴 한 장)가 일정한 속도로 내려간다. 열지도는 사용자 요청으로 위 빨강 →
  * 아래 파랑(accent) 그라데이션이다(사이트에서 빨강을 쓰는 예외 자리). 수치가 없는
  * 개념 그림이라 설문/출처 같은 근거 문구는 붙이지 않는다.
  *
  * 화면에 들어오면 열지도가 위에서부터 차오른다.
  */
 
-/** 상품 카드 뼈대 — 사진 칸 + 글줄 몇 개. */
-function Card({ tall = false }: { tall?: boolean }) {
-  return (
-    <div className="flex flex-col gap-1">
-      <span
-        className={`block rounded-md bg-white/12 ${tall ? "aspect-[4/5]" : "aspect-square"}`}
-      />
-      <span className="mt-0.5 block h-1.5 w-11/12 rounded-full bg-white/15" />
-      <span className="block h-1.5 w-2/3 rounded-full bg-white/15" />
-      <span className="block h-2 w-1/2 rounded-full bg-white/30" />
-    </div>
-  );
-}
+/**
+ * 실제 검색 결과 화면. 휴대폰 녹화를 이어 붙여 만든 긴 한 장(strip)을
+ * 머리(검색창)/바닥(하단 메뉴) 사이 칸에서 같은 속도로 계속 내린다.
+ * 녹화의 손가락 스크롤은 빨랐다 느렸다 해서 그대로 쓰지 않는다.
+ * 속도는 길이와 상관없이 같도록 duration 을 strip 길이에 맞춘다.
+ */
+const SCREENS = {
+  naver: { head: naverHead, strip: naverStrip, foot: naverFoot, sec: 22 },
+  coupang: {
+    head: coupangHead,
+    strip: coupangStrip,
+    foot: coupangFoot,
+    sec: 29,
+  },
+} as const;
 
 function Phone({
   label,
-  variant,
+  screen,
   delay,
 }: {
   label: string;
-  variant: "grid" | "list";
+  screen: keyof typeof SCREENS;
   delay: number;
 }) {
+  const { head, strip, foot, sec } = SCREENS[screen];
   return (
     <figure className="flex flex-col items-center">
-      <div className="relative w-[128px] overflow-hidden rounded-[1.4rem] border border-white/15 bg-[#0f1a2b] shadow-[0_18px_50px_rgb(0_0_0/0.45)] sm:w-[190px] lg:w-[210px]">
-        <div className="aspect-[9/17] p-2.5 sm:p-3">
-          {/* 검색창 */}
-          <div className="flex items-center gap-1.5 rounded-full border border-white/15 bg-white/[0.06] px-2.5 py-1.5">
-            <span className="block h-2 w-2 shrink-0 rounded-full border border-white/40" />
-            <span className="text-[0.55rem] font-bold text-white/80 sm:text-[0.7rem]">
-              이어폰
-            </span>
+      <div className="relative w-[min(calc((100vw_-_60px)/2),220px)] overflow-hidden rounded-[1.4rem] border border-white/15 bg-white shadow-[0_18px_50px_rgb(0_0_0/0.45)] sm:w-[230px] lg:w-[260px]">
+        <div aria-hidden className="flex aspect-[9/17] flex-col">
+          <Image src={head} alt="" sizes="260px" className="h-auto w-full" />
+          <div className="relative min-h-0 flex-1 overflow-hidden">
+            <Image
+              src={strip}
+              alt=""
+              sizes="260px"
+              className="slot-scroll absolute inset-0 h-full w-full object-cover"
+              style={{ animationDuration: `${sec}s` }}
+            />
           </div>
-          {/* 필터 칩 */}
-          <div className="mt-2 flex gap-1">
-            {[10, 14, 12].map((w, i) => (
-              <span
-                key={i}
-                className="block h-2.5 rounded-full bg-white/10 sm:h-3"
-                style={{ width: `${w * 2}%` }}
-              />
-            ))}
-          </div>
-          {/* 상품 — 손가락으로 넘기듯 계속 아래로 스크롤된다. 같은 목록을
-              두 벌 이어 붙이고 -50%까지 올려서 끊김 없이 돈다. 검색창과
-              열지도는 그대로 두고 상품만 지나간다. */}
-          <div className="relative mt-3 h-[calc(100%-4.5rem)] overflow-hidden sm:h-[calc(100%-5rem)]">
-            <div className="slot-scroll grid grid-cols-2 gap-x-2 gap-y-3">
-              {[0, 1].map((copy) =>
-                (variant === "grid"
-                  ? [false, false, false, false, false, false]
-                  : [true, true, false, false, true, true]
-                ).map((tall, i) => <Card key={`${copy}-${i}`} tall={tall} />),
-              )}
-            </div>
-          </div>
+          <Image src={foot} alt="" sizes="260px" className="h-auto w-full" />
         </div>
 
         {/* 열지도 — 위는 빨강(반응 매우 높음), 아래로 갈수록 파랑(낮음).
@@ -81,7 +72,7 @@ function Phone({
         >
           <span
             aria-hidden
-            className="absolute inset-0 block bg-gradient-to-b from-[#ff4d5e]/65 via-[#c45ad8]/25 via-45% to-accent/35 mix-blend-screen [clip-path:inset(0_0_100%_0)] transition-[clip-path] duration-[1400ms] ease-out group-data-[visible=true]/heat:[clip-path:inset(0_0_0_0)]"
+            className="absolute inset-0 block bg-gradient-to-b from-[#ff4d5e]/70 via-[#c45ad8]/35 via-45% to-accent/45 mix-blend-multiply [clip-path:inset(0_0_100%_0)] transition-[clip-path] duration-[1400ms] ease-out group-data-[visible=true]/heat:[clip-path:inset(0_0_0_0)]"
           />
         </Reveal>
       </div>
@@ -93,12 +84,12 @@ function Phone({
 }
 
 /**
- * 상품 목록 스크롤 키프레임. 이 컴포넌트에서만 쓰여 globals.css 대신 여기
- * 둔다. 움직임 줄이기 설정이면 멈춘다.
+ * 긴 한 장을 위에서 아래까지 일정한 속도로 내린다(object-position 0% → 100%).
+ * 끝에서 잠깐 멈췄다가 처음으로 돌아간다. 움직임 줄이기면 멈춘다.
  */
 const SCROLL_CSS = `
-@keyframes slot-scroll { from { transform: translateY(0); } to { transform: translateY(-50%); } }
-.slot-scroll { animation: slot-scroll 14s linear infinite; }
+@keyframes slot-scroll { 0% { object-position: 50% 0%; } 94%, 100% { object-position: 50% 100%; } }
+.slot-scroll { animation: slot-scroll 20s linear infinite; }
 @media (prefers-reduced-motion: reduce) { .slot-scroll { animation: none; } }
 `;
 
@@ -118,20 +109,23 @@ export default function SlotHeatmap({
   return (
     <div className="flex flex-col items-center">
       <style>{SCROLL_CSS}</style>
-      <div className="flex items-stretch gap-3 sm:gap-6">
-        <Phone label={phones[0]} variant="grid" delay={100} />
+      {/* 모바일에서는 휴대폰 두 대를 화면 폭에 맞춰 키운다 — 둘 + 눈금이
+          화면 양옆 12px 만 남기고 꽉 차도록(page-container 여백 안쪽을 조금
+          넘어선다). sm 부터는 고정 폭. */}
+      <div className="flex items-stretch gap-1.5 sm:gap-6">
+        <Phone label={phones[0]} screen="naver" delay={100} />
 
         {/* 가운데 눈금 — 위 "매우 높음", 아래 "낮음" */}
         <div
           aria-hidden
-          className="flex flex-col items-center pb-8 text-center text-[0.65rem] leading-tight font-bold text-white/60 sm:text-xs"
+          className="flex flex-col items-center pb-8 text-center text-[0.6rem] leading-tight font-bold text-white/60 sm:text-xs"
         >
           <span className="whitespace-pre-line">{high}</span>
-          <span className="my-3 block w-[3px] flex-1 rounded-full bg-gradient-to-b from-[#ff4d5e] via-[#c45ad8] to-accent" />
+          <span className="my-2 block w-[3px] sm:my-3 flex-1 rounded-full bg-gradient-to-b from-[#ff4d5e] via-[#c45ad8] to-accent" />
           <span>{low}</span>
         </div>
 
-        <Phone label={phones[1]} variant="list" delay={250} />
+        <Phone label={phones[1]} screen="coupang" delay={250} />
       </div>
 
       <p className="mt-8 text-sm font-bold text-white sm:text-base">
